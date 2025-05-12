@@ -1,0 +1,126 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/debian
+{
+	"name": "fairagro-m4.2_infrastructure",
+	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
+	"image": "mcr.microsoft.com/devcontainers/base:0.202.10-bullseye",
+	"features": {
+		"ghcr.io/devcontainers/features/docker-in-docker:2.12.2": {
+			"moby": true,
+			"azureDnsAutoDetection": true,
+			"installDockerBuildx": true,
+			"dockerDashComposeVersion": "v2"
+		},
+		"ghcr.io/devcontainers/features/kubectl-helm-minikube:1.2.1": {
+			"version": "1.28.6",
+			"helm": "3.16.1",
+			"minikube": "none"
+		},
+		"ghcr.io/devcontainers/features/git:1.3.3": {
+			"ppa": false,
+			"version": "2.46.2"
+		},
+		"ghcr.io/mpriscella/features/helm-chart-testing:1.0.0": {
+			"version": "v3.11.0"
+		},
+		// feature version 1.0.15 does not support higher age versions than 1.1.1
+		"ghcr.io/devcontainers-contrib/features/age:1.0.15": {
+			"version": "v1.1.1"
+		},
+		"ghcr.io/devcontainers-contrib/features/age-keygen:1.0.14": {
+			"version": "v1.1.1"
+		},
+		"ghcr.io/devcontainers-contrib/features/argo-cd:1.0.2": {
+			"version": "2.12.4"
+		},
+		"ghcr.io/devcontainers-contrib/features/curl-apt-get:1.0.16": {},
+		"ghcr.io/devcontainers-contrib/features/starship:1.0.9": {
+			"version": "v1.20.1"
+		},
+		"ghcr.io/devcontainers-contrib/features/syft:1.0.9": {
+			"version": "v1.13.0"
+		},
+		"ghcr.io/devcontainers-contrib/features/wget-apt-get:1.0.15": {},
+		"ghcr.io/eitsupi/devcontainer-features/jq-likes:2.1.1": {
+			"jqVersion": "1.7.1",
+			"yqVersion": "4.44.3",
+			"gojqVersion": "none",
+			"xqVersion": "0.4.1",
+			"jaqVersion": "none"
+		},
+		"ghcr.io/guiyomh/features/vim:0.0.1": {},
+		"ghcr.io/nucleuscloud/devcontainer-features/helmfile:0.1.0": {
+			"version": "v0.168.0"
+		},
+		"ghcr.io/devcontainers/features/python:1.7.1": {
+			"installTools": true,
+			"version": "3.12"
+		},
+		"ghcr.io/devcontainers-contrib/features/sops:1.0.14": {
+			"version": "v3.9.0"
+		},
+		"ghcr.io/dhoeric/features/hadolint:1": {},
+		"ghcr.io/xfrancois/devcontainers-features/velero:1": {
+			"version": "v1.13.2"
+		}
+	},
+
+	"postCreateCommand": {
+		"install.software": [
+			"bash",
+			"-c",
+			"sudo apt update && sudo apt install dnsutils iputils-ping ncat"
+		],
+		// In case we've accidently checked secrets into git, we need to git-filter-repo.
+		"install.git-filter-repo": [
+			"bash",
+			"-c",
+			"sudo wget https://raw.githubusercontent.com/newren/git-filter-repo/main/git-filter-repo -P /usr/local/bin && sudo chmod +x /usr/local/bin/git-filter-repo"
+		],
+		// The cert-manager command line tool. Actually there is a corresponding dev container feature (cmctl-asdf)
+		// but I did not manage to get it to work.
+		"install.cmctl": [
+			"bash",
+			"-c",
+			"sudo wget https://github.com/cert-manager/cmctl/releases/latest/download/cmctl_linux_amd64 -O /usr/local/bin/cmctl && sudo chmod +x /usr/local/bin/cmctl"
+		],
+		// This command could be questionable: it requires to enter your gpg passphrase every time you start a shell
+		// in the container. Also you might not always want to connect to fizz. Nevertheless, for me it works fine.
+		"connect.to.fizz": [
+			"bash",
+			"-c",
+			"echo 'source /workspaces/basic_infrastructure/scripts/set_context.sh fizz' >> ~/.bashrc"
+		]
+	},
+
+	// Use 'forwardPorts' to make a list of ports inside the container available locally.
+	// "forwardPorts": [],
+
+	// Configure tool-specific properties.
+	"customizations": {
+		// Configure properties specific to VS Code.
+		"vscode": {
+			"extensions": [
+				"signageos.signageos-vscode-sops",
+				"codeium.codeium",
+				"jheilingbrunner.vscode-gnupg-tool",
+				"exiasr.hadolint",
+				"meezilla.json",
+				"adamhartford.vscode-base64",
+				"redhat.vscode-yaml",
+				"rogalmic.bash-debug",
+				"davidanson.vscode-markdownlint",
+				"ms-python.pylint"
+			],
+			"settings": {
+				"sops.creationEnabled": true,
+				"sops.binPath": "sops",
+				"sops.configPath": "./.sopsrc",
+				"hadolint.hadolintPath": "/usr/local/bin/hadolint"
+			}
+		}
+	},
+
+	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
+	"remoteUser": "vscode"
+}

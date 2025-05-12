@@ -1,0 +1,7 @@
+corki_admin.yaml
+draven_admin.yaml
+elise_admin.yaml
+**/admin.conf
+**/.decrypted~*
+helmcharts/*/charts/*.tgz
+helmcharts/*/Chart.lock

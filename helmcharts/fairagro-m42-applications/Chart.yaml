@@ -1,5 +1,5 @@
 apiVersion: v2
-name: fairagro-applications
+name: fairagro-m42-applications
 description: A Helm chart to create argocd applications for all FAIRagro services
 
 # A chart can be either an 'application' or a 'library' chart.

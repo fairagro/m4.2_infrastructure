@@ -13,8 +13,8 @@ echo "Installing FAIRagro applications app on ${environment}..."
 argocd app create fairagro-m42-application-wrapper \
     --upsert \
     --repo "git@github.com:fairagro/m42_infrastructure.git" \
-    --revision HAED \
-    --path "helmcharts/fairagro-applications" \
+    --revision HEAD \
+    --path "helmcharts/fairagro-m42-applications" \
     --dest-server "https://kubernetes.default.svc" \
     --project fairagro \
     --dest-namespace fairagro-m42-applications \

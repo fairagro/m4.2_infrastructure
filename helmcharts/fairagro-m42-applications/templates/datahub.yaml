@@ -6,7 +6,7 @@ metadata:
 spec:
   project: fairagro
   source:
-    repoURL: "git@github.com:fairagro/basic_infrastructure.git"
+    repoURL: "git@github.com:fairagro/m4.2_infrastructure.git"
     path: helmcharts/fairagro-datahub
     targetRevision: "{{ .Values.datahub_revision }}"
     helm:
@@ -15,7 +15,7 @@ spec:
         - ../../environments/{{ .Values.cluster_name }}/values/fairagro-datahub.enc.yaml
   destination:
     server: "https://kubernetes.default.svc"
-    namespace: fairagro-datahub
+    namespace: fairagro-m42-datahub
   syncPolicy:
     syncOptions:
       - Prune=true

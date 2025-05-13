@@ -15,7 +15,7 @@ spec:
         - ../../environments/{{ .Values.cluster_name }}/values/fairagro-datahub.enc.yaml
   destination:
     server: "https://kubernetes.default.svc"
-    namespace: fairagro-m42-datahub
+    namespace: fairagro-datahub
   syncPolicy:
     syncOptions:
       - Prune=true

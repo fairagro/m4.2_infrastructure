@@ -15,7 +15,7 @@ spec:
         - ../../environments/{{ .Values.cluster_name }}/values/fairagro-basic-middleware.enc.yaml
   destination:
     server: "https://kubernetes.default.svc"
-    namespace: fairagro-m42-basic-middleware
+    namespace: fairagro-basic-middleware
   syncPolicy:
     syncOptions:
       - Prune=true

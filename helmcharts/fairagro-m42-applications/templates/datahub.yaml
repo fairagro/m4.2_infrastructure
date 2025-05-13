@@ -2,9 +2,9 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: datahub
-  namespace: fairagro-applications
+  namespace: fairagro-m42-applications
 spec:
-  project: fairagro
+  project: fairagro-m42
   source:
     repoURL: "git@github.com:fairagro/m4.2_infrastructure.git"
     path: helmcharts/fairagro-datahub

@@ -33,14 +33,14 @@ spec:
                 {{- toYaml .Values.securityContext | nindent 16 }}
               {{- with .Values.args }}
               args:
-                {{- toYaml . | nindent 6 }}
+                {{- toYaml . | nindent 16 }}
               {{- end }}
               env:
-              - name: SSH_PRIVATE_KEY
-                valueFrom:
-                  secretKeyRef:
-                    name: {{ include "fairagro-basic-middleware.fullname" . }}
-                    key: secret_key
+                - name: SSH_PRIVATE_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ include "fairagro-basic-middleware.fullname" . }}
+                      key: secret_key
               {{- with .Values.env }}
                 {{- toYaml . | nindent 16 }}
               {{- end }}

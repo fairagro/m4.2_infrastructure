@@ -48,8 +48,6 @@ fi
 # set some environment variables for helm secrets and helmfile
 export HELM_SECRETS_SOPS_PATH=$(which sops)
 export HELM_SECRETS_HELM_PATH=$(which helm)
-export HELMFILE_ENV="$environment"
-export HELMFILE_HELM_PATH=$(which helm)
 
 # import all public keyfiles into gpg keyring so sops can find them
 public_key_path="$environment_path/public_gpg_keys"
@@ -61,9 +59,7 @@ done
 source /etc/bash_completion
 source <(kubectl completion bash)
 source <(helm completion bash)
-source <(helmfile completion bash)
 source <(argocd completion bash)
-source <(velero completion bash)
 source <(docker completion bash)
 source <(cmctl completion bash)
 

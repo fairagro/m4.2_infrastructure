@@ -16,10 +16,10 @@ data:
     #   - embedded_jsonld (for schema.org JSON-LD metadata embedded into HTML)
     #   - jsonld (for standalone schema.org JSON-LD files)
     sitemaps:
-      - name: bonares
-        url: https://maps.bonares.de/finder/resources/googleds/sitemap.xml
-        sitemap: xml
-        metadata: embedded_jsonld
+      # - name: bonares
+      #   url: https://maps.bonares.de/finder/resources/googleds/sitemap.xml
+      #   sitemap: xml
+      #   metadata: embedded_jsonld
       - name: edal
         url: https://doi.ipk-gatersleben.de/sitemap.xml
         sitemap: xml
@@ -31,7 +31,7 @@ data:
       - name: publisso
         url: "https://frl.publisso.de/find?q=contentType:researchData&from=0&until={{ .Values.config.publisso_max_entries }}&format=json"
         sitemap: publisso
-      - name: thunen_atlas
+      - name: thunen_atlas_native
         url: "https://atlas.thuenen.de/api/v2/resources?page_size={{ .Values.config.thuenen_atlas_max_entries }}&format=json"
         sitemap: thunen_atlas
 

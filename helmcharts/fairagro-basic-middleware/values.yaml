@@ -30,6 +30,8 @@ image:
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
 
+args: ~
+
 env: []
 
 # This is for setting Kubernetes Annotations to a Pod.

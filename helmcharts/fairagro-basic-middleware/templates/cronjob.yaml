@@ -31,6 +31,10 @@ spec:
               imagePullPolicy: {{ .Values.image.pullPolicy }}
               securityContext:
                 {{- toYaml .Values.securityContext | nindent 16 }}
+              {{- with .Values.args }}
+              args:
+                {{- toYaml . | nindent 6 }}
+              {{- end }}
               env:
               - name: SSH_PRIVATE_KEY
                 valueFrom:

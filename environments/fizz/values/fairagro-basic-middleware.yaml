@@ -1,0 +1,7 @@
+args:
+  - "python"
+  - "-m"
+  - "middleware.main"
+  - "-c"
+  - "/middleware/config.yml"
+  - "--no-git"

@@ -3,7 +3,7 @@
 {
 	"name": "fairagro-m4.2_infrastructure",
 	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
-	"image": "mcr.microsoft.com/devcontainers/base:0.202.10-bullseye",
+	"image": "mcr.microsoft.com/devcontainers/base:bookworm",
 	"features": {
 		"ghcr.io/devcontainers/features/docker-in-docker:2.12.2": {
 			"moby": true,
@@ -24,23 +24,17 @@
 			"version": "v3.11.0"
 		},
 		// feature version 1.0.15 does not support higher age versions than 1.1.1
-		"ghcr.io/devcontainers-contrib/features/age:1.0.15": {
+		"ghcr.io/devcontainers-extra/features/age:1.0.16": {
 			"version": "v1.1.1"
 		},
-		"ghcr.io/devcontainers-contrib/features/age-keygen:1.0.14": {
-			"version": "v1.1.1"
-		},
-		"ghcr.io/devcontainers-contrib/features/argo-cd:1.0.2": {
+		"ghcr.io/devcontainers-extra/features/argo-cd:1.1.0": {
 			"version": "2.12.4"
 		},
-		"ghcr.io/devcontainers-contrib/features/curl-apt-get:1.0.16": {},
-		"ghcr.io/devcontainers-contrib/features/starship:1.0.9": {
+		"ghcr.io/devcontainers-extra/features/curl-apt-get:1.0.18": {},
+		"ghcr.io/devcontainers-extra/features/starship:1.0.10": {
 			"version": "v1.20.1"
 		},
-		"ghcr.io/devcontainers-contrib/features/syft:1.0.9": {
-			"version": "v1.13.0"
-		},
-		"ghcr.io/devcontainers-contrib/features/wget-apt-get:1.0.15": {},
+		"ghcr.io/devcontainers-extra/features/wget-apt-get:1.0.17": {},
 		"ghcr.io/eitsupi/devcontainer-features/jq-likes:2.1.1": {
 			"jqVersion": "1.7.1",
 			"yqVersion": "4.44.3",
@@ -49,20 +43,14 @@
 			"jaqVersion": "none"
 		},
 		"ghcr.io/guiyomh/features/vim:0.0.1": {},
-		"ghcr.io/nucleuscloud/devcontainer-features/helmfile:0.1.0": {
-			"version": "v0.168.0"
-		},
 		"ghcr.io/devcontainers/features/python:1.7.1": {
 			"installTools": true,
 			"version": "3.12"
 		},
-		"ghcr.io/devcontainers-contrib/features/sops:1.0.14": {
+		"ghcr.io/devcontainers-extra/features/sops:1.0.15": {
 			"version": "v3.9.0"
 		},
 		"ghcr.io/dhoeric/features/hadolint:1": {},
-		"ghcr.io/xfrancois/devcontainers-features/velero:1": {
-			"version": "v1.13.2"
-		}
 	},
 
 	"postCreateCommand": {
@@ -89,7 +77,7 @@
 		"connect.to.fizz": [
 			"bash",
 			"-c",
-			"echo 'source /workspaces/basic_infrastructure/scripts/set_context.sh fizz' >> ~/.bashrc"
+			"echo 'source /workspaces/m4.2_infrastructure/scripts/set_context.sh fizz' >> ~/.bashrc"
 		]
 	},
 
@@ -102,7 +90,6 @@
 		"vscode": {
 			"extensions": [
 				"signageos.signageos-vscode-sops",
-				"codeium.codeium",
 				"jheilingbrunner.vscode-gnupg-tool",
 				"exiasr.hadolint",
 				"meezilla.json",

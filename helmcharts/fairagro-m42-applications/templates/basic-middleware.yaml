@@ -6,7 +6,7 @@ metadata:
 spec:
   project: fairagro-m42
   source:
-    repoURL: "git@github.com:fairagro/m4.2_infrastructure.git"
+    repoURL: "https://github.com/fairagro/m4.2_infrastructure.git"
     path: helmcharts/fairagro-basic-middleware
     targetRevision: "{{ .Values.basic_middleware_revision }}"
     helm:

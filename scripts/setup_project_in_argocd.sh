@@ -12,7 +12,7 @@ sops exec-env "${environment_path}/credentials/argocd_secrets.enc.yaml" 'argocd 
 echo "Installing FAIRagro applications app on ${environment}..."
 argocd app create fairagro-m42-application-wrapper \
     --upsert \
-    --repo "git@github.com:fairagro/m4.2_infrastructure.git" \
+    --repo "https://github.com/fairagro/m4.2_infrastructure.git" \
     --revision HEAD \
     --path "helmcharts/fairagro-m42-applications" \
     --dest-server "https://kubernetes.default.svc" \

@@ -24,14 +24,17 @@ data:
         url: https://doi.ipk-gatersleben.de/sitemap.xml
         sitemap: xml
         metadata: embedded_jsonld
-      - name: openagrar
+      - name: openagrar_native
+        commit: false
         url: "https://www.openagrar.de/servlets/solr/select?core=main&q=category.top%3A%22mir_genres%3Aresearch_data%22+AND+objectType%3Amods+AND+category.top%3A%22state%3Apublished%22&rows={{ .Values.config.openagrar_max_entries }}&fl=id%2Cmods.identifier&wt=json&XSL.Style=xml"
         sitemap: openagrar
         metadata: embedded_jsonld
       - name: publisso_native
+        commit: false
         url: "https://frl.publisso.de/find?q=contentType:researchData&from=0&until={{ .Values.config.publisso_max_entries }}&format=json"
         sitemap: publisso
       - name: thunen_atlas_native
+        commit: false
         url: "https://atlas.thuenen.de/api/v2/resources?page_size={{ .Values.config.thuenen_atlas_max_entries }}&format=json"
         sitemap: thunen_atlas
 

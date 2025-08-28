@@ -54,7 +54,7 @@ data:
     # If you operate an opentelemetry endpoint you can configure it here
     opentelemetry:
     {{- if .Values.otlp_endpoint }}
-      otlp_endpoint: {{ .Values.otlp_endpoint }}
+      endpoint: {{ .Values.otlp_endpoint }}
     {{- else }}
       {}
     {{- end }}

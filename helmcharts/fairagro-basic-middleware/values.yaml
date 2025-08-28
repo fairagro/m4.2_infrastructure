@@ -8,6 +8,13 @@ schedule: "0 2 * * *" # every night at 2AM
 middlewareConfig: ""
 sshPrivateKey: ~
 
+# make use of our external reverse proxy to connect to bonares, because ZALF IT
+# blocks direct access.
+etc_hosts:
+  - ip: 188.34.195.248
+    hostnames:
+      - maps.bonares.de
+
 outputVolume:
   size: 1Gi
 #  storageClassName:

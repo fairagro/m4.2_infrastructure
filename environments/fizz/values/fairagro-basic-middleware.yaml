@@ -6,4 +6,4 @@ args:
   - "/middleware/config.yml"
   - "--no-git"
 
-otlp_endpoint: signoz-otel-collector.monitoring.svc.cluster.fizz:4317
+otlp_endpoint: signoz-otel-collector.monitoring.svc.fizz.cluster:4317

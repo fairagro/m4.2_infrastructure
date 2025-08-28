@@ -55,6 +55,7 @@ data:
     opentelemetry:
     {{- if .Values.otlp_endpoint }}
       endpoint: {{ .Values.otlp_endpoint }}
+      insecure: true
     {{- else }}
       {}
     {{- end }}

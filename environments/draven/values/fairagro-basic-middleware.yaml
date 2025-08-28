@@ -1,0 +1,1 @@
+otlp_endpoint: signoz-otel-collector.monitoring.svc.draven.cluster:4317

@@ -48,7 +48,7 @@ spec:
                       name: {{ include "fairagro-basic-middleware.fullname" . }}
                       key: secret_key
                 {{- end }}
-                {{- if .Values.sshPrivateKey }}
+                {{- if .Values.gitAccessToken }}
                 - name: ACCESS_TOKEN
                   valueFrom:
                     secretKeyRef:

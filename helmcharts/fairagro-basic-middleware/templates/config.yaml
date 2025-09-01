@@ -50,7 +50,7 @@ data:
     git:
       repo_url: git@github.com:fairagro/middleware_repo.git
       branch: main
-      local_path: {{ .Values.config.output_path }}
+      local_path: {{ .Values.config.output_path }}/middleware_repo
       user_name: "FAIRagro middleware"
       user_email: "middleware@fairagro.net"
 

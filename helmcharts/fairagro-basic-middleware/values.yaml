@@ -1,5 +1,5 @@
 config:
-  output_path: /middleware/output/repo
+  output_path: /middleware/output
   openagrar_max_entries: 5000
   publisso_max_entries: 5000
   thuenen_atlas_max_entries: 5000

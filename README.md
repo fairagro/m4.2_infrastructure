@@ -126,3 +126,48 @@ set -a
 set +a
 /usr/local/bin/etcdctl get / --prefix --keys-only  # an example
 ```
+
+### Create a debug pod from a cronjob ###
+
+We create a `CronJob` that runs the middleware. Sometimes it's useful to manually
+create a pod from this job and execute a shell within for debugging. The solution
+is not that striaght forward:
+
+First we need to terminate any running/scheduled jobs/pods that have been created
+form the cronjob, as otherwise ReadWriteOnce volumes might be mounted serveral times:
+
+```bash
+for job in $(kubectl get jobs -o json | jq -r '
+  .items[]
+  | select(.metadata.ownerReferences[]?.kind == "CronJob")
+  | select(.metadata.ownerReferences[]?.name == "basic-middleware-fairagro-basic-middleware")
+  | select((.status.succeeded | not) or (.status.succeeded == 0))
+  | .metadata.name
+'); do
+  kubectl delete job "$job"
+done
+```
+
+Now we can create a debug job and exec into it:
+
+```bash
+JOB_NAME=debug-job
+# Create a job/pod in suspended state, so it does not run immediately and replace
+# the command so it does not do anything but wait.
+kubectl create job $JOB_NAME \
+  --from=cronjob/basic-middleware-fairagro-basic-middleware \
+  -o yaml --dry-run=client | \
+yq '
+  .spec.suspend = true
+  | .spec.template.spec.containers[0].command = ["/bin/sh","-c","sleep infinity"]
+  | del(.spec.template.spec.containers[0].args)
+' | \
+kubectl apply -f -
+# Now start the job/pod
+kubectl patch job $JOB_NAME -p '{"spec":{"suspend":false}}'
+# Wait for the job/pod to be running
+kubectl wait --for=condition=ready pod -l batch.kubernetes.io/job-name=$JOB_NAME --timeout=300s
+# And exec into it
+kubectl exec -it $(kubectl get pod -l batch.kubernetes.io/job-name=$JOB_NAME \
+  -o jsonpath='{.items[0].metadata.name}') -- /bin/sh
+```

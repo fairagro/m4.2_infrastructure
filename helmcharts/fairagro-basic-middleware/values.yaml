@@ -7,6 +7,7 @@ config:
 schedule: "0 2 * * *" # every night at 2AM
 middlewareConfig: ""
 sshPrivateKey: ~
+gitAccessToken: ~
 
 # make use of our external reverse proxy to connect to bonares, because ZALF IT
 # blocks direct access.

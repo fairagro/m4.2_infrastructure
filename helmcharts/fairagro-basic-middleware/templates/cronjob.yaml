@@ -39,12 +39,22 @@ spec:
               args:
                 {{- toYaml . | nindent 16 }}
               {{- end }}
+              {{- if or .Values.sshPrivateKey .Values.gitAccessToken }}
               env:
+                {{- if .Values.sshPrivateKey }}
                 - name: SSH_PRIVATE_KEY
                   valueFrom:
                     secretKeyRef:
                       name: {{ include "fairagro-basic-middleware.fullname" . }}
                       key: secret_key
+                {{- end }}
+                {{- if .Values.sshPrivateKey }}
+                - name: ACCESS_TOKEN
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ include "fairagro-basic-middleware.fullname" . }}
+                      key: access_token
+              {{- end }}
               {{- with .Values.env }}
                 {{- toYaml . | nindent 16 }}
               {{- end }}

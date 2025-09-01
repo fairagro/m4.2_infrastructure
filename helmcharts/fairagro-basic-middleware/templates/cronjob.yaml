@@ -54,6 +54,7 @@ spec:
                     secretKeyRef:
                       name: {{ include "fairagro-basic-middleware.fullname" . }}
                       key: access_token
+                {{- end }}
               {{- end }}
               {{- with .Values.env }}
                 {{- toYaml . | nindent 16 }}

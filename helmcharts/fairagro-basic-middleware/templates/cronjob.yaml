@@ -31,7 +31,7 @@ spec:
           {{- end }}
           containers:
             - name: middleware
-              image: "{{ .Values.image.repository }}:{{ default .Values.image.tag .Chart.AppVersion }}"
+              image: "{{ .Values.image.repository }}:{{ default .Chart.AppVersion .Values.image.tag }}"
               imagePullPolicy: {{ .Values.image.pullPolicy }}
               securityContext:
                 {{- toYaml .Values.securityContext | nindent 16 }}

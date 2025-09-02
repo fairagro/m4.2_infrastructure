@@ -1,3 +1,6 @@
+image:
+  tag: 0.5.72
+
 args:
   - "python"
   - "-m"

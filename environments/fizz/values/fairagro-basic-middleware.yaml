@@ -1,5 +1,5 @@
 image:
-  tag: 0.5.72
+  tag: 0.5.73
 
 args:
   - "python"

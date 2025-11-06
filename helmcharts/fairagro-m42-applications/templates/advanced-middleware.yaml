@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: https://github.com/fairagro/m4.2_infrastructure.git
     path: helmcharts/fairagro-advanced-middleware
-    targetRevision: ${.Values.advanced_middleware_revision}
+    targetRevision: "{{.Values.advanced_middleware_revision}}"
     helm:
       valueFiles:
         - ../../environments/{{ .Values.cluster_name }}/values/fairagro-advanced-middleware.yaml

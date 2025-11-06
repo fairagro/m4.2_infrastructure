@@ -4,7 +4,7 @@ metadata:
   name: fairagro-advanced-middleware
   namespace: fairagro-m42-applications
 spec:
-  project: default
+  project: fairagro-m42
   source:
     repoURL: oci://registry-1.docker.io/zalf
     targetRevision: ${.Values.advanced_middleware_revision}

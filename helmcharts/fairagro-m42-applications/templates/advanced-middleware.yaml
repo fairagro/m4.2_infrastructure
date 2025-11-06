@@ -2,7 +2,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: fairagro-advanced-middleware
-  namespace: argocd
+  namespace: fairagro-m42-applications
 spec:
   project: default
   source:
@@ -17,6 +17,5 @@ spec:
     server: https://kubernetes.default.svc
     namespace: fairagro-advanced-middleware
   syncPolicy:
-    automated: {}
     syncOptions:
       - CreateNamespace=true

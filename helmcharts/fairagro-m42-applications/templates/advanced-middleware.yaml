@@ -6,9 +6,9 @@ metadata:
 spec:
   project: fairagro-m42
   source:
-    repoURL: oci://registry-1.docker.io/zalf
+    repoURL: https://github.com/fairagro/m4.2_infrastructure.git
+    path: helmcharts/fairagro-advanced-middleware
     targetRevision: ${.Values.advanced_middleware_revision}
-    chart: fairagro-advanced-middleware-api-chart
     helm:
       valueFiles:
         - ../../environments/{{ .Values.cluster_name }}/values/fairagro-advanced-middleware.yaml

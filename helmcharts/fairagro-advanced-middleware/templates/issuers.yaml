@@ -1,0 +1,23 @@
+{{- if not (and .Values.tls (and .Values.tls.key .Values.tls.crt)) }}
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: {{ include "fairagro-advanced-middleware.fullname" . }}-letsencrypt
+spec:
+  acme:
+    # The ACME server URL
+    #server: https://acme-staging-v02.api.letsencrypt.org/directory # staging
+    server: https://acme-v02.api.letsencrypt.org/directory # production
+    # Email address used for ACME registration
+    email: "{{ .Values.cert_email_receiver }}"
+    # Name of a secret used to store the ACME account private key
+    privateKeySecretRef:
+      name: {{ include "fairagro-advanced-middleware.fullname" . }}-letsencrypt
+    # Enable the DNS-01 challenge provider
+    solvers:
+      - dns01:
+          cloudflare:
+            apiTokenSecretRef:
+              name: {{ include "fairagro-advanced-middleware.fullname" . }}-cloudflare-api-token
+              key: api-token
+{{- end }}

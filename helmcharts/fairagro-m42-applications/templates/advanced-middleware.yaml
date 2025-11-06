@@ -1,0 +1,22 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: fairagro-advanced-middleware
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: oci://registry-1.docker.io/zalf
+    targetRevision: ${.Values.advanced_middleware_revision}
+    chart: fairagro-advanced-middleware-api-chart
+    helm:
+      valueFiles:
+        - ../../environments/{{ .Values.cluster_name }}/values/fairagro-advanced-middleware.yaml
+        - ../../environments/{{ .Values.cluster_name }}/values/fairagro-advanced-middleware.enc.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: fairagro-advanced-middleware
+  syncPolicy:
+    automated: {}
+    syncOptions:
+      - CreateNamespace=true

@@ -1,3 +1,4 @@
 basic_middleware_revision: HEAD
+advanced_middleware_revision: latest
 datahub_revision: HEAD
 cluster_name: ~

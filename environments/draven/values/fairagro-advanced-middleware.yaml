@@ -49,7 +49,7 @@ fairagro-advanced-middleware-api-chart:
 
   image:
     repository: zalf/fairagro-advanced-middleware-api
-    tag: 1.0.0
+    tag: 1.0.1
     imagePullPolicy: Never
 
   ingress:

@@ -1,60 +1,26 @@
 fairagro-advanced-middleware-api-chart:
   config:
     log_level: DEBUG
+    allowed_rdis:
+      - bonares
+      - edal
+      - openagrar
+      - publisso
+      - thunen_atlas
+    client_auth_oid: 1.3.6.1.4.1.64609.1.1
     gitlab_api:
       url: https://datahub-dev.ipk-gatersleben.de
       group: FAIRagro-advanced-middleware
 
-  tls:
-    caCrt: |
-      -----BEGIN CERTIFICATE-----
-      MIIG0DCCBLigAwIBAgIIbnUYZWZLR8UwDQYJKoZIhvcNAQELBQAwgdYxCzAJBgNV
-      BAYTAkRFMRQwEgYDVQQIEwtCcmFuZGVuYnVyZzEUMBIGA1UEBwwLTcO8bmNoZWJl
-      cmcxRDBCBgNVBAoMO0xlaWJuaXotWmVudHJ1bSBmw7xyIEFncmFybGFuZHNjaGFm
-      dHNmb3JzY2h1bmcgKFpBTEYpIGUuIFYuMRAwDgYDVQQLEwdDRFAgRElTMSEwHwYD
-      VQQDExhGQUlSYWdybyBJbnRlcm1lZGlhdGUgQ0ExIDAeBgkqhkiG9w0BCQEWEWlu
-      Zm9AZmFpcmFncm8ubmV0MB4XDTI1MTEwNjEyNDUwMFoXDTI4MTEwNjEyNDUwMFow
-      gdsxCzAJBgNVBAYTAkRFMRQwEgYDVQQIEwtCcmFuZGVuYnVyZzEUMBIGA1UEBwwL
-      TcO8bmNoZWJlcmcxRDBCBgNVBAoMO0xlaWJuaXotWmVudHJ1bSBmw7xyIEFncmFy
-      bGFuZHNjaGFmdHNmb3JzY2h1bmcgKFpBTEYpIGUuIFYuMRAwDgYDVQQLEwdDRFAg
-      RElTMSYwJAYDVQQDEx1GQUlSYWdybyBNaWRkbGV3YXJlIENsaWVudCBDQTEgMB4G
-      CSqGSIb3DQEJARYRaW5mb0BmYWlyYWdyby5uZXQwggIiMA0GCSqGSIb3DQEBAQUA
-      A4ICDwAwggIKAoICAQDG8mkUntSmKsOXBBiNPemkaxABa8j5uz3o/0pP+Y4fZ4Tu
-      psKgpFIubaOso+mmsbZD6ZUEiSBRTEN9h6JTL7y+gDrcH3utPJ6fNDQo5qTP/Vxs
-      jtj+TMx55Dlenu6Fa/8FsUWdurMqccY6wBFzduRlSlP5ScW7B0+TX8PMaeQRO2pI
-      grimn43qAG57lGOZXYrCcz0IJnvTzi17YK8QhNUdA1Vo1SezwCnk5K/8q6xfMPoK
-      Dald7CvOXlOdtNC1swYGbFpC0nC35a8rn+asK/dmM8IZEezpLzd7sxUc2+MmPB+h
-      wWAR/2GkiGHT4gy606+lzYJpgo9GOjDvKha8T4NDIWo28aCDfYLnM0vgUoEQl0XB
-      X9E/F/QlGS9HICbMpyVPLVZqYcpzezlP1qdEq/j8EYuvzY5Fmv6jf0LvRgyaZ0BP
-      QYigUVUjaCfKKcHcFR+3l/9HKbH0HwxptZ6Lf35pK2w5CHS4fFBtdUjHN84Hi1hE
-      ZtpVdABGzEmN1ldrx4dgOC561IJUMNhnnXd68EvxtzC5nbsibWS22y0BHnFQMsNw
-      RiSv9527pZZSGx0m+jhOrM7Zv5Q6IWgUFyDJZUdGsmxU9Sb305guq/axaAA6qdxb
-      l+Au8fRMpFSuXBXZTxJgNhfY2GnJdOMXByltUbASfuTbmTkauwKhXXIygYIlIwID
-      AQABo4GaMIGXMBIGA1UdEwEB/wQIMAYBAf8CAQAwHQYDVR0OBBYEFNdQTIwNgW+s
-      abO4NayWoMcGEvmqMB8GA1UdIwQYMBaAFOrBwkRQHnvCYja92IA4hKLBz3UxMA4G
-      A1UdDwEB/wQEAwIBBjARBglghkgBhvhCAQEEBAMCAAcwHgYJYIZIAYb4QgENBBEW
-      D3hjYSBjZXJ0aWZpY2F0ZTANBgkqhkiG9w0BAQsFAAOCAgEAbzUEQwiBaj9Y5qZz
-      heEh1BG5T0gSlsVsVzlz2YjLacbKFmBgcgR8BPuPi940WXshz4WnRnjEq1lExkoG
-      LJBi2QNOBpReLUneuE4z3ndjpL8jZbLmKjj/7Z5Q5GEZXAlUhNJBTnLA1MKjHYT+
-      Ew/BdBxni8WV8Vx5y9dv4dNFarqG+p+irRgScHZ1kzVOwsltTtKLXcNuDAddn3dZ
-      zOQyYDeXkNq3l5znAC9nyZZ4x8BxofPevrx3cVXuHpUqe7wRH4xNL9ca+f/5G8FE
-      E68YbAPGzmxz2rxSheGj7BbS/7bPeeEhMVEO2g5qyE0Wtr8B84m4nuKRx4Wn6+71
-      /TMZG8tZU+HLKivYbD9DRuNz8X0XjDdO6Gl72QojXhMpTcfSLJOKWpAjIJty0gU3
-      EIcGWf/fDRx+vXdeWXfbZsn0SVSYi5YKABymBpN83cHa/KBh5kPTuOK5CY28TQWH
-      dQOdCqRwHMiY0kBdIpKE0gTgXzg0QMKu3fHn0zage46gkL3E/GU4NyHHyTVvGP6g
-      rb5tYGffhFB06jLB+ammRCuglQZGlgVdT1GCs0Va1ALc2ROBZS2g4rJyG6Vt/9v2
-      F5Vs7q3Y5IVT4aeY23huAaaTvZw9nByhP5yMvmGdZ4IFdgDVrjUGEVcgWVEfltmG
-      liZb/4Fjzjo0yR2wRT1s5wrQJvI=
-      -----END CERTIFICATE-----
-
   image:
     repository: zalf/fairagro-advanced-middleware-api
-    tag: 1.0.0
+    tag: 2.0.1
     imagePullPolicy: Never
 
   ingress:
     enabled: true
-    mtlsEnabled: false
+    mtlsEnabled: true
+    mtlsVerifyDepth: 3
     className: nginx-external
     annotations:
       cert-manager.io/issuer: letsencrypt

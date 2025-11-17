@@ -1,7 +1,7 @@
 fairagro-advanced-middleware-api-chart:
   config:
     log_level: DEBUG
-    allowed_rdis:
+    known_rdis:
       - bonares
       - edal
       - openagrar

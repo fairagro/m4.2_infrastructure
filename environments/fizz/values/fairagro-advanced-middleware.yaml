@@ -15,7 +15,6 @@ fairagro-advanced-middleware-api-chart:
   image:
     repository: zalf/fairagro-advanced-middleware-api
     tag: 2.0.1
-    imagePullPolicy: Never
 
   ingress:
     enabled: true

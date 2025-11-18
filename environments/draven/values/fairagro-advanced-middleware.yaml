@@ -1,9 +1,10 @@
 fairagro-advanced-middleware-api-chart:
   config:
-    log_level: DEBUG
+    log_level: INFO
     known_rdis:
       - bonares
       - edal
+      - edaphobase
       - openagrar
       - publisso
       - thunen_atlas
@@ -14,7 +15,7 @@ fairagro-advanced-middleware-api-chart:
 
   image:
     repository: zalf/fairagro-advanced-middleware-api
-    tag: 2.0.1
+    tag: 4.0.2
 
   ingress:
     enabled: true

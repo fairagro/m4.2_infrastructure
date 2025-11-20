@@ -14,7 +14,7 @@ fairagro-advanced-middleware-api-chart:
 
   image:
     repository: zalf/fairagro-advanced-middleware-api
-    tag: 5.0.0
+    tag: 6.0.0
 
   ingress:
     enabled: true

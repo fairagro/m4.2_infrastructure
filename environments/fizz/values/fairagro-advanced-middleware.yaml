@@ -4,6 +4,7 @@ fairagro-advanced-middleware-api-chart:
     known_rdis:
       - bonares
       - edal
+      - edaphobase
       - openagrar
       - publisso
       - thunen_atlas

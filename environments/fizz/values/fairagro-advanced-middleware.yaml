@@ -14,7 +14,7 @@ fairagro-advanced-middleware-api-chart:
       max_workers: 4
     celery: {}  # all further celery config is set via environment variables
     otel:
-      endpoint: signoz-otel-collector.monitoring.svc.fizz.cluster:4317
+      endpoint: http://signoz-otel-collector.monitoring.svc.fizz.cluster:4318
 
   rabbitmq:
     image: rabbitmq:4.2.2

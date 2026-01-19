@@ -15,6 +15,7 @@ fairagro-advanced-middleware-api-chart:
     celery: {}  # all further celery config is set via environment variables
     otel:
       endpoint: http://signoz-otel-collector.monitoring.svc.fizz.cluster:4318
+      log_level: DEBUG
 
   rabbitmq:
     image: rabbitmq:4.2.2

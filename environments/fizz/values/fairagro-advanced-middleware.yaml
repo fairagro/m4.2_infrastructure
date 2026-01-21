@@ -59,4 +59,4 @@ fairagro-advanced-middleware-api-chart:
       replicaCount: 2
       concurrency: 2
       persistence:
-        size: 50Gi
+        size: 10Gi

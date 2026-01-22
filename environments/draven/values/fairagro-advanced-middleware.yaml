@@ -9,9 +9,9 @@ fairagro-advanced-middleware-api-chart:
       - publisso
       - thunen_atlas
     git_repo:
-      url: https://datahub-dev.ipk-gatersleben.de
-      group: FAIRagro-advanced-middleware-dev
-      max_workers: 4
+      url: https://datahub.ipk-gatersleben.de
+      group: FAIRagro-advanced-middleware
+      max_workers: 8
     celery: {}  # all further celery config is set via environment variables
     otel:
       endpoint: http://signoz-otel-collector.monitoring.svc.draven.cluster:4318
@@ -26,7 +26,7 @@ fairagro-advanced-middleware-api-chart:
   api:
     image:
       repository: zalf/fairagro-advanced-middleware-api
-      tag: 7.4.0
+      tag: 7.4.1
     ingress:
       enabled: true
       mtlsEnabled: true
@@ -54,7 +54,7 @@ fairagro-advanced-middleware-api-chart:
   celery:
     image:
       repository: zalf/fairagro-advanced-middleware-api
-      tag: 7.4.0
+      tag: 7.4.1
     worker:
       replicaCount: 4
       concurrency: 4

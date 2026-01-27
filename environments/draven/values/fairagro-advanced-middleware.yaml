@@ -33,6 +33,7 @@ fairagro-advanced-middleware-api-chart:
       mtlsVerifyDepth: 3
       className: nginx-external
       annotations:
+        nginx.ingress.kubernetes.io/client-max-body-size: "50m"
         cert-manager.io/issuer: letsencrypt
         cert-manager.io/private-key-size: "4096"
         cert-manager.io/private-key-rotation-policy: "Always"

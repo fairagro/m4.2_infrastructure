@@ -60,4 +60,4 @@ fairagro-advanced-middleware-api-chart:
       replicaCount: 4
       concurrency: 4
       persistence:
-        size: 100Mi # for temporary files during processing
+        size: 4Gi # for temporary files during processing

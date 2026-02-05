@@ -9,7 +9,8 @@ fairagro-advanced-middleware-api-chart:
             username: ENC[AES256_GCM,data:zr0pgNqYPY+py1MHxtHsRm62lQ==,iv:5806aVSINfHl1LFIQ0IeIKHgqYCcEwCdCcBm56VCgFc=,tag:mpiNeRgG49ysTydnet07jQ==,type:str]
             password: ENC[AES256_GCM,data:l8naFAJS4WYnkuzW0IoLCXCOZNkZ6PcV8DIW1/GyP3sxwyCca7uoc+brmaPRuKY5sDcjpf1uKAozHSkN44oW4g==,iv:NkNuqo9HLE3U4qjowtyB2nQ+Co+7qrCqEh8co5j7poY=,tag:LBetkRne+A5GdxThzqMzAw==,type:str]
     redis:
-        password: ENC[AES256_GCM,data:hzVzIWPuSQdB14vNVAA2Y0gmUCm/Fs3BIoq4jINfjADJcYWJjz0IbwCLpQD85obCXAbk7QgC9TQZZ1+xzklUaQ==,iv:yzGyyU8+dHGxP5K6GDUNkIveFzR+axN5TLGaZguq/68=,tag:70KH2aH5iOVK1iOg1UiY+g==,type:str]
+        auth:
+            password: ENC[AES256_GCM,data:KDXt5fB0sYzC26/0pgo8QywKv4ZJG9ish+T+Ok/CzCIGdWwSDSE/bDWVuuUbGoupo58822UXBocVDZItSIyFGA==,iv:xcLnh88LzxN3mW/lfy/i1+1UcQRc1Ggs6VZ5sNbl0x0=,tag:juwTmR4j5tMGsB+FQnm+1A==,type:str]
     couchdb:
         auth:
             username: ENC[AES256_GCM,data:VAiVmCnWBkUAgzyXpWkCRriNgA==,iv:EPPRxWJsucNpGiYQqdNgfv6+Uo5bWKn7WTenUg9ROS0=,tag:bB0ZOgrc7RQHuX/Cqnw5Qg==,type:str]
@@ -32,8 +33,8 @@ sops:
             OFFSdm1Jalh3R2lwOWJhMzIxRE1zek0K/xRAjfBIoTCaCKLb/CF7IjEo2KWvk4PX
             KXJxHrF9BTa7A5UrCw7BxtpHaON3/mSeb3YokMd1W/I9lsu7OsDOfg==
             -----END AGE ENCRYPTED FILE-----
-    lastmodified: "2026-02-05T18:26:45Z"
-    mac: ENC[AES256_GCM,data:sif85y8IAxliqzWflJV/DeiUDJ0/SgPSFZ9MJpCHnPxn+Ovb1JlzgGvzA2pnd3faXfVm+de1A6xFJ0t/3lrb7m7xcDV73lgC/Or56d52M7ejGqDIvy/GQBpvyRuSZJQEtR5GB3rjuUMpZLa+fo61NLYiQAHRnzkMcdvlhlQOkds=,iv:GSKH/g7VyWL5WVyN6j2+u4SJU7UMviq9uXAmfE+ZMaQ=,tag:ub4IsExcxEj/ATxMKvdKSw==,type:str]
+    lastmodified: "2026-02-05T18:54:35Z"
+    mac: ENC[AES256_GCM,data:YMnSgcoGoIRR+fx9d3nbGBhjPQcaNq9GEKAo7A92Gv70G2ifUlEHtwHOIO5YYRvk6802piXtkTWpzKZIhjF09Vj4MJ2xRTbzG+zVbHgf0UcpHcHsk/9AUt7YgWbcljpRJ9JvsgPfuSEA0crClYzVmArVqBZf7Cp1Kq9+LUnLRN8=,iv:+ERQlmVuC//X2xjY1okY+oZMXmql4s5vg4PLcy6TYiE=,tag:Vb23G0R3T5iHQrquCjMCPw==,type:str]
     pgp:
         - created_at: "2025-11-06T16:28:03Z"
           enc: |-

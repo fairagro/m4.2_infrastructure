@@ -23,10 +23,16 @@ fairagro-advanced-middleware-api-chart:
   redis:
     image: redis:8.4-alpine
 
+  couchdb:
+    image: couchdb:3.3
+    persistence:
+      enabled: true
+      size: 40Gi
+
   api:
     image:
       repository: zalf/fairagro-advanced-middleware-api
-      tag: 8.2.0
+      tag: 8.3.0
     ingress:
       enabled: true
       mtlsEnabled: true
@@ -55,7 +61,7 @@ fairagro-advanced-middleware-api-chart:
   celery:
     image:
       repository: zalf/fairagro-advanced-middleware-api
-      tag: 8.2.0
+      tag: 8.3.0
     worker:
       replicaCount: 4
       concurrency: 4

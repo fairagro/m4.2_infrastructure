@@ -1,6 +1,6 @@
 fairagro-advanced-middleware-api-chart:
   config:
-    log_level: DEBUG
+    log_level: INFO
     known_rdis:
       - bonares
       - edal
@@ -23,16 +23,23 @@ fairagro-advanced-middleware-api-chart:
   redis:
     image: redis:8.4-alpine
 
+  couchdb:
+    image: couchdb:3.3
+    persistence:
+      enabled: true
+      size: 40Gi
+
   api:
     image:
       repository: zalf/fairagro-advanced-middleware-api
-      tag: 7.3.0
+      tag: 8.3.4
     ingress:
       enabled: true
       mtlsEnabled: true
       mtlsVerifyDepth: 3
       className: nginx-external
       annotations:
+        nginx.ingress.kubernetes.io/proxy-body-size: 32m
         cert-manager.io/issuer: letsencrypt
         cert-manager.io/private-key-size: "4096"
         cert-manager.io/private-key-rotation-policy: "Always"
@@ -42,21 +49,21 @@ fairagro-advanced-middleware-api-chart:
         cert-manager.io/subject-organizations: "NFDI FAIRagro"
         cert-manager.io/subject-organizationalunits: "Measure 4.2"
       hosts:
-        - host: middleware-test.fairagro.net
+        - host: middleware.fairagro.net
           paths:
             - path: /
               pathType: ImplementationSpecific
       tls:
         - secretName: server-tls
           hosts:
-            - middleware-test.fairagro.net
+            - middleware.fairagro.net
 
   celery:
     image:
       repository: zalf/fairagro-advanced-middleware-api
-      tag: 7.3.0
+      tag: 8.3.4
     worker:
       replicaCount: 2
       concurrency: 2
       persistence:
-        size: 20Gi
+        size: 4Gi # for temporary files during processing

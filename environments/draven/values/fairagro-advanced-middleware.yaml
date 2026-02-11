@@ -30,9 +30,9 @@ fairagro-advanced-middleware-api-chart:
       size: 40Gi
 
   api:
-    replicaCount: 2
+    replicaCount: 4
     # Parallelism settings
-    workers: 2
+    workers: 1
     image:
       repository: zalf/fairagro-advanced-middleware-api
       tag: 8.4.5

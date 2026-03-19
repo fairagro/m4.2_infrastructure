@@ -24,7 +24,7 @@ fairagro-advanced-middleware-api-chart:
     image: couchdb:3.3
     persistence:
       enabled: true
-      size: 40Gi
+      size: 5Gi
 
   api:
     image:

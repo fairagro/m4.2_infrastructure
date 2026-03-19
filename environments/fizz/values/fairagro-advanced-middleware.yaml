@@ -58,7 +58,7 @@ fairagro-advanced-middleware-api-chart:
   celery:
     image:
       repository: zalf/fairagro-advanced-middleware-api
-      tag: 8.4.8-couchdb-step2-v3-api.3
+      tag: 8.4.8-couchdb-step2-v3-api.1
     worker:
       replicaCount: 2
       concurrency: 2

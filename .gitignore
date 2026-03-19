@@ -3,5 +3,7 @@ draven_admin.yaml
 elise_admin.yaml
 **/admin.conf
 **/.decrypted~*
+**/*.decoded.*
 helmcharts/*/charts/*.tgz
 helmcharts/*/Chart.lock
+helmcharts/fairagro-advanced-middleware/Chart.yaml

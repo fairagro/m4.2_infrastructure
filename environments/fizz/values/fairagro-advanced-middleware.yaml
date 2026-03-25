@@ -46,14 +46,14 @@ fairagro-advanced-middleware-api-chart:
         cert-manager.io/subject-organizations: "NFDI FAIRagro"
         cert-manager.io/subject-organizationalunits: "Measure 4.2"
       hosts:
-        - host: middleware.fairagro.net
+        - host: middleware-test.fairagro.net
           paths:
             - path: /
               pathType: ImplementationSpecific
       tls:
         - secretName: server-tls
           hosts:
-            - middleware.fairagro.net
+            - middleware-test.fairagro.net
 
   celery:
     image:

@@ -21,9 +21,6 @@ fairagro-advanced-middleware-api-chart:
   rabbitmq:
     image: rabbitmq:4.2.2
 
-  redis:
-    image: redis:8.4-alpine
-
   couchdb:
     image: couchdb:3.3
     persistence:

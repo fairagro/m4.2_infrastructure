@@ -3,6 +3,7 @@ fairagro-advanced-middleware-api-chart:
     log_level: INFO
     known_rdis:
       - bonares
+      - dwd
       - edal
       - edaphobase
       - openagrar

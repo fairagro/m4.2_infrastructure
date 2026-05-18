@@ -1,0 +1,153 @@
+fairagro-advanced-middleware-harvester-chart:
+  # -- CronJob schedule in standard cron syntax (TZ is controlled by timeZone).
+  schedule: "0 2 * * *"
+
+  # =============================================================================
+  # Resource requests and limits
+  # =============================================================================
+  resources:
+    requests:
+      # -- Baseline CPU needed for a typical harvest run.
+      cpu: "100m"
+      # -- Baseline memory. The harvester buffers ARC payloads in memory.
+      memory: "256Mi"
+    limits:
+      # -- Upper CPU bound. The harvester is I/O-bound; burst headroom is sufficient.
+      cpu: "500m"
+      # -- Upper memory bound. Increase if harvesting very large catalogues.
+      memory: "1Gi"
+
+  # =============================================================================
+  # Harvester configuration — rendered as /etc/harvester/config.yaml
+  #
+  # This block is serialised to YAML verbatim and stored as a Kubernetes ConfigMap.
+  # It contains no sensitive values. Sensitive data (TLS cert content) is
+  # managed separately via the tls section below, which creates a K8s Secret.
+  # =============================================================================
+  config:
+    # -- Logging level for the harvester process.
+    # -- Allowed: DEBUG | INFO | WARNING | ERROR | CRITICAL
+    log_level: INFO
+
+    # -- OpenTelemetry / OTLP settings.
+    otel:
+      # -- OTLP HTTP collector endpoint. Set null to disable tracing export.
+      endpoint: null
+      # -- Print every span to stdout (useful for local debugging).
+      log_console_spans: false
+      # -- Minimum log level exported via OTLP.
+      log_level: INFO
+
+    # -- FAIRagro Middleware API client settings.
+    api_client:
+      # -- Base URL of the Middleware API (no trailing slash).
+      # -- Override at runtime via HARVESTER_API_CLIENT__API_URL env var.
+      api_url: "https://middleware-test.fairagro.net"
+      # -- Request timeout in seconds.
+      timeout: 30.0
+      # -- Maximum concurrent requests to the API.
+      max_concurrency: 10
+      # -- Verify the server's TLS certificate chain.
+      verify_ssl: true
+      # -- Retries for transient HTTP errors (5xx, connection resets).
+      max_retries: 3
+
+    # -- List of repositories to harvest. Each entry must specify exactly one
+    # -- plugin type (inspire or schema_org).
+    repositories:
+
+      - rdi: "bonares"
+        inspire:
+          csw_url: "https://repository-staging.dataservice.zalf.de/catalogue/csw"
+
+      - rdi: "edal"
+        schema_org:
+          sitemap_url: https://doi.ipk-gatersleben.de/sitemap.xml
+          sitemap_type: xml
+          dataset_type: html_jsonld
+          payload_type: general
+
+      # -------------------------------------------------------------------------
+      # Example 1: INSPIRE / CSW repository
+      # -------------------------------------------------------------------------
+      # - rdi: "example-inspire-gdi-de"
+      #   inspire:
+      #     # -- CSW endpoint URL (required).
+      #     csw_url: "https://gdk.gdi-de.org/gdi-de/srv/eng/csw"
+      #     # -- Records per paginated CSW request.
+      #     chunk_size: 50
+      #     # -- Maximum total records to harvest. null = harvest everything.
+      #     # -- Use a small number (e.g. 10) for smoke-testing a new source.
+      #     max_records: null
+      #     # -- CQL filter string. Mutually exclusive with xml_query.
+      #     cql_query: null
+      #     # -- Raw GetRecords XML body. Mutually exclusive with cql_query.
+      #     # -- Use this for complex OGC filter expressions.
+      #     xml_query: null
+      #     # -- CSW connection timeout in seconds.
+      #     timeout: 30
+      #     # -- User-Agent header sent to the CSW server.
+      #     user_agent: "FAIRagro-Harvester/2.0 (dataservice@fairagro.org)"
+      #     # -- Retry attempts on transient CSW failures (network errors, 5xx).
+      #     retry_attempts: 5
+      #     # -- Initial retry backoff in seconds.
+      #     retry_backoff_base: 1.0
+      #     # -- Exponential factor applied to each successive retry delay.
+      #     retry_backoff_factor: 2.0
+      #     # -- Maximum retry delay cap in seconds (prevents runaway backoff).
+      #     retry_max_delay: 600.0
+
+      # # -------------------------------------------------------------------------
+      # # Example 2: Schema.org / HTML JSON-LD repository via XML sitemap
+      # # -------------------------------------------------------------------------
+      # - rdi: "example-schemaorg-openagrar"
+      #   schema_org:
+      #     # -- Sitemap entry point URL (required).
+      #     sitemap_url: "https://openagrar.bmel-forschung.de/sitemap.xml"
+      #     # -- Sitemap protocol. Allowed: xml | mycore_solr
+      #     sitemap_type: xml
+      #     # -- Provider-specific dataset page format. Allowed: html_jsonld
+      #     dataset_type: html_jsonld
+      #     # -- Expected JSON-LD payload shape. Allowed: general
+      #     payload_type: general
+      #     # -- Byte threshold above which JSON-LD parsing is offloaded to a
+      #     # -- background thread to avoid blocking the event loop.
+      #     jsonld_parse_threshold_bytes: 65536
+      #     # -- Number of parallel worker tasks fetching dataset pages.
+      #     # -- null defaults to http.max_connections.
+      #     worker_tasks: null
+      #     # -- HTTP client settings for dataset page requests.
+      #     http:
+      #       connect_timeout: 10.0
+      #       read_timeout: 30.0
+      #       # -- Maximum simultaneous open connections.
+      #       max_connections: 10
+      #       retry_attempts: 5
+      #       retry_backoff_base: 1.0
+      #       retry_backoff_factor: 2.0
+      #       # -- Maximum delay cap for retry backoff in seconds.
+      #       max_retry_delay: 600.0
+      #       # -- Rate limit: max requests per second to the same host.
+      #       # -- null disables rate limiting.
+      #       max_requests_per_second: 2.0
+      #       # -- Honour robots.txt crawl-delay and disallow directives.
+      #       respect_robots_txt: true
+      #       # -- User-Agent header sent with every HTTP request.
+      #       user_agent: "FAIRagro-Harvester/2.0 (dataservice@fairagro.org)"
+
+      # # -------------------------------------------------------------------------
+      # # Example 3: Schema.org via MyCoRe Solr discovery source
+      # # -------------------------------------------------------------------------
+      # - rdi: "example-schemaorg-mycore-solr"
+      #   schema_org:
+      #     sitemap_url: "https://repository.example.org/api/v2/search/objects"
+      #     sitemap_type: mycore_solr
+      #     dataset_type: html_jsonld
+      #     payload_type: general
+      #     http:
+      #       connect_timeout: 10.0
+      #       read_timeout: 30.0
+      #       max_connections: 5
+      #       retry_attempts: 5
+      #       max_requests_per_second: 1.0
+      #       respect_robots_txt: true

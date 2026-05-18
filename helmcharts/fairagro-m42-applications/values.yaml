@@ -1,5 +1,5 @@
 basic_middleware_revision: HEAD
 advanced_middleware_revision: HEAD
-advanced_middleware_harvester_revision: feature/fairagro-advanced-middleware-harvester
+advanced_middleware_harvester_revision: HEAD
 datahub_revision: HEAD
 cluster_name: ~

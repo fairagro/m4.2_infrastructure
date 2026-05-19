@@ -47,8 +47,6 @@ fairagro-advanced-middleware-harvester-chart:
       timeout: 30.0
       # -- Maximum concurrent requests to the API.
       max_concurrency: 10
-      # -- Verify the server's TLS certificate chain.
-      verify_ssl: true
       # -- Retries for transient HTTP errors (5xx, connection resets).
       max_retries: 3
 

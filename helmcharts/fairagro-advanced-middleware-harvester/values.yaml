@@ -9,9 +9,9 @@ fairagro-advanced-middleware-harvester-chart:
     mountPath: "/run/secrets/tls"
   config:
     api_client:
+      # -- Verify the server's TLS certificate chain.
+      verify_ssl: true
       # -- Set to the tls.mountPath location when tls.enabled is true.
       client_cert_path: "/run/secrets/tls/client.crt"
       # -- Path to the client private key PEM file (for mutual TLS).
       client_key_path: "/run/secrets/tls/client.key"
-      # -- Path to a custom CA bundle PEM file (for private/internal CAs).
-      ca_cert_path: "/run/secrets/tls/ca.crt"

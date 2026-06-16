@@ -1,8 +1,8 @@
 {
 	"name": "fairagro-m4.2_infrastructure (VS Code - DinD)",
 	"build": {
-		"dockerfile": "Dockerfile",
-		"context": "."
+		"dockerfile": "../Dockerfile",
+		"context": ".."
 	},
 	"features": {
 		"ghcr.io/devcontainers/features/docker-in-docker:3": {

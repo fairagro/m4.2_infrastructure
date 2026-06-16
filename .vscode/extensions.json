@@ -1,0 +1,17 @@
+{
+	"recommendations": [
+		"signageos.signageos-vscode-sops",
+		"jheilingbrunner.vscode-gnupg-tool",
+		"exiasr.hadolint",
+		"meezilla.json",
+		"adamhartford.vscode-base64",
+		"redhat.vscode-yaml",
+		"rogalmic.bash-debug",
+		"davidanson.vscode-markdownlint",
+		"ms-python.pylint",
+		"jeff-hykin.better-dockerfile-syntax",
+		"ms-azuretools.vscode-docker",
+		"tim-koehler.helm-intellisense",
+		"vadzimnestsiarenka.helm-template-preview-and-more"
+	]
+}

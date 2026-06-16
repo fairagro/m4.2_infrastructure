@@ -47,7 +47,15 @@ if [ "$environment" = "local_dev" ]; then
 else
     # set KUBECONFIG environment variable to the actual cluster config file
     kubeconfig=$(mktemp)
-    sops -d "${environment_path}/credentials/project_admin.enc.yaml" > "$kubeconfig"
+    if ! sops -d "${environment_path}/credentials/project_admin.enc.yaml" > "$kubeconfig"; then
+        rm -f "$kubeconfig"
+        fail "Failed to decrypt ${environment_path}/credentials/project_admin.enc.yaml" || return
+    fi
+    if ! kubectl config view --kubeconfig="$kubeconfig" --minify --raw -o jsonpath='{.users[0].user.client-key-data}' \
+        | base64 -d 2>/dev/null | openssl pkey -noout 2>/dev/null; then
+        rm -f "$kubeconfig"
+        fail "Kubeconfig client-key-data is missing or invalid. Re-encrypt project_admin.enc.yaml with a kubeconfig that embeds client-key-data (not client-key file paths)." || return
+    fi
     export KUBECONFIG="$kubeconfig"
 fi
 

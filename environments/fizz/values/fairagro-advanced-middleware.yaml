@@ -10,8 +10,8 @@ fairagro-advanced-middleware-api-chart:
       - publisso
       - thunen_atlas
     git_repo:
-      url: https://datahub-dev.ipk-gatersleben.de
-      group: FAIRagro-advanced-middleware-dev
+      url: https://datahub.ipk-gatersleben.de
+      group: FAIRagro-advanced-middleware-test
       max_workers: 4
     celery: {}  # all further celery config is set via environment variables
     otel:

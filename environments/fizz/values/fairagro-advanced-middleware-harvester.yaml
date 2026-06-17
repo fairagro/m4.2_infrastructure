@@ -3,7 +3,6 @@ fairagro-advanced-middleware-harvester-chart:
   schedule: "0 2 * * *"
 
   image:
-    repository: zalf/fairagro-advanced-middleware-harvester
     tag: 1.1.0
 
   # =============================================================================

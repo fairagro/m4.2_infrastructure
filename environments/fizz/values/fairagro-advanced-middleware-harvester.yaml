@@ -2,6 +2,10 @@ fairagro-advanced-middleware-harvester-chart:
   # -- CronJob schedule in standard cron syntax (TZ is controlled by timeZone).
   schedule: "0 2 * * *"
 
+  image:
+    repository: zalf/fairagro-advanced-middleware-harvester
+    tag: 1.1.0
+
   # =============================================================================
   # Resource requests and limits
   # =============================================================================

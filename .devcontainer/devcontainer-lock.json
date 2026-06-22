@@ -30,10 +30,10 @@
       "resolved": "ghcr.io/devcontainers-extra/features/wget-apt-get@sha256:35dbf105e38d7772cfe363b2fc4aedb3348f274822bc6fbf9c18be6d6b0ea471",
       "integrity": "sha256:35dbf105e38d7772cfe363b2fc4aedb3348f274822bc6fbf9c18be6d6b0ea471"
     },
-    "ghcr.io/devcontainers/features/docker-in-docker:2.16.0": {
-      "version": "2.16.0",
-      "resolved": "ghcr.io/devcontainers/features/docker-in-docker@sha256:31ef1bbfde793bcc62c52fa847c02a15fe659d69e48b2d8c1cfbd4db95f97cf7",
-      "integrity": "sha256:31ef1bbfde793bcc62c52fa847c02a15fe659d69e48b2d8c1cfbd4db95f97cf7"
+    "ghcr.io/devcontainers/features/docker-in-docker:3.1.0": {
+      "version": "3.1.0",
+      "resolved": "ghcr.io/devcontainers/features/docker-in-docker@sha256:62e04ec83d944da4fd2830f68a677d1f5466c0654aea1e4baa30232d16029ac1",
+      "integrity": "sha256:62e04ec83d944da4fd2830f68a677d1f5466c0654aea1e4baa30232d16029ac1"
     },
     "ghcr.io/devcontainers/features/git:1.3.5": {
       "version": "1.3.5",

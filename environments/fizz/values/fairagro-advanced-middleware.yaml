@@ -38,7 +38,7 @@ fairagro-advanced-middleware-api-chart:
   api:
     image:
       repository: zalf/fairagro-advanced-middleware-api
-      tag: 9.1.1-rc.datahub-nicify.22
+      tag: 10.0.1-rc.fix-change-detection.23
     ingress:
       enabled: true
       mtlsEnabled: true
@@ -67,7 +67,7 @@ fairagro-advanced-middleware-api-chart:
   celery:
     image:
       repository: zalf/fairagro-advanced-middleware-api
-      tag: 9.1.1-rc.datahub-nicify.22
+      tag: 10.0.1-rc.fix-change-detection.23
     worker:
       replicaCount: 2
       concurrency: 2

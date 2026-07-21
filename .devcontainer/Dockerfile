@@ -17,10 +17,14 @@ ARG STARSHIP_VERSION=v1.20.1
 ARG YQ_VERSION=v4.44.3
 ARG JQ_VERSION=jq-1.7.1
 ARG HADOLINT_VERSION=v2.12.0
+ARG KIND_VERSION=v0.29.0
+ARG GIT_LFS_VERSION=v3.6.1
 
 ENV DEBIAN_FRONTEND=noninteractive
 
 # ── Base packages ─────────────────────────────────────────────────────────────
+# Base image already pins the distro; pinning every apt package here is brittle.
+# hadolint ignore=DL3008
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     ca-certificates \
@@ -39,6 +43,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # ── GitHub CLI (APT repos) ────────────────────────────────────────────────────
+# hadolint ignore=DL3008
 RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg \
         | gpg --batch --yes --dearmor -o /usr/share/keyrings/githubcli-archive-keyring.gpg && \
     echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" \
@@ -76,6 +81,15 @@ RUN curl -fsSL "https://github.com/jqlang/jq/releases/download/${JQ_VERSION}/jq-
 RUN curl -fsSL "https://github.com/hadolint/hadolint/releases/download/${HADOLINT_VERSION}/hadolint-Linux-x86_64" \
         -o /usr/local/bin/hadolint && chmod +x /usr/local/bin/hadolint
 
+# ── kind (local k8s; shares DinD Docker daemon) ───────────────────────────────
+RUN curl -fsSL "https://kind.sigs.k8s.io/dl/${KIND_VERSION}/kind-linux-amd64" \
+        -o /usr/local/bin/kind && chmod +x /usr/local/bin/kind
+
+# ── git-lfs (needed for some software submodules under deps/) ─────────────────
+RUN curl -fsSL "https://github.com/git-lfs/git-lfs/releases/download/${GIT_LFS_VERSION}/git-lfs-linux-amd64-${GIT_LFS_VERSION}.tar.gz" \
+        | tar -xz --strip-components=1 -C /usr/local/bin git-lfs-${GIT_LFS_VERSION#v}/git-lfs && \
+    git lfs install --system
+
 # ── SOPS ──────────────────────────────────────────────────────────────────────
 RUN curl -fsSL "https://github.com/getsops/sops/releases/download/${SOPS_VERSION}/sops-${SOPS_VERSION}.linux.amd64" \
         -o /usr/local/bin/sops && chmod +x /usr/local/bin/sops
@@ -103,14 +117,15 @@ RUN mkdir -p /usr/share/bash-completion/completions && \
     helm completion bash > /usr/share/bash-completion/completions/helm && \
     argocd completion bash > /usr/share/bash-completion/completions/argocd && \
     yq shell-completion bash > /usr/share/bash-completion/completions/yq && \
+    kind completion bash > /usr/share/bash-completion/completions/kind && \
     starship completions bash > /usr/share/bash-completion/completions/starship
 
 # ── Shell init (must run each session; not installable as static completions) ─
-RUN echo 'eval "$(starship init bash)"' >> /etc/bash.bashrc
+RUN echo "eval \"\$(starship init bash)\"" >> /etc/bash.bashrc
 
 # ── Shell history persistence helper (stuartleeks pattern) ───────────────────
-RUN echo 'export HISTFILE=/commandhistory/.bash_history' >> /etc/bash.bashrc && \
-    echo 'PROMPT_COMMAND="history -a; $PROMPT_COMMAND"' >> /etc/bash.bashrc && \
+RUN echo "export HISTFILE=/commandhistory/.bash_history" >> /etc/bash.bashrc && \
+    echo "PROMPT_COMMAND=\"history -a; \$PROMPT_COMMAND\"" >> /etc/bash.bashrc && \
     mkdir -p /commandhistory && \
     touch /commandhistory/.bash_history && \
     chown -R vscode /commandhistory

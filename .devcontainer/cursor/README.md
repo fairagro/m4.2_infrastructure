@@ -39,6 +39,7 @@ These run once per devcontainer create (not on every shell):
 
 - `scripts/setup-container-gpg.sh` (host agent + trustdb + public keys)
 - `scripts/setup-container-docker.sh` (DevPod DinD Docker config workaround)
+- `scripts/init-submodules.sh` (software repos under `deps/` for local image builds)
 
 ## Per-start setup (postStartCommand)
 

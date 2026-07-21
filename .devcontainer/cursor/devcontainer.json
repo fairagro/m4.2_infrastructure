@@ -53,7 +53,8 @@
 	"postCreateCommand": {
 		"fix commandhistory permissions": "sudo chown -R vscode:vscode /commandhistory",
 		"setup container gpg": "bash ${containerWorkspaceFolder}/scripts/setup-container-gpg.sh",
-		"setup container docker": "bash ${containerWorkspaceFolder}/scripts/setup-container-docker.sh"
+		"setup container docker": "bash ${containerWorkspaceFolder}/scripts/setup-container-docker.sh",
+		"init submodules": "bash ${containerWorkspaceFolder}/scripts/init-submodules.sh"
 	},
 	"postStartCommand": {
 		"setup bashrc": "grep -qF 'source ${containerWorkspaceFolder}/scripts/load-env.sh' ~/.bashrc || echo 'source ${containerWorkspaceFolder}/scripts/load-env.sh' >> ~/.bashrc",

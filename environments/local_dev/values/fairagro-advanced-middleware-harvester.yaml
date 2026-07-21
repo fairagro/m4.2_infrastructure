@@ -1,0 +1,46 @@
+# Local kind deployment values for the middleware harvester.
+# Talks to the in-cluster API Service (no public ingress / mTLS).
+fairagro-advanced-middleware-harvester-chart:
+  # Far-future schedule; trigger manually with:
+  #   kubectl create job --from=cronjob/<name> harvest-now -n fairagro-advanced-middleware-harvester
+  schedule: "0 0 1 1 *"
+
+  image:
+    # Chart templates as registry/repository:tag — keep docker.io to match
+    # the tag used by local-dev-build.sh / kind load.
+    registry: docker.io
+    repository: fairagro-advanced-middleware-harvester
+    tag: local
+    pullPolicy: Never
+
+  resources:
+    requests:
+      cpu: "50m"
+      memory: "128Mi"
+    limits:
+      cpu: "500m"
+      memory: "512Mi"
+
+  tls:
+    enabled: false
+
+  config:
+    log_level: DEBUG
+    otel:
+      endpoint: null
+      log_console_spans: false
+      log_level: INFO
+    api_client:
+      # In-cluster Service DNS (release name from local-dev-deploy.sh).
+      api_url: "http://fairagro-advanced-middleware-api.fairagro-advanced-middleware.svc.cluster.local:8000"
+      timeout: 30.0
+      max_concurrency: 5
+      max_retries: 3
+      verify_ssl: false
+      client_cert_path: null
+      client_key_path: null
+    repositories:
+      - rdi: bonares
+        inspire:
+          csw_url: "https://repository-staging.dataservice.zalf.de/catalogue/csw"
+          max_records: 5

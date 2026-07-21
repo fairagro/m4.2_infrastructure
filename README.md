@@ -6,12 +6,12 @@ Infrastructure-as-Code to deploy services needed by measure 4.2
 
 This project delivers a dev container with all tools needed (kubectl, helm, sops, argocd, etc.).
 
-### VS Code
+### VS Code ###
 
 Open the repository in VS Code and choose **Reopen in Container** (or **Clone in Volume**).
 The default configuration is `.devcontainer/devcontainer.json` (equivalent to `.devcontainer/vscode/devcontainer.json`).
 
-### Cursor (via DevPod)
+### Cursor (via DevPod) ###
 
 Cursor has no built-in "Reopen in Container". Use DevPod instead:
 
@@ -20,6 +20,26 @@ Cursor has no built-in "Reopen in Container". Use DevPod instead:
 ```
 
 See `.devcontainer/cursor/README.md` for GPG agent forwarding (Linux) and platform notes.
+
+### Local stack (kind + DinD) ###
+
+To exercise API + harvester together without pushing to Docker Hub, use the `local_dev`
+environment. Software sources live as **git submodules** under `deps/` (initialised by
+`postCreateCommand`).
+
+```bash
+# Prefer when cloning outside an existing Dev Container:
+git clone --recurse-submodules https://github.com/fairagro/m4.2_infrastructure.git
+
+# Inside the Dev Container:
+./scripts/init-submodules.sh      # if postCreate already ran, this is a no-op refresh
+./scripts/local-dev-up.sh         # kind cluster + ingress-nginx
+./scripts/local-dev-build.sh      # docker build from deps/ + kind load
+./scripts/local-dev-deploy.sh     # helm install with environments/local_dev/values
+source ./scripts/set_context.sh local_dev
+```
+
+Details: `environments/local_dev/README.md` and `deps/README.md`.
 
 As the project contains encrypted secrets (that are also instantiated when running the container),
 you will need to enter your personal `gpg` passphrase. This of course requires that your pgp key

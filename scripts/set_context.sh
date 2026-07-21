@@ -42,8 +42,21 @@ if [ ! -d "$environment_path" ]; then
 fi
 
 if [ "$environment" = "local_dev" ]; then
-    # do special stuff for minicube
-    fail "There is no implementation for a local cluster environment for Linux yet." || return
+    cluster_name="${KIND_CLUSTER_NAME:-fairagro-local}"
+    if ! command -v kind >/dev/null 2>&1; then
+        fail "kind is not installed. Rebuild the Dev Container." || return
+    fi
+    if ! kind get clusters 2>/dev/null | grep -qx "$cluster_name"; then
+        fail "kind cluster '$cluster_name' not found. Run ./scripts/local-dev-up.sh first." || return
+    fi
+    kubeconfig=$(mktemp)
+    if ! kind get kubeconfig --name "$cluster_name" > "$kubeconfig"; then
+        rm -f "$kubeconfig"
+        fail "Failed to get kind kubeconfig for cluster '$cluster_name'." || return
+    fi
+    export KUBECONFIG="$kubeconfig"
+    kubectl config use-context "kind-${cluster_name}" >/dev/null
+    echo "Using kind cluster '$cluster_name' (KUBECONFIG=$KUBECONFIG)."
 else
     # set KUBECONFIG environment variable to the actual cluster config file
     kubeconfig=$(mktemp)
@@ -65,9 +78,11 @@ export HELM_SECRETS_HELM_PATH=$(which helm)
 
 # import all public keyfiles into gpg keyring so sops can find them
 public_key_path="$environment_path/public_gpg_keys"
+shopt -s nullglob
 for file in "$public_key_path"/*.asc; do
     gpg --import "$file"
 done
+shopt -u nullglob
 
 # Create Bash autocompletion for installed tools
 source /etc/bash_completion

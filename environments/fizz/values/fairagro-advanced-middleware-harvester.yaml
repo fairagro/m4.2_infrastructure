@@ -1,14 +1,3 @@
-# Published research datasets (MODS) — same Solr query as m4.2_basic_middleware openagrar_native.
-.schema_org_openagrar: &schema_org_openagrar
-  sitemap_url: >-
-    https://www.openagrar.de/servlets/solr/select?core=main&q=category.top%3A%22mir_genres%3Aresearch_data%22+AND+objectType%3Amods+AND+category.top%3A%22state%3Apublished%22&rows=1000&fl=id&wt=json
-  sitemap_type: mycore_solr
-  dataset_type: html_jsonld
-  payload_type: general
-
-.thunen_publisher: &thunen_publisher_regex
-  'Thünen[- ]?Institut(?:e)?|Thuenen Institute|Thünen-Atlas'
-
 fairagro-advanced-middleware-harvester-chart:
   # -- CronJob schedule in standard cron syntax (TZ is controlled by timeZone).
   schedule: "0 2 * * *"
@@ -72,6 +61,10 @@ fairagro-advanced-middleware-harvester-chart:
         inspire:
           csw_url: "https://repository-staging.dataservice.zalf.de/catalogue/csw"
 
+      - rdi: thuenen_atlas
+        inspire:
+          csw_url: "https://atlas.thuenen.de/catalogue/csw"
+
       - rdi: edal
         schema_org:
           sitemap_url: https://doi.ipk-gatersleben.de/sitemap.xml
@@ -82,18 +75,19 @@ fairagro-advanced-middleware-harvester-chart:
       # Non-Thünen datasets from the OpenAgrar portal (~775 records in the legacy harvest).
       - rdi: openagrar
         schema_org:
-          <<: *schema_org_openagrar
-          record_filter:
-            field: publisher.name
-            exclude: *thunen_publisher_regex
+          sitemap_url: >-
+            https://www.openagrar.de/servlets/solr/select?core=main&q=category.top%3A%22mir_genres%3Aresearch_data%22+AND+objectType%3Amods+AND+category.top%3A%22state%3Apublished%22&rows=1000&fl=id&wt=json
+          sitemap_type: mycore_solr
+          dataset_type: html_jsonld
+          payload_type: general
 
       # Thünen-Institut / Thünen-Atlas datasets hosted on OpenAgrar (~49 records).
-      - rdi: thunen
-        schema_org:
-          <<: *schema_org_openagrar
-          record_filter:
-            field: publisher.name
-            include: *thunen_publisher_regex
+      # - rdi: thuenen
+      #   schema_org:
+      #     <<: *schema_org_openagrar
+      #     record_filter:
+      #       field: publisher.name
+      #       include: *thunen_publisher_regex
 
       # -------------------------------------------------------------------------
       # Example 1: INSPIRE / CSW repository

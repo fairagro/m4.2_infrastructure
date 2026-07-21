@@ -56,8 +56,8 @@
 		"setup container docker": "bash ${containerWorkspaceFolder}/scripts/setup-container-docker.sh"
 	},
 	"postStartCommand": {
-		"setup bashrc": "grep -qF 'source \\${containerWorkspaceFolder}/scripts/load-env.sh' ~/.bashrc || echo 'source \\${containerWorkspaceFolder}/scripts/load-env.sh' >> ~/.bashrc",
-		"connect to fizz": "grep -qF 'source \\${containerWorkspaceFolder}/scripts/set_context.sh fizz' ~/.bashrc || echo 'source \\${containerWorkspaceFolder}/scripts/set_context.sh fizz' >> ~/.bashrc"
+		"setup bashrc": "grep -qF 'source ${containerWorkspaceFolder}/scripts/load-env.sh' ~/.bashrc || echo 'source ${containerWorkspaceFolder}/scripts/load-env.sh' >> ~/.bashrc",
+		"connect to fizz": "grep -qF 'source ${containerWorkspaceFolder}/scripts/set_context.sh fizz' ~/.bashrc || echo 'source ${containerWorkspaceFolder}/scripts/set_context.sh fizz' >> ~/.bashrc"
 	},
 	"remoteUser": "vscode"
 }

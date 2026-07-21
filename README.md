@@ -6,20 +6,11 @@ Infrastructure-as-Code to deploy services needed by measure 4.2
 
 This project delivers a dev container with all tools needed (kubectl, helm, sops, argocd, etc.).
 
-### VS Code ###
+### VS Code / Cursor ###
 
-Open the repository in VS Code and choose **Reopen in Container** (or **Clone in Volume**).
-The default configuration is `.devcontainer/devcontainer.json` (equivalent to `.devcontainer/vscode/devcontainer.json`).
-
-### Cursor (via DevPod) ###
-
-Cursor has no built-in "Reopen in Container". Use DevPod instead:
-
-```bash
-./scripts/start-devcontainer-cursor.sh
-```
-
-See `.devcontainer/cursor/README.md` for GPG agent forwarding (Linux) and platform notes.
+Open the repository and choose **Reopen in Container** (or **Clone in Volume**).
+The default configuration is `.devcontainer/devcontainer.json`
+(equivalent to `.devcontainer/vscode/devcontainer.json`).
 
 ### Local stack (kind + DinD) ###
 

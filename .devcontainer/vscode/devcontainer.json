@@ -1,5 +1,5 @@
 {
-	"name": "fairagro-m4.2_infrastructure (VS Code - DinD)",
+	"name": "fairagro-m4.2_infrastructure (DinD)",
 	"build": {
 		"dockerfile": "../Dockerfile",
 		"context": ".."
@@ -47,7 +47,6 @@
 	"postCreateCommand": {
 		"fix commandhistory permissions": "sudo chown -R vscode:vscode /commandhistory",
 		"import gpg keys": "bash ${containerWorkspaceFolder}/scripts/import-public-gpg-keys.sh",
-		"setup container docker": "bash ${containerWorkspaceFolder}/scripts/setup-container-docker.sh",
 		"init submodules": "bash ${containerWorkspaceFolder}/scripts/init-submodules.sh"
 	},
 	"postStartCommand": {

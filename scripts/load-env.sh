@@ -5,13 +5,7 @@ if [ $sourced -eq 0 ]; then
 fi
 
 # Load Environment Script
-# Sets up aliases, completions, and Docker config for the devcontainer.
-
-mydir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
-
-# DevPod credsStore is host-only; DinD needs a container-local Docker config.
-# shellcheck source=/dev/null
-source "${mydir}/setup-container-docker.sh"
+# Sets up aliases and completions for the devcontainer.
 
 # Setup aliases (completions: static files in image + bash-completion lazy-load)
 alias k=kubectl

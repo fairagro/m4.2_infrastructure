@@ -15,7 +15,7 @@ export GIT_LFS_SKIP_SMUDGE="${GIT_LFS_SKIP_SMUDGE:-1}"
 
 echo "Updating git submodules under deps/ ..."
 git submodule sync --recursive
-git submodule update --init --recursive --depth 1
+git submodule update --init --recursive
 
 echo "Submodule status:"
 git submodule status

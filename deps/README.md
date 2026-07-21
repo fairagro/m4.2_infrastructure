@@ -14,7 +14,7 @@ Production still consumes published OCI images/charts from Docker Hub.
 ```bash
 ./scripts/init-submodules.sh
 # or
-git submodule update --init --recursive --depth 1
+git submodule update --init --recursive
 ```
 
 `m4.2_sql_to_arc` uses Git LFS; `init-submodules.sh` sets `GIT_LFS_SKIP_SMUDGE=1`
@@ -29,7 +29,7 @@ To build against a different branch or tag of one of the repos under `deps/`:
 
 ```bash
 cd deps/m4.2_advanced_middleware_api   # or harvester / sql_to_arc
-git fetch --tags origin
+git fetch origin
 git checkout my-feature                # or: git checkout v1.2.3
 cd ../..
 ./scripts/local-dev-build.sh
@@ -39,7 +39,7 @@ cd ../..
 
 ```bash
 cd deps/m4.2_advanced_middleware_api
-git fetch --tags origin
+git fetch origin
 git checkout my-feature                # or tag
 cd ../..
 git add deps/m4.2_advanced_middleware_api
@@ -48,18 +48,3 @@ git commit -m "Pin advanced middleware API to my-feature"
 ```
 
 After that, `git submodule update --init` checks out exactly that SHA for everyone.
-
-### Shallow clones
-
-Submodules are configured with `shallow = true` in `.gitmodules`. If `checkout`
-cannot find the ref, deepen the history first:
-
-```bash
-# branch tip
-git -C deps/m4.2_advanced_middleware_api fetch --depth 50 origin my-feature
-git -C deps/m4.2_advanced_middleware_api checkout my-feature
-
-# tag
-git -C deps/m4.2_advanced_middleware_api fetch --tags --depth 1 origin tag v1.2.3
-git -C deps/m4.2_advanced_middleware_api checkout v1.2.3
-```

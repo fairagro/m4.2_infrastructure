@@ -5,7 +5,8 @@ set -euo pipefail
 repo_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
 cluster_name="${KIND_CLUSTER_NAME:-fairagro-local}"
 image_tag="${LOCAL_IMAGE_TAG:-local}"
-app_version="${APP_VERSION:-0.0.0-local}"
+# Must be PEP 440 (hatch-vcs / packaging); hyphen local versions are invalid.
+app_version="${APP_VERSION:-0.0.0+local}"
 
 api_dir="${repo_root}/deps/m4.2_advanced_middleware_api"
 harvester_dir="${repo_root}/deps/m4.2_middleware_harvester"

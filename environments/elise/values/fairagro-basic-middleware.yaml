@@ -1,0 +1,12 @@
+image:
+  tag: 0.5.73
+
+args:
+  - "python"
+  - "-m"
+  - "middleware.main"
+  - "-c"
+  - "/middleware/config.yml"
+  - "--no-git"
+
+otlp_endpoint: {}

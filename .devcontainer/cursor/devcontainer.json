@@ -1,8 +1,8 @@
 {
-	"name": "fairagro-m4.2_infrastructure (VS Code - DinD)",
+	"name": "fairagro-m4.2_infrastructure (Cursor - DinD)",
 	"build": {
-		"dockerfile": "Dockerfile",
-		"context": "."
+		"dockerfile": "../Dockerfile",
+		"context": ".."
 	},
 	"features": {
 		"ghcr.io/devcontainers/features/docker-in-docker:3": {
@@ -12,8 +12,14 @@
 		}
 	},
 	"mounts": [
+		"source=${localEnv:HOME}${localEnv:USERPROFILE}/.gitconfig,target=/home/vscode/.gitconfig,type=bind,readonly",
+		"source=${localEnv:XDG_RUNTIME_DIR}/gnupg/S.gpg-agent.extra,target=/host-gpg/S.gpg-agent.extra,type=bind",
+		"source=${localEnv:HOME}/.gnupg/trustdb.gpg,target=/host-gpg/trustdb.gpg,type=bind,readonly",
 		"source=m42-infrastructure-bashhistory,target=/commandhistory,type=volume"
 	],
+	"containerEnv": {
+		"GNUPGHOME": "/home/vscode/.gnupg"
+	},
 	"customizations": {
 		"vscode": {
 			"extensions": [
@@ -46,7 +52,7 @@
 	},
 	"postCreateCommand": {
 		"fix commandhistory permissions": "sudo chown -R vscode:vscode /commandhistory",
-		"import gpg keys": "bash ${containerWorkspaceFolder}/scripts/import-public-gpg-keys.sh",
+		"setup container gpg": "bash ${containerWorkspaceFolder}/scripts/setup-container-gpg.sh",
 		"setup container docker": "bash ${containerWorkspaceFolder}/scripts/setup-container-docker.sh"
 	},
 	"postStartCommand": {

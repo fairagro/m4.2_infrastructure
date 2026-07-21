@@ -18,7 +18,12 @@ if ! kind get clusters 2>/dev/null | grep -qx "$cluster_name"; then
   fail "kind cluster '$cluster_name' not found. Run ./scripts/local-dev-up.sh first."
 fi
 
-kubectl config use-context "kind-${cluster_name}" >/dev/null
+# Always target kind explicitly (ambient KUBECONFIG may point at fizz via bashrc).
+kubeconfig="$(mktemp)"
+trap 'rm -f "$kubeconfig"' EXIT
+kind get kubeconfig --name "$cluster_name" > "$kubeconfig"
+export KUBECONFIG="$kubeconfig"
+kubectl cluster-info >/dev/null
 
 echo "Ensuring namespaces ..."
 kubectl create namespace "$api_ns" --dry-run=client -o yaml | kubectl apply -f -

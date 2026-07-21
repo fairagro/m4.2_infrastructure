@@ -27,8 +27,15 @@ else
   kind create cluster --config "$kind_config"
 fi
 
-echo "Setting kubectl context to kind-${cluster_name} ..."
-kubectl cluster-info --context "kind-${cluster_name}" >/dev/null
+# Always target kind explicitly. The Dev Container bashrc sources set_context.sh fizz,
+# which sets KUBECONFIG to a remote cluster — do not rely on the ambient context.
+kubeconfig="$(mktemp)"
+trap 'rm -f "$kubeconfig"' EXIT
+kind get kubeconfig --name "$cluster_name" > "$kubeconfig"
+export KUBECONFIG="$kubeconfig"
+
+echo "Using kind cluster '$cluster_name' (KUBECONFIG=$KUBECONFIG)."
+kubectl cluster-info >/dev/null
 
 if kubectl get ns ingress-nginx >/dev/null 2>&1; then
   echo "ingress-nginx namespace already present."
@@ -38,10 +45,9 @@ else
 fi
 
 echo "Waiting for ingress-nginx controller ..."
-kubectl wait --namespace ingress-nginx \
-  --for=condition=ready pod \
-  --selector=app.kubernetes.io/component=controller \
-  --timeout=180s
+# rollout status waits for the Deployment to create pods; kubectl wait --selector
+# fails immediately with "no matching resources found" if the pod is not listed yet.
+kubectl -n ingress-nginx rollout status deployment/ingress-nginx-controller --timeout=180s
 
 echo
 echo "Local kind cluster is ready."

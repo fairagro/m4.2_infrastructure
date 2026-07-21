@@ -40,9 +40,12 @@ These run once per devcontainer create (not on every shell):
 - `scripts/setup-container-gpg.sh` (host agent + trustdb + public keys)
 - `scripts/setup-container-docker.sh` (DevPod DinD Docker config workaround)
 
-`scripts/load-env.sh` is sourced from `~/.bashrc` and sets up aliases and completions.
-`scripts/set_context.sh fizz` is also sourced from `~/.bashrc` to connect to the fizz
-cluster (requires GPG passphrase for SOPS decryption).
+## Per-start setup (postStartCommand)
+
+These run every time the container starts and ensure `~/.bashrc` sources:
+
+- `scripts/load-env.sh` (aliases and completions)
+- `scripts/set_context.sh fizz` (cluster context; requires GPG passphrase for SOPS decryption)
 
 For a **local clone outside devcontainers**, import public keys once:
 

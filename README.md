@@ -9,8 +9,7 @@ This project delivers a dev container with all tools needed (kubectl, helm, sops
 ### VS Code / Cursor ###
 
 Open the repository and choose **Reopen in Container** (or **Clone in Volume**).
-The default configuration is `.devcontainer/devcontainer.json`
-(equivalent to `.devcontainer/vscode/devcontainer.json`).
+The configuration lives at `.devcontainer/devcontainer.json`.
 
 ### Local stack (kind + DinD) ###
 

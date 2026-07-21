@@ -10,21 +10,11 @@ fairagro-advanced-middleware-api-chart:
       - publisso
       - thunen_atlas
     git_repo:
-      url: https://datahub.ipk-gatersleben.de
-      group: FAIRagro-advanced-middleware-test
+      url: https://datahub-dev.ipk-gatersleben.de
+      group: FAIRagro-advanced-middleware-dev
       max_workers: 4
-      rdi_gitlab_topics:
-        bonares: bonares
-        dwd: DWD
-        edal: "e!DAL"
-        edaphobase: edaphobase
-        openagrar: "OpenAgrar Repository"
-        publisso: Publisso
-        thunen_atlas: "Thunen Atlas"
     celery: {}  # all further celery config is set via environment variables
-    otel:
-      endpoint: http://signoz-otel-collector.monitoring.svc.fizz.cluster:4318
-      log_level: DEBUG
+    otel: {}
 
   rabbitmq:
     image: rabbitmq:4.2.2
@@ -38,7 +28,7 @@ fairagro-advanced-middleware-api-chart:
   api:
     image:
       repository: zalf/fairagro-advanced-middleware-api
-      tag: 10.0.2-rc.max-description-length.24
+      tag: 8.7.1-rc.review-harvesting-api.11
     ingress:
       enabled: true
       mtlsEnabled: true
@@ -55,19 +45,19 @@ fairagro-advanced-middleware-api-chart:
         cert-manager.io/subject-organizations: "NFDI FAIRagro"
         cert-manager.io/subject-organizationalunits: "Measure 4.2"
       hosts:
-        - host: middleware-test.fairagro.net
+        - host: middleware-dev.fairagro.net
           paths:
             - path: /
               pathType: ImplementationSpecific
       tls:
         - secretName: server-tls
           hosts:
-            - middleware-test.fairagro.net
+            - middleware-dev.fairagro.net
 
   celery:
     image:
       repository: zalf/fairagro-advanced-middleware-api
-      tag: 10.0.2-rc.max-description-length.24
+      tag: 8.7.1-rc.review-harvesting-api.11
     worker:
       replicaCount: 2
       concurrency: 2

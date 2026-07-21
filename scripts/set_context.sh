@@ -4,6 +4,14 @@ if [ $sourced -eq 0 ]; then
   exit 1
 fi
 
+fail() {
+  echo "$1" >&2
+  if [ $sourced -eq 1 ]; then
+    return 1
+  fi
+  exit 1
+}
+
 environment=$1
 age_secret_key=$2
 
@@ -30,18 +38,24 @@ environment_path="$mydir/../environments/$environment"
 
 # Check that the context is actually known
 if [ ! -d "$environment_path" ]; then
-    echo "The environment directory for environment $environment does not exist. Exiting..."
-    exit 1
+    fail "The environment directory for environment $environment does not exist." || return
 fi
 
 if [ "$environment" = "local_dev" ]; then
     # do special stuff for minicube
-    echo "There is no implementation for a local cluster environment for Linux yet. Exiting..."
-    exit 1
+    fail "There is no implementation for a local cluster environment for Linux yet." || return
 else
     # set KUBECONFIG environment variable to the actual cluster config file
     kubeconfig=$(mktemp)
-    sops -d "${environment_path}/credentials/project_admin.enc.yaml" > "$kubeconfig"
+    if ! sops -d "${environment_path}/credentials/project_admin.enc.yaml" > "$kubeconfig"; then
+        rm -f "$kubeconfig"
+        fail "Failed to decrypt ${environment_path}/credentials/project_admin.enc.yaml" || return
+    fi
+    if ! kubectl config view --kubeconfig="$kubeconfig" --minify --raw -o jsonpath='{.users[0].user.client-key-data}' \
+        | base64 -d 2>/dev/null | openssl pkey -noout 2>/dev/null; then
+        rm -f "$kubeconfig"
+        fail "Kubeconfig client-key-data is missing or invalid. Re-encrypt project_admin.enc.yaml with a kubeconfig that embeds client-key-data (not client-key file paths)." || return
+    fi
     export KUBECONFIG="$kubeconfig"
 fi
 

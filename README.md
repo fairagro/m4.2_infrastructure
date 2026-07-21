@@ -4,9 +4,22 @@ Infrastructure-as-Code to deploy services needed by measure 4.2
 
 ## How to deal with this project ##
 
-This project delivers a `vscode` dev container that contains all tools needed. To use that container
-you need a running docker installation and choose 'Clone in Volume' after opening it in `vscode`.
-It will take quite some time to build the container.
+This project delivers a dev container with all tools needed (kubectl, helm, sops, argocd, etc.).
+
+### VS Code
+
+Open the repository in VS Code and choose **Reopen in Container** (or **Clone in Volume**).
+The default configuration is `.devcontainer/devcontainer.json` (equivalent to `.devcontainer/vscode/devcontainer.json`).
+
+### Cursor (via DevPod)
+
+Cursor has no built-in "Reopen in Container". Use DevPod instead:
+
+```bash
+./scripts/start-devcontainer-cursor.sh
+```
+
+See `.devcontainer/cursor/README.md` for GPG agent forwarding (Linux) and platform notes.
 
 As the project contains encrypted secrets (that are also instantiated when running the container),
 you will need to enter your personal `gpg` passphrase. This of course requires that your pgp key

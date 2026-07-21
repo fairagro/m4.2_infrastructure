@@ -65,12 +65,12 @@ fairagro-advanced-middleware-harvester-chart:
         inspire:
           csw_url: "https://atlas.thuenen.de/catalogue/csw"
 
-      - rdi: edal
-        schema_org:
-          sitemap_url: https://doi.ipk-gatersleben.de/sitemap.xml
-          sitemap_type: xml
-          dataset_type: html_jsonld
-          payload_type: general
+      # - rdi: edal
+      #   schema_org:
+      #     sitemap_url: https://doi.ipk-gatersleben.de/sitemap.xml
+      #     sitemap_type: xml
+      #     dataset_type: html_jsonld
+      #     payload_type: general
 
       # Non-Thünen datasets from the OpenAgrar portal (~775 records in the legacy harvest).
       # - rdi: openagrar

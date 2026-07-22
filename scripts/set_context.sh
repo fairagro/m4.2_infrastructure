@@ -41,6 +41,26 @@ if [ ! -d "$environment_path" ]; then
     fail "The environment directory for environment $environment does not exist." || return
 fi
 
+# Temp kubeconfigs must outlive this sourced script (KUBECONFIG points at them)
+# but must not accumulate across re-sources or orphaned shells.
+_fairagro_cleanup_kubeconfig_temp() {
+    if [ -n "${FAIRAGRO_KUBECONFIG_TEMP:-}" ]; then
+        rm -f -- "$FAIRAGRO_KUBECONFIG_TEMP"
+        unset FAIRAGRO_KUBECONFIG_TEMP
+    fi
+}
+
+_fairagro_install_kubeconfig_temp() {
+    local new_kubeconfig=$1
+    local prev="${FAIRAGRO_KUBECONFIG_TEMP:-}"
+    export KUBECONFIG="$new_kubeconfig"
+    export FAIRAGRO_KUBECONFIG_TEMP="$new_kubeconfig"
+    if [ -n "$prev" ] && [ "$prev" != "$new_kubeconfig" ]; then
+        rm -f -- "$prev"
+    fi
+    trap '_fairagro_cleanup_kubeconfig_temp' EXIT
+}
+
 if [ "$environment" = "local_dev" ]; then
     cluster_name="${KIND_CLUSTER_NAME:-fairagro-local}"
     if ! command -v kind >/dev/null 2>&1; then
@@ -54,7 +74,7 @@ if [ "$environment" = "local_dev" ]; then
         rm -f "$kubeconfig"
         fail "Failed to get kind kubeconfig for cluster '$cluster_name'." || return
     fi
-    export KUBECONFIG="$kubeconfig"
+    _fairagro_install_kubeconfig_temp "$kubeconfig"
     kubectl config use-context "kind-${cluster_name}" >/dev/null
     echo "Using kind cluster '$cluster_name' (KUBECONFIG=$KUBECONFIG)."
 else
@@ -69,7 +89,7 @@ else
         rm -f "$kubeconfig"
         fail "Kubeconfig client-key-data is missing or invalid. Re-encrypt project_admin.enc.yaml with a kubeconfig that embeds client-key-data (not client-key file paths)." || return
     fi
-    export KUBECONFIG="$kubeconfig"
+    _fairagro_install_kubeconfig_temp "$kubeconfig"
 fi
 
 # set some environment variables for helm secrets and helmfile

@@ -64,8 +64,8 @@ fairagro-advanced-middleware-harvester-chart:
           dataset_type: regal_jsonld
           payload_type: regal_general
           resource_base_url: "https://repository.publisso.de/resource/"
-        http:
-          respect_robots_txt: false
+          http:
+            respect_robots_txt: false
 
       # - rdi: bonares
       #   inspire:

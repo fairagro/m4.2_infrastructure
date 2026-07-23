@@ -3,7 +3,7 @@ fairagro-advanced-middleware-harvester-chart:
   schedule: "0 2 * * *"
 
   image:
-    tag: 1.2.1-rc.interface-publisso.28
+    tag: 1.2.1-rc.interface-publisso.30
 
   # =============================================================================
   # Resource requests and limits

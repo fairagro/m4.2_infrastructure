@@ -1,0 +1,9 @@
+[submodule "deps/m4.2_advanced_middleware_api"]
+	path = deps/m4.2_advanced_middleware_api
+	url = https://github.com/fairagro/m4.2_advanced_middleware_api.git
+[submodule "deps/m4.2_middleware_harvester"]
+	path = deps/m4.2_middleware_harvester
+	url = https://github.com/fairagro/m4.2_middleware_harvester.git
+[submodule "deps/m4.2_sql_to_arc"]
+	path = deps/m4.2_sql_to_arc
+	url = https://github.com/fairagro/m4.2_sql_to_arc.git

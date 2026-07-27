@@ -57,6 +57,16 @@ fairagro-advanced-middleware-harvester-chart:
     # -- plugin type (inspire or schema_org).
     repositories:
 
+      # - rdi: publisso
+      #   linked_data:
+      #     sitemap_url: "https://frl.publisso.de/find"
+      #     sitemap_type: regal_find
+      #     dataset_type: regal_jsonld
+      #     payload_type: regal_general
+      #     resource_base_url: "https://repository.publisso.de/resource/"
+      #     http:
+      #       respect_robots_txt: false
+
       # - rdi: bonares
       #   inspire:
       #     csw_url: "https://repository-staging.dataservice.zalf.de/catalogue/csw"
@@ -80,14 +90,6 @@ fairagro-advanced-middleware-harvester-chart:
       #     sitemap_type: mycore_solr
       #     dataset_type: html_jsonld
       #     payload_type: general
-
-      # Thünen-Institut / Thünen-Atlas datasets hosted on OpenAgrar (~49 records).
-      # - rdi: thuenen
-      #   schema_org:
-      #     <<: *schema_org_openagrar
-      #     record_filter:
-      #       field: publisher.name
-      #       include: *thunen_publisher_regex
 
         - rdi: dwd
           inspire:

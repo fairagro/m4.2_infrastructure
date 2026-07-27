@@ -91,7 +91,7 @@ fairagro-advanced-middleware-harvester-chart:
 
         - rdi: dwd
           inspire:
-            csw_url: "https://www.geodatenkatalog.de/geonetwork/srv/ger/csw"
+            csw_url: "https://gdk.gdi-de.org/gdi-de/srv/ger/csw"
             # CSW-Abfrage nach DWD Datensaetzen. Die Zahl der Treffer unterscheidet sich von der
             # Web-GUI (https://www.geoportal.de/search.html?q=Deutscher%20Wetterdienst,
             # https://www.geoportal.de/search.html?q=DWD)

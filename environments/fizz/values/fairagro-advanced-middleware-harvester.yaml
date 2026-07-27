@@ -105,8 +105,7 @@ fairagro-advanced-middleware-harvester-chart:
                   resultType="results"
                   outputFormat="application/xml"
                   outputSchema="http://www.isotc211.org/2005/gmd"
-                  startPosition="1"
-                  maxRecords="50">
+                  startPosition="1">
 
                 <csw:Query typeNames="csw:Record">
                   <csw:ElementSetName>summary</csw:ElementSetName>

@@ -41,9 +41,42 @@ if [ ! -d "$environment_path" ]; then
     fail "The environment directory for environment $environment does not exist." || return
 fi
 
+# Temp kubeconfigs must outlive this sourced script (KUBECONFIG points at them)
+# but must not accumulate across re-sources or orphaned shells.
+_fairagro_cleanup_kubeconfig_temp() {
+    if [ -n "${FAIRAGRO_KUBECONFIG_TEMP:-}" ]; then
+        rm -f -- "$FAIRAGRO_KUBECONFIG_TEMP"
+        unset FAIRAGRO_KUBECONFIG_TEMP
+    fi
+}
+
+_fairagro_install_kubeconfig_temp() {
+    local new_kubeconfig=$1
+    local prev="${FAIRAGRO_KUBECONFIG_TEMP:-}"
+    export KUBECONFIG="$new_kubeconfig"
+    export FAIRAGRO_KUBECONFIG_TEMP="$new_kubeconfig"
+    if [ -n "$prev" ] && [ "$prev" != "$new_kubeconfig" ]; then
+        rm -f -- "$prev"
+    fi
+    trap '_fairagro_cleanup_kubeconfig_temp' EXIT
+}
+
 if [ "$environment" = "local_dev" ]; then
-    # do special stuff for minicube
-    fail "There is no implementation for a local cluster environment for Linux yet." || return
+    cluster_name="${KIND_CLUSTER_NAME:-fairagro-local}"
+    if ! command -v kind >/dev/null 2>&1; then
+        fail "kind is not installed. Rebuild the Dev Container." || return
+    fi
+    if ! kind get clusters 2>/dev/null | grep -qx "$cluster_name"; then
+        fail "kind cluster '$cluster_name' not found. Run ./scripts/local-dev-up.sh first." || return
+    fi
+    kubeconfig=$(mktemp)
+    if ! kind get kubeconfig --name "$cluster_name" > "$kubeconfig"; then
+        rm -f "$kubeconfig"
+        fail "Failed to get kind kubeconfig for cluster '$cluster_name'." || return
+    fi
+    _fairagro_install_kubeconfig_temp "$kubeconfig"
+    kubectl config use-context "kind-${cluster_name}" >/dev/null
+    echo "Using kind cluster '$cluster_name' (KUBECONFIG=$KUBECONFIG)."
 else
     # set KUBECONFIG environment variable to the actual cluster config file
     kubeconfig=$(mktemp)
@@ -56,7 +89,7 @@ else
         rm -f "$kubeconfig"
         fail "Kubeconfig client-key-data is missing or invalid. Re-encrypt project_admin.enc.yaml with a kubeconfig that embeds client-key-data (not client-key file paths)." || return
     fi
-    export KUBECONFIG="$kubeconfig"
+    _fairagro_install_kubeconfig_temp "$kubeconfig"
 fi
 
 # set some environment variables for helm secrets and helmfile
@@ -65,9 +98,11 @@ export HELM_SECRETS_HELM_PATH=$(which helm)
 
 # import all public keyfiles into gpg keyring so sops can find them
 public_key_path="$environment_path/public_gpg_keys"
+shopt -s nullglob
 for file in "$public_key_path"/*.asc; do
     gpg --import "$file"
 done
+shopt -u nullglob
 
 # Create Bash autocompletion for installed tools
 source /etc/bash_completion

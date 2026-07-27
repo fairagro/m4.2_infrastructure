@@ -3,7 +3,7 @@ fairagro-advanced-middleware-harvester-chart:
   schedule: "0 2 * * *"
 
   image:
-    tag: 1.1.1-rc.handle-openagrar.23
+    tag: 1.2.1-rc.interface-publisso.31
 
   # =============================================================================
   # Resource requests and limits
@@ -57,13 +57,23 @@ fairagro-advanced-middleware-harvester-chart:
     # -- plugin type (inspire or schema_org).
     repositories:
 
-      - rdi: bonares
-        inspire:
-          csw_url: "https://repository-staging.dataservice.zalf.de/catalogue/csw"
+      - rdi: publisso
+        linked_data:
+          sitemap_url: "https://frl.publisso.de/find"
+          sitemap_type: regal_find
+          dataset_type: regal_jsonld
+          payload_type: regal_general
+          resource_base_url: "https://repository.publisso.de/resource/"
+          http:
+            respect_robots_txt: false
 
-      - rdi: thunen_atlas
-        inspire:
-          csw_url: "https://atlas.thuenen.de/catalogue/csw"
+      # - rdi: bonares
+      #   inspire:
+      #     csw_url: "https://repository-staging.dataservice.zalf.de/catalogue/csw"
+
+      # - rdi: thunen_atlas
+      #   inspire:
+      #     csw_url: "https://atlas.thuenen.de/catalogue/csw"
 
       # - rdi: edal
       #   schema_org:

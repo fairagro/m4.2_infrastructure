@@ -1,0 +1,84 @@
+# Local kind deployment values for the advanced middleware API.
+# Images are built from deps/ and loaded into kind (pullPolicy: Never).
+
+# Skip cert-manager Issuer + Cloudflare secret templates in the umbrella chart
+# (templates render only when tls.key / tls.crt are unset).
+tls:
+  key: local-dev-unused
+  crt: local-dev-unused
+
+fairagro-advanced-middleware-api-chart:
+  config:
+    log_level: DEBUG
+    known_rdis:
+      - bonares
+      - dwd
+      - edal
+      - edaphobase
+      - openagrar
+      - publisso
+      - thunen_atlas
+    git_repo:
+      # Point at a reachable Datahub when testing against real data, or keep
+      # placeholders and exercise API-only paths.
+      url: https://datahub.ipk-gatersleben.de
+      group: FAIRagro-advanced-middleware-test
+      max_workers: 2
+      rdi_gitlab_topics:
+        bonares: bonares
+        dwd: DWD
+        edal: "e!DAL"
+        edaphobase: edaphobase
+        openagrar: "OpenAgrar Repository"
+        publisso: Publisso
+        thunen_atlas: "Thunen Atlas"
+    celery: {}
+    otel:
+      endpoint: null
+      log_level: INFO
+    require_client_cert: false
+
+  rabbitmq:
+    image: rabbitmq:4.2.2
+    auth:
+      username: fairagro
+      password: fairagro-local
+      erlang_cookie: fairagro-local-cookie
+
+  couchdb:
+    image: couchdb:3.3
+    auth:
+      username: fairagro
+      password: fairagro-local
+    persistence:
+      enabled: false
+
+  api:
+    replicaCount: 1
+    image:
+      repository: fairagro-advanced-middleware-api
+      tag: local
+      pullPolicy: Never
+    ingress:
+      enabled: true
+      mtlsEnabled: false
+      className: nginx
+      annotations:
+        nginx.ingress.kubernetes.io/proxy-body-size: 32m
+      hosts:
+        - host: middleware.localtest.me
+          paths:
+            - path: /
+              pathType: ImplementationSpecific
+      tls: []
+
+  celery:
+    image:
+      repository: fairagro-advanced-middleware-api
+      tag: local
+      pullPolicy: Never
+    worker:
+      replicaCount: 1
+      concurrency: 1
+      persistence:
+        size: 1Gi

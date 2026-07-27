@@ -11,11 +11,11 @@ gitAccessToken: ~
 
 # make use of our external reverse proxy to connect to bonares, because ZALF IT
 # blocks direct access.
-# etc_hosts:
-# #  - ip: 188.34.195.248 # FAIRagro external reverse proxy
-#   - ip: 188.245.43.108  # Bonares IP forwarder
-#     hostnames:
-#       - maps.bonares.de
+etc_hosts:
+#  - ip: 188.34.195.248 # FAIRagro external reverse proxy
+  - ip: 188.245.43.108  # Bonares IP forwarder
+    hostnames:
+      - maps.bonares.de
 
 outputVolume:
   size: 1Gi

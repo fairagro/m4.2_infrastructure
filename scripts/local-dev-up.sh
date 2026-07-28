@@ -57,12 +57,10 @@ else
   echo "Installing Zalando postgres-operator (Helm) ..."
   helm repo add postgres-operator-charts https://opensource.zalando.com/postgres-operator/charts/postgres-operator >/dev/null
   helm repo update postgres-operator-charts >/dev/null
-  # Allow teamId "fairagro" used by DataHUB / sql-to-arc CRs
+  # Defaults are fine for kind: Teams API off, watch all namespaces (teamId fairagro needs no team API).
   helm upgrade --install postgres-operator postgres-operator-charts/postgres-operator \
     --namespace postgres-operator \
     --create-namespace \
-    --set configGeneral.team_api_url="" \
-    --set configKubernetes.watched_namespace="*" \
     --wait \
     --timeout 5m
   echo "Waiting for postgres-operator CRD ..."

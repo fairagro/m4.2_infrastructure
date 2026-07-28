@@ -1,6 +1,7 @@
 # local_dev — kind: local image, no mTLS, Job only
 image:
-  tag: 1.1.0
+  repository: fairagro-sql-to-arc
+  tag: local
 
 converter:
   job:

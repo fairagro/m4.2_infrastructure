@@ -21,7 +21,8 @@ postgres:
   numberOfInstances: 1
   version: "16"
   volume:
-    size: 50Gi
+    # ~0.9Gi dump → ~1–3Gi on disk; 10Gi leaves headroom for indexes/WAL/growth
+    size: 10Gi
     storageClass: ""
   resources:
     requests:

@@ -19,6 +19,8 @@ ARG JQ_VERSION=jq-1.7.1
 ARG HADOLINT_VERSION=v2.12.0
 ARG KIND_VERSION=v0.29.0
 ARG GIT_LFS_VERSION=v3.6.1
+ARG NODE_VERSION=v22.23.1
+ARG OPENSPEC_VERSION=1.6.0
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -41,6 +43,17 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     iputils-ping \
     ncat \
     && rm -rf /var/lib/apt/lists/*
+
+# ── Node.js + npm (official binary; apt node is too old for OpenSpec engines) ─
+RUN curl -fsSL "https://nodejs.org/dist/${NODE_VERSION}/node-${NODE_VERSION}-linux-x64.tar.xz" \
+        | tar -xJ --strip-components=1 -C /usr/local \
+            "node-${NODE_VERSION}-linux-x64/bin" \
+            "node-${NODE_VERSION}-linux-x64/lib" \
+            "node-${NODE_VERSION}-linux-x64/include" \
+            "node-${NODE_VERSION}-linux-x64/share"
+
+# ── OpenSpec (spec-driven planning; https://openspec.dev/) ────────────────────
+RUN npm install -g "@fission-ai/openspec@${OPENSPEC_VERSION}"
 
 # ── GitHub CLI (APT repos) ────────────────────────────────────────────────────
 # hadolint ignore=DL3008

@@ -1,0 +1,48 @@
+schema: spec-driven
+
+# Shown to the AI when creating artifacts (proposal, specs, design, tasks).
+context: |
+  Repo: fairagro/m4.2_infrastructure — Infrastructure-as-Code for FAIRagro Measure 4.2.
+  Not application source code; deploy/config for middleware services.
+
+  Tech stack:
+  - Helm charts + Argo CD Application umbrella (fairagro-m42-applications)
+  - SOPS + GPG for secrets (*.enc.yaml); public keys under environments/*/public_gpg_keys
+  - Dev Container: kubectl, helm, sops, argocd, kind, Node/OpenSpec
+  - Local integration: kind + DinD (scripts/local-dev-*.sh); build contexts in deps/ (git submodules)
+
+  Environments (values overlays):
+  - fizz — test (e.g. middleware-test.fairagro.net)
+  - draven — production-like (e.g. middleware.fairagro.net)
+  - elise, local_dev
+
+  Deployed capabilities (Helm):
+  - fairagro-advanced-middleware — API umbrella → OCI api-chart (ARC ingest, CouchDB, RabbitMQ, Celery)
+  - fairagro-advanced-middleware-harvester — harvest RDIs → API
+  - fairagro-basic-middleware — legacy sitemap scrapers (BonaRes, e!DAL, OpenAgrar, Publisso, Thünen)
+  - fairagro-datahub — DataPLANT DataHUB
+
+  Conventions:
+  - Prefer editing environment values over chart defaults when change is cluster-specific
+  - Chart defaults for shared behaviour; pin image tags in env values
+  - Do not commit decrypted secrets; use sops
+  - Application logic/specs live in upstream repos under deps/ (or their GitHub remotes), not here
+  - kubectl context via: source scripts/set_context.sh <environment>
+
+  Domain: agricultural research data infrastructures (RDIs), INSPIRE/CSW, Schema.org/JSON-LD,
+  ARC packages, FAIR data middleware between RDIs and the FAIRagro Datahub.
+
+rules:
+  proposal:
+    - State which environment(s) and chart(s) are in scope
+    - Call out secret vs plaintext value file changes
+    - Include Non-goals (especially: no app-code changes in deps/ unless explicitly requested)
+  specs:
+    - Prefer capability names that match ops concerns (e.g. env-fizz-harvester, basic-middleware-networking)
+    - Requirements should be verifiable via kubectl/helm/sops or documented URLs—not unit tests alone
+  design:
+    - Note Argo CD sync / umbrella revision implications when chart or dependency versions change
+    - Call out cluster network constraints (e.g. BonaRes hostAliases/proxies, TLS trust)
+  tasks:
+    - Separate "values-only" steps from "chart/template" and "submodule/image rebuild" steps
+    - Include a verification step (helm template, dry-run, or kubectl get) where practical

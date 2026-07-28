@@ -2,6 +2,10 @@
 image:
   tag: 1.1.0
 
+postgres:
+  volume:
+    size: 5Gi
+
 converter:
   job:
     enabled: true

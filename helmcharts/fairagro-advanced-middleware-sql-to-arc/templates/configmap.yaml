@@ -8,5 +8,5 @@ metadata:
     argocd.argoproj.io/sync-wave: "0"
 data:
   config.yaml: |
-    {{- /* Non-secret config; connection_string is overridden via SQL_TO_ARC_CONNECTION_STRING */}}
-    {{- toYaml .Values.config | nindent 4 }}
+    {{- /* Non-secret config only; DB URL is chart env SQL_TO_ARC_CONNECTION_STRING */}}
+    {{- toYaml (omit .Values.config "connection_string") | nindent 4 }}

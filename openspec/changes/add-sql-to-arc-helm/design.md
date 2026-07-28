@@ -71,7 +71,7 @@ Cluster roles (for scoping overlays):
 - **ConfigMap `config.yaml`:** Non-secret configuration — same shape as `config.dev.yaml` (`rdi`, `api_url`, cert *paths*, concurrency, otel, log level). Mounted and selected with `-c`.
 - **TLS cert/key:** Kubernetes Secret volume mounts (harvester pattern). Paths only in `config.yaml`. Compose’s `SQL_TO_ARC_CLIENT_KEY_DATA` → file write is local-only; in-cluster mount the PEMs directly.
 - **Client identity:** Prefer a **dedicated sql-to-arc client certificate** (new identity). Reusing the harvester client identity is acceptable as a short-term fallback if issuing a new cert blocks deploy on elise.
-- **Passwords / other non-TLS secrets:** Managed as env vars from Kubernetes Secrets (e.g. operator credentials Secret, `SQL_TO_ARC_CONNECTION_STRING`). Not in ConfigMap.
+- **Passwords / other non-TLS secrets:** Managed as env vars from Kubernetes Secrets (operator credentials). The chart sets `SQL_TO_ARC_CONNECTION_STRING` as a fixed env value using Kubernetes `$(VAR)` expansion over Service DNS + secret-backed `PGUSER`/`PGPASSWORD` — never stored in values/ConfigMap.
 - **Do not** put PEM private keys or passwords in the ConfigMap.
 
 ### 6. Argo / naming / namespaces

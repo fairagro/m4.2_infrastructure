@@ -3,7 +3,7 @@ fullnameOverride: ""
 
 # -- Container image for sql-to-arc converter
 image:
-  repository: zalf/fairagro-sql-to-arc
+  repository: zalf/fairagro-advanced-middleware-sql_to_arc
   tag: ""
   pullPolicy: IfNotPresent
 
@@ -49,7 +49,7 @@ bootstrap:
 # -- Converter Job / CronJob
 converter:
   job:
-    enabled: true
+    enabled: false
     backoffLimit: 1
     activeDeadlineSeconds: 14400
   cronjob:
@@ -74,14 +74,14 @@ tls:
   clientCert: ""
   clientKey: ""
 
-# -- Non-secret sql-to-arc config.yaml (connection_string overridden at runtime via env)
+# -- Non-secret sql-to-arc config.yaml.
+# -- DB URL is set as env SQL_TO_ARC_CONNECTION_STRING in the chart (K8s expands
+# -- $(PGUSER)/$(PGPASSWORD)/$(PGHOST)/$(PGDATABASE) from operator Secret + Service DNS).
 config:
   log_level: INFO
   rdi: edaphobase
   rdi_url: https://edaphobase.org
   max_concurrent_arc_builds: 4
-  # Placeholder only — SQL_TO_ARC_CONNECTION_STRING env overrides this at runtime.
-  connection_string: "postgresql+psycopg://unused:unused@localhost:5432/rdi"
   api_client:
     api_url: "https://middleware-dev.fairagro.net"
     timeout: 600

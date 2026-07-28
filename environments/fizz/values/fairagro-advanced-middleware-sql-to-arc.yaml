@@ -34,7 +34,6 @@ config:
   rdi: edaphobase
   rdi_url: https://edaphobase.org
   max_concurrent_arc_builds: 4
-  connection_string: "postgresql+psycopg://unused:unused@localhost:5432/rdi"
   api_client:
     api_url: "https://middleware-test.fairagro.net"
     timeout: 600

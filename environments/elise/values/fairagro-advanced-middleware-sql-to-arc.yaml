@@ -1,41 +1,16 @@
 # elise — deployment test: one-shot converter Job, no CronJob
 image:
-  repository: zalf/fairagro-sql-to-arc
-  # Pin to a published tag when available
-  tag: latest
-  pullPolicy: IfNotPresent
-
-postgres:
-  clusterName: fairagro-postgresql-sql-to-arc
-  teamId: fairagro
-  user: sqltoarc
-  database: rdi
-  numberOfInstances: 1
-  version: "16"
-  volume:
-    size: 50Gi
-
-bootstrap:
-  enabled: true
-  dumpUrl: https://repo.edaphobase.org/rep/dumps/FAIRagro.sql
+  tag: 1.1.0
 
 converter:
   job:
     enabled: true
-  cronjob:
-    enabled: false
-
-tls:
-  enabled: true
-  mountPath: /run/secrets/tls
-  # clientCert / clientKey from fairagro-advanced-middleware-sql-to-arc.enc.yaml (dedicated identity preferred)
 
 config:
   log_level: INFO
   rdi: edaphobase
   rdi_url: https://edaphobase.org
   max_concurrent_arc_builds: 4
-  connection_string: "postgresql+psycopg://unused:unused@localhost:5432/rdi"
   api_client:
     api_url: "https://middleware-dev.fairagro.net"
     timeout: 600

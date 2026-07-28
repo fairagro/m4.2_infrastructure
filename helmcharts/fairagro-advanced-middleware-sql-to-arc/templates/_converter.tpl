@@ -86,6 +86,9 @@ containers:
           secretKeyRef:
             name: {{ include "fairagro-advanced-middleware-sql-to-arc.postgresCredentialsSecret" . }}
             key: password
+      # Kubernetes expands $(VAR) from previously defined env (incl. secretKeyRef).
+      - name: SQL_TO_ARC_CONNECTION_STRING
+        value: "postgresql+psycopg://$(PGUSER):$(PGPASSWORD)@$(PGHOST):5432/$(PGDATABASE)"
     resources:
       {{- toYaml .Values.converter.resources | nindent 6 }}
     volumeMounts:
@@ -97,13 +100,6 @@ containers:
         mountPath: {{ .Values.tls.mountPath | quote }}
         readOnly: true
       {{- end }}
-    command:
-      - /bin/sh
-      - -ec
-      - |
-        set -euo pipefail
-        export SQL_TO_ARC_CONNECTION_STRING="postgresql+psycopg://${PGUSER}:${PGPASSWORD}@${PGHOST}:5432/${PGDATABASE}"
-        exec /middleware/sql_to_arc/sql_to_arc -c /etc/sql_to_arc/config.yaml
 volumes:
   - name: config
     configMap:

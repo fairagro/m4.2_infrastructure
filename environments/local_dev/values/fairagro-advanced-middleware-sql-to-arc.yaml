@@ -1,28 +1,10 @@
 # local_dev — kind: local image, no mTLS, Job only
 image:
-  repository: fairagro-sql-to-arc
-  tag: local
-  pullPolicy: Never
-
-postgres:
-  clusterName: fairagro-postgresql-sql-to-arc
-  teamId: fairagro
-  user: sqltoarc
-  database: rdi
-  numberOfInstances: 1
-  version: "16"
-  volume:
-    size: 20Gi
-
-bootstrap:
-  enabled: true
-  dumpUrl: https://repo.edaphobase.org/rep/dumps/FAIRagro.sql
+  tag: 1.1.0
 
 converter:
   job:
     enabled: true
-  cronjob:
-    enabled: false
 
 tls:
   enabled: false
@@ -33,12 +15,9 @@ config:
   rdi_url: https://edaphobase.org
   max_concurrent_arc_builds: 2
   api_client:
+    # In-cluster Service DNS (same target as local_dev harvester).
     api_url: "http://fairagro-advanced-middleware-api.fairagro-advanced-middleware.svc.cluster.local:8000"
     timeout: 600
     client_cert_path: null
     client_key_path: null
     verify_ssl: false
-  otel:
-    endpoint: null
-    log_console_spans: false
-    log_level: INFO

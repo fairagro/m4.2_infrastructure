@@ -1,6 +1,6 @@
 cluster_name: elise
 # elise is not on main yet — child apps must track the same branch as the wrapper.
-basic_middleware_revision: feature/fairagro-advanced-middleware-harvester
-advanced_middleware_revision: feature/fairagro-advanced-middleware-harvester
-advanced_middleware_harvester_revision: feature/fairagro-advanced-middleware-harvester
-advanced_middleware_sql_to_arc_revision: feature/fairagro-advanced-middleware-harvester
+basic_middleware_revision: HEAD
+advanced_middleware_revision: HEAD
+advanced_middleware_harvester_revision: HEAD
+advanced_middleware_sql_to_arc_revision: HEAD

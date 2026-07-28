@@ -17,7 +17,3 @@ config:
     client_cert_path: /run/secrets/tls/client.crt
     client_key_path: /run/secrets/tls/client.key
     verify_ssl: true
-  otel:
-    endpoint: null
-    log_console_spans: false
-    log_level: INFO

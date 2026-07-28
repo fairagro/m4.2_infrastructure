@@ -3,7 +3,7 @@
 `sql_to_arc` converts Edaphobase SQL into ARCs and uploads them to the Advanced Middleware API. Locally, `deps/m4.2_sql_to_arc/dev_environment/start-dev.sh` runs that stack via Compose:
 
 ```text
-secrets (sops) → postgres → db-init (Edaphobase dump) → sql_to_arc → external API (mTLS)
+secrets (sops) → postgres → converter pod (dump-init → sql_to_arc) → external API (mTLS)
 ```
 
 This infra repo already builds/loads the image for kind (`scripts/local-dev-build.sh`) but explicitly does not deploy it. The harvester is the closest operational pattern: thin umbrella chart + Argo Application under `fairagro-m42-applications` + env values / SOPS. Unlike the harvester, there is **no** published OCI Helm chart for sql-to-arc under `oci://registry-1.docker.io/zalf` yet, so this repo must own the chart templates initially.
@@ -39,7 +39,7 @@ Cluster roles (for scoping overlays):
 
 ### 1. Chart name and layout
 
-- **Choice:** Chart path `helmcharts/fairagro-advanced-middleware-sql-to-arc/` with templates for the Zalando `postgresql` CR, bootstrap Job, converter Job/CronJob, ConfigMap, TLS Secrets, ServiceAccount as needed.
+- **Choice:** Chart path `helmcharts/fairagro-advanced-middleware-sql-to-arc/` with templates for the Zalando `postgresql` CR, converter Job/CronJob (dump-init + convert), ConfigMap, TLS Secrets, ServiceAccount as needed.
 - **Why not harvester-style OCI umbrella only?** No OCI sql-to-arc chart exists today; waiting blocks deployability.
 - **Follow-up:** If upstream publishes an OCI chart, thin this repo chart to a dependency wrapper like the harvester.
 
@@ -48,23 +48,23 @@ Cluster roles (for scoping overlays):
 - **Choice:** Chart supports both a one-shot **Job** and a **CronJob** (values toggle).
   - **elise** (deployment test): one-shot Job only — no CronJob.
   - **fizz** (operation test): CronJob enabled for scheduled conversion runs.
-- **Bootstrap:** Separate **Job** for db-init; converter waits until Postgres Ready + bootstrap success (sync-waves / wait). Prefer documented sync waves over opaque Helm hooks where possible.
-- **Why:** Matches compose one-shot semantics for deploy validation on elise; periodic refresh only where operational testing needs it (fizz).
+- **Bootstrap:** Dump download + import runs as an **init container on every converter Job/CronJob pod** (not a separate one-shot Job), so each conversion uses a freshly downloaded daily dump. Init waits for Postgres Ready, then downloads and imports.
+- **Why:** Matches compose semantics for elise (one run on deploy) and ensures fizz CronJob runs always see the latest dump.
 
 ### 3. Postgres: Zalando Postgres Operator (`acid.zalan.do/v1`)
 
 - **Choice:** Declare a `postgresql` custom resource (same pattern as `helmcharts/fairagro-datahub/templates/postgres-db.yaml`). The **cluster-wide Zalando Postgres Operator** reconciles the CR — do **not** ship a chart-owned Postgres Deployment/StatefulSet/Bitnami subchart.
 - **Why:** Operator is already installed cluster-wide on real clusters; matches existing infra (DataHUB); credentials/services follow operator conventions (e.g. `*.credentials.postgresql.acid.zalan.do`).
-- **CR content:** `teamId` (e.g. `fairagro`), volume/size/storageClass from values, users + **`databases` including `rdi`** (operator creates DB/user; bootstrap Job only loads the dump), Postgres version aligned with start-dev (15+) / cluster practice (DataHUB uses 16).
-- **Network:** Converter and db-init use the operator-managed in-cluster Service DNS and Secret-backed password env vars. API URL points at in-cluster Advanced Middleware or an external URL as configured.
+- **CR content:** `teamId` (e.g. `fairagro`), volume/size/storageClass from values, users + **`databases` including `rdi`** (operator creates DB/user; dump reload is converter init container), Postgres version aligned with start-dev (15+) / cluster practice (DataHUB uses 16).
+- **Network:** Converter uses the operator-managed in-cluster Service DNS and Secret-backed password env vars. API URL points at in-cluster Advanced Middleware or an external URL as configured.
 - **Alternative rejected:** Hand-rolled / Bitnami Postgres in the chart — duplicates what the operator already provides.
 
-### 4. Dump bootstrap: download-only (no local fallback)
+### 4. Dump bootstrap: download-only init container (every converter run)
 
-- **Choice:** Bootstrap Job downloads the dump from the configured URL (default Edaphobase FAIRagro dump) and imports it. **No** local/ConfigMap/PVC fallback SQL — unlike `compose.dev.yaml` `db-init`.
-- **On failure:** Exit non-zero and log an actionable message that includes the dump URL and states that download is required (no local fallback).
+- **Choice:** Dump download + import is an **init container** on the converter Job/CronJob pod, so every run (including each CronJob tick on fizz) refreshes `rdi` from the remote dump. **No** local/ConfigMap/PVC fallback SQL — unlike `compose.dev.yaml` `db-init`.
+- **On failure:** Init container exits non-zero and logs an actionable message that includes the dump URL and states that download is required (no local fallback); the converter container does not start.
 - **Cluster constraint:** Clusters need egress to `repo.edaphobase.org` (or the configured dump host); document this for ZALF egress policies.
-- **Size:** Edaphobase dumps can be large — do not bake the dump into the git repo; download at Job runtime only.
+- **Size:** Edaphobase dumps can be large — do not bake the dump into the git repo; download at each converter run.
 
 ### 5. Config and secrets (config.yaml + TLS mounts + password env vars)
 
@@ -106,7 +106,7 @@ Cluster roles (for scoping overlays):
 ## Migration Plan
 
 1. Land chart `fairagro-advanced-middleware-sql-to-arc` + Application template + **elise** values (secrets encrypted); optionally **fizz** with CronJob.
-2. Validate on **elise** (deployment test): Postgres Ready → bootstrap Succeeded → converter Job completes against middleware API.
+2. Validate on **elise** (deployment test): Postgres Ready → dump-init Succeeded → converter Job completes against middleware API.
 3. If/when enabling **fizz**: CronJob schedule + monitor operational runs.
 4. **draven** later (out of scope here).
 5. Rollback: disable/remove Application or pin previous revision; operator volume retain policy can keep DB for re-run.

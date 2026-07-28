@@ -15,22 +15,22 @@ The sql-to-arc chart SHALL declare a Zalando Postgres Operator resource (`apiVer
 
 ### Scenario: Converter can connect to operator-managed Postgres
 
-- **WHEN** the sql-to-arc workload starts after the operator cluster is ready and database bootstrap has completed
+- **WHEN** the sql-to-arc converter container starts after Postgres is Ready and the dump-init container has succeeded
 - **THEN** it connects using a connection string (secret via env) targeting the operator-managed Postgres `rdi` database
 
-## Requirement: Edaphobase database bootstrap
+## Requirement: Edaphobase dump reload on every converter run
 
-The chart SHALL run a bootstrap Job that loads the Edaphobase dump into the operator-provisioned `rdi` database by downloading it from the configured URL (default `https://repo.edaphobase.org/rep/dumps/FAIRagro.sql`). The Job MUST NOT use a local or pre-staged dump fallback. Creating the `rdi` database itself is the operator’s responsibility via the `postgresql` CR.
+The chart SHALL reload the Edaphobase dump on **every** converter Job/CronJob run via an init container: wait for Postgres Ready, download from the configured URL (default `https://repo.edaphobase.org/rep/dumps/FAIRagro.sql`), import into `rdi`, then start the converter. The init container MUST NOT use a local or pre-staged dump fallback. Creating the `rdi` database itself is the operator’s responsibility via the `postgresql` CR `databases:` field.
 
-### Scenario: Successful dump import
+### Scenario: Successful dump import before convert
 
-- **WHEN** Postgres is ready and the bootstrap Job runs with network access to the Edaphobase dump URL
-- **THEN** the Job imports the dump into database `rdi` and exits successfully
+- **WHEN** a converter Job/CronJob pod starts and the dump URL is reachable
+- **THEN** the dump-init container imports the dump into `rdi` and the converter container starts
 
-### Scenario: Download failure fails the Job with a clear error
+### Scenario: Download failure fails the run with a clear error
 
 - **WHEN** download of the Edaphobase dump fails (network error, non-success HTTP status, or empty/invalid response)
-- **THEN** the Job exits non-zero and logs an actionable error that names the dump URL and that no local fallback is used
+- **THEN** the init container exits non-zero, logs an actionable error that names the dump URL and that no local fallback is used, and the converter container does not start
 
 ## Requirement: Converter schedule by environment
 

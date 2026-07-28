@@ -1,5 +1,6 @@
 basic_middleware_revision: HEAD
 advanced_middleware_revision: HEAD
 advanced_middleware_harvester_revision: HEAD
+advanced_middleware_sql_to_arc_revision: HEAD
 datahub_revision: HEAD
 cluster_name: ~

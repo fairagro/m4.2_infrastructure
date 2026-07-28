@@ -1,1 +1,2 @@
 cluster_name: fizz
+advanced_middleware_sql_to_arc_revision: HEAD

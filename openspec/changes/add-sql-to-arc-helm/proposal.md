@@ -7,7 +7,7 @@
 - Add Helm chart `helmcharts/fairagro-advanced-middleware-sql-to-arc/` (and Argo CD Application wiring), parallel to `fairagro-advanced-middleware-harvester`.
 - Chart behaviour mirrors `start-dev.sh` / `compose.dev.yaml`:
   - PostgreSQL for the RDI database via the cluster-wide **Zalando Postgres Operator** (`acid.zalan.do/v1` CR; `rdi` declared in the CR)
-  - One-shot DB-init Job that downloads and loads the Edaphobase dump (no local fallback; fail with a clear error if download fails)
+  - Dump download + import as an init container on every converter Job/CronJob run (no local fallback; fail with a clear error if download fails)
   - sql-to-arc converter: **Job on elise**, **CronJob on fizz**
   - Non-secret config via `config.yaml` in a ConfigMap; client cert/key as Secret volume mounts (paths in config); passwords as env vars from Secrets
   - Prefer a **dedicated** sql-to-arc mTLS client identity (harvester identity acceptable only as interim)

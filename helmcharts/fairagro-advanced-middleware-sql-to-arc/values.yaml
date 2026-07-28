@@ -1,0 +1,94 @@
+nameOverride: ""
+fullnameOverride: ""
+
+# -- Container image for sql-to-arc converter
+image:
+  repository: zalf/fairagro-sql-to-arc
+  tag: ""
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+
+# -- Zalando Postgres Operator CR (acid.zalan.do/v1). Requires cluster-wide postgres-operator.
+# -- Declares database `rdi` owned by `postgres.user`; bootstrap Job only loads the dump.
+postgres:
+  # -- metadata.name of the postgresql CR (and Service DNS name)
+  clusterName: fairagro-postgresql-sql-to-arc
+  teamId: fairagro
+  # -- DB role that owns `rdi` (operator creates credentials Secret)
+  user: sqltoarc
+  database: rdi
+  numberOfInstances: 1
+  version: "16"
+  volume:
+    size: 50Gi
+    storageClass: ""
+  resources:
+    requests:
+      cpu: "500m"
+      memory: 1Gi
+    limits:
+      cpu: "2"
+      memory: 4Gi
+
+# -- Edaphobase dump bootstrap Job
+bootstrap:
+  enabled: true
+  dumpUrl: https://repo.edaphobase.org/rep/dumps/FAIRagro.sql
+  image: postgres:16
+  activeDeadlineSeconds: 7200
+  backoffLimit: 1
+  resources:
+    requests:
+      cpu: "100m"
+      memory: 256Mi
+    limits:
+      cpu: "1"
+      memory: 1Gi
+
+# -- Converter Job / CronJob
+converter:
+  job:
+    enabled: true
+    backoffLimit: 1
+    activeDeadlineSeconds: 14400
+  cronjob:
+    enabled: false
+    schedule: "0 3 * * 0"
+    concurrencyPolicy: Forbid
+    successfulJobsHistoryLimit: 3
+    failedJobsHistoryLimit: 3
+  resources:
+    requests:
+      cpu: "500m"
+      memory: 1Gi
+    limits:
+      cpu: "4"
+      memory: 8Gi
+
+# -- mTLS client material (PEM content from SOPS .enc.yaml overlays)
+tls:
+  enabled: true
+  mountPath: /run/secrets/tls
+  # -- Set via encrypted values: tls.clientCert / tls.clientKey
+  clientCert: ""
+  clientKey: ""
+
+# -- Non-secret sql-to-arc config.yaml (connection_string overridden at runtime via env)
+config:
+  log_level: INFO
+  rdi: edaphobase
+  rdi_url: https://edaphobase.org
+  max_concurrent_arc_builds: 4
+  # Placeholder only — SQL_TO_ARC_CONNECTION_STRING env overrides this at runtime.
+  connection_string: "postgresql+psycopg://unused:unused@localhost:5432/rdi"
+  api_client:
+    api_url: "https://middleware-dev.fairagro.net"
+    timeout: 600
+    client_cert_path: /run/secrets/tls/client.crt
+    client_key_path: /run/secrets/tls/client.key
+    verify_ssl: true
+  otel:
+    endpoint: null
+    log_console_spans: false
+    log_level: INFO

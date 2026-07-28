@@ -1,0 +1,47 @@
+# fizz — operation test: CronJob enabled
+image:
+  repository: zalf/fairagro-sql-to-arc
+  tag: latest
+  pullPolicy: IfNotPresent
+
+postgres:
+  clusterName: fairagro-postgresql-sql-to-arc
+  teamId: fairagro
+  user: sqltoarc
+  database: rdi
+  numberOfInstances: 1
+  version: "16"
+  volume:
+    size: 50Gi
+
+bootstrap:
+  enabled: true
+  dumpUrl: https://repo.edaphobase.org/rep/dumps/FAIRagro.sql
+
+converter:
+  job:
+    enabled: false
+  cronjob:
+    enabled: true
+    schedule: "0 3 * * 0"
+
+tls:
+  enabled: true
+  mountPath: /run/secrets/tls
+
+config:
+  log_level: INFO
+  rdi: edaphobase
+  rdi_url: https://edaphobase.org
+  max_concurrent_arc_builds: 4
+  connection_string: "postgresql+psycopg://unused:unused@localhost:5432/rdi"
+  api_client:
+    api_url: "https://middleware-test.fairagro.net"
+    timeout: 600
+    client_cert_path: /run/secrets/tls/client.crt
+    client_key_path: /run/secrets/tls/client.key
+    verify_ssl: true
+  otel:
+    endpoint: null
+    log_console_spans: false
+    log_level: INFO

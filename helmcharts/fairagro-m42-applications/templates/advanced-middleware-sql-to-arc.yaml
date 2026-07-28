@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: fairagro-advanced-middleware-sql-to-arc
+  namespace: fairagro-m42-applications
+spec:
+  project: fairagro-m42
+  source:
+    repoURL: https://github.com/fairagro/m4.2_infrastructure.git
+    path: helmcharts/fairagro-advanced-middleware-sql-to-arc
+    targetRevision: "{{.Values.advanced_middleware_sql_to_arc_revision}}"
+    helm:
+      valueFiles:
+        - ../../environments/{{ .Values.cluster_name }}/values/fairagro-advanced-middleware-sql-to-arc.yaml
+        - ../../environments/{{ .Values.cluster_name }}/values/fairagro-advanced-middleware-sql-to-arc.enc.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: fairagro-advanced-middleware-sql-to-arc

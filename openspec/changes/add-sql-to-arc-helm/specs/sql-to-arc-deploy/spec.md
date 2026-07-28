@@ -20,12 +20,17 @@ The sql-to-arc chart SHALL declare a Zalando Postgres Operator resource (`apiVer
 
 ## Requirement: Edaphobase dump reload on every converter run
 
-The chart SHALL reload the Edaphobase dump on **every** converter Job/CronJob run via an init container: wait for Postgres Ready, download from the configured URL (default `https://repo.edaphobase.org/rep/dumps/FAIRagro.sql`), import into `rdi`, then start the converter. The init container MUST NOT use a local or pre-staged dump fallback. Creating the `rdi` database itself is the operator’s responsibility via the `postgresql` CR `databases:` field.
+The chart SHALL reload the Edaphobase dump on **every** converter Job/CronJob run via an init container: wait for Postgres Ready, download from the configured URL (default `https://repo.edaphobase.org/rep/dumps/FAIRagro.sql`), **reset the target database schema so a prior import does not conflict**, import into `rdi`, then start the converter. The init container MUST NOT use a local or pre-staged dump fallback. Creating the `rdi` database itself is the operator’s responsibility via the `postgresql` CR `databases:` field.
 
 ### Scenario: Successful dump import before convert
 
 - **WHEN** a converter Job/CronJob pod starts and the dump URL is reachable
-- **THEN** the dump-init container imports the dump into `rdi` and the converter container starts
+- **THEN** the dump-init container resets the `rdi` schema as needed, imports the dump into `rdi`, and the converter container starts
+
+### Scenario: Re-run against an already-populated database
+
+- **WHEN** a subsequent converter Job/CronJob run imports the dump into an `rdi` database that still holds objects from a previous import
+- **THEN** the init container clears conflicting objects (e.g. drops and recreates schema `public`) before import and the import succeeds without “already exists” errors
 
 ### Scenario: Download failure fails the run with a clear error
 

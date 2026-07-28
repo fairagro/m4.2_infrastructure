@@ -96,7 +96,7 @@ Cluster roles (for scoping overlays):
 
 ## Risks / Trade-offs
 
-- **[Large dump / Job time]** Bootstrap may exceed default Job activeDeadline → set generous deadlines and resource requests; allow skip-reimport when `rdi` already loaded (operator volume persists).
+- **[Large dump / Job time]** Bootstrap may exceed default Job activeDeadline → set generous deadlines and resource requests. Each run resets `public` then re-imports (persistent operator volume must not keep stale objects).
 - **[Egress blocked to Edaphobase]** Download fails in locked-down clusters → Mitigation: fail the Job immediately with a clear log (URL + “no local fallback”); fix egress or dump URL in values — do not ship a silent alternate dump path.
 - **[mTLS / API URL mismatch]** Wrong API host or client cert → Mitigation: elise/fizz values point at the correct middleware API + dedicated (or interim harvester) client material; validate with one dry-run Job.
 - **[Operator / CR readiness]** Bootstrap must wait until the Zalando cluster is Ready and credentials Secret exists → Mitigation: sync-waves + wait-for conditions (same idea as DataHUB depending on operator).

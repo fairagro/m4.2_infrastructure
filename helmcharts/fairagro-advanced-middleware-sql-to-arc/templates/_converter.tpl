@@ -64,8 +64,18 @@ initContainers:
           exit 1
         fi
 
+        echo "Resetting database ${PGDATABASE} for a clean dump import ..."
+        # Dump uses plain CREATE (no IF NOT EXISTS); wipe public so re-runs on a
+        # persistent Zalando volume do not fail with "relation already exists".
+        psql -v ON_ERROR_STOP=1 -d "$PGDATABASE" <<'SQL'
+DROP SCHEMA IF EXISTS public CASCADE;
+CREATE SCHEMA public;
+GRANT ALL ON SCHEMA public TO CURRENT_USER;
+GRANT ALL ON SCHEMA public TO public;
+SQL
+
         echo "Importing dump into database ${PGDATABASE} ..."
-        psql -v ON_ERROR_STOP=1 -f "$DUMP_FILE"
+        psql -v ON_ERROR_STOP=1 -d "$PGDATABASE" -f "$DUMP_FILE"
         echo "Dump reload complete."
 containers:
   - name: sql-to-arc

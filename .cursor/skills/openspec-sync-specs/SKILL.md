@@ -10,7 +10,7 @@ metadata:
   generatedBy: "1.6.0"
 ---
 
-Sync delta specs from a change to main specs.
+# Sync delta specs from a change to main specs
 
 This is an **agent-driven** operation - you will read delta specs and directly edit main specs to apply the changes. This allows intelligent merging (e.g., adding a scenario without copying the entire requirement).
 
@@ -18,7 +18,7 @@ This is an **agent-driven** operation - you will read delta specs and directly e
 
 **Input**: Optionally specify a change name. If omitted, check if it can be inferred from conversation context. If vague or ambiguous you MUST prompt for available changes.
 
-**Steps**
+## Steps
 
 1. **If no change name provided, prompt for selection**
 
@@ -31,6 +31,7 @@ This is an **agent-driven** operation - you will read delta specs and directly e
 2. **Resolve change context**
 
    Run:
+
    ```bash
    openspec status --change "<name>" --json
    ```
@@ -86,7 +87,7 @@ This is an **agent-driven** operation - you will read delta specs and directly e
    - Which capabilities were updated
    - What changes were made (requirements added/modified/removed/renamed)
 
-**Delta Spec Format Reference**
+## Delta Spec Format Reference
 
 ```markdown
 ## ADDED Requirements
@@ -115,16 +116,17 @@ The system SHALL do something new.
 - TO: `### Requirement: New Name`
 ```
 
-**Key Principle: Intelligent Merging**
+## Key Principle: Intelligent Merging
 
 Unlike programmatic merging, you can apply **partial updates**:
+
 - To add a scenario, just include that scenario under MODIFIED - don't copy existing scenarios
 - The delta represents *intent*, not a wholesale replacement
 - Use your judgment to merge changes sensibly
 
-**Output On Success**
+## Output On Success
 
-```
+```markdown
 ## Specs Synced: <change-name>
 
 Updated main specs:
@@ -140,7 +142,8 @@ Updated main specs:
 Main specs are now updated. The change remains active - archive when implementation is complete.
 ```
 
-**Guardrails**
+## Guardrails
+
 - Read both delta and main specs before making changes
 - Preserve existing content not mentioned in delta
 - If something is unclear, ask for clarification

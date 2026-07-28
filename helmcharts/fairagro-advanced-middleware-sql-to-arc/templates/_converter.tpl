@@ -49,6 +49,7 @@ initContainers:
 
         DUMP_FILE=/tmp/edaphobase.sql
         echo "Downloading Edaphobase dump from ${DUMP_URL} (no local fallback) ..."
+        export DEBIAN_FRONTEND=noninteractive
         if ! (apt-get update -qq && apt-get install -y -qq --no-install-recommends wget ca-certificates >/dev/null); then
           echo "ERROR: Failed to install wget/ca-certificates in bootstrap image." >&2
           exit 1

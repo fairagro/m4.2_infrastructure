@@ -27,10 +27,10 @@ fairagro-advanced-middleware-api-chart:
       log_level: DEBUG
 
   rabbitmq:
-    image: rabbitmq:4.2.2
+    image: rabbitmq:4.3.4-alpine
 
   couchdb:
-    image: couchdb:3.3
+    image: couchdb:3.5.2.1
     persistence:
       enabled: true
       size: 5Gi
@@ -38,7 +38,7 @@ fairagro-advanced-middleware-api-chart:
   api:
     image:
       repository: zalf/fairagro-advanced-middleware-api
-      tag: 11.0.0
+      tag: 11.0.1-rc.introduce-report-lib.31
     ingress:
       enabled: true
       mtlsEnabled: true
@@ -67,7 +67,7 @@ fairagro-advanced-middleware-api-chart:
   celery:
     image:
       repository: zalf/fairagro-advanced-middleware-api
-      tag: 11.0.0
+      tag: 11.0.1-rc.introduce-report-lib.31
     worker:
       replicaCount: 2
       concurrency: 2

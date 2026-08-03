@@ -1,6 +1,6 @@
 # elise — deployment test: one-shot converter Job, no CronJob
 image:
-  tag: 1.1.0
+  tag: 1.1.1-introduce-report-lib.1
 
 converter:
   cronjob:

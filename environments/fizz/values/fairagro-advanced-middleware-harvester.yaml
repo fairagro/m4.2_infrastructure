@@ -3,7 +3,7 @@ fairagro-advanced-middleware-harvester-chart:
   schedule: "0 2 * * *"
 
   image:
-    tag: 1.4.1-rc.introduce-report-lib.34
+    tag: 1.4.1-rc.introduce-report-lib.35
 
   # =============================================================================
   # Resource requests and limits

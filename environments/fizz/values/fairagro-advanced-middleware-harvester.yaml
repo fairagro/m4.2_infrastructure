@@ -114,25 +114,22 @@ fairagro-advanced-middleware-harvester-chart:
                     <ogc:Filter>
                       <ogc:And>
                         <ogc:Or>
-                          <!-- klassische CDC-IDs -->
                           <ogc:PropertyIsLike wildCard="%" singleChar="_" escapeChar="\">
                             <ogc:PropertyName>Identifier</ogc:PropertyName>
                             <ogc:Literal>urn:x-wmo:md:de.dwd.cdc::%</ogc:Literal>
                           </ogc:PropertyIsLike>
-                          <!-- deckt urn:wmo:md:de-dwd-cdc:… und urn:wmo:md:de-dwd:… ab -->
                           <ogc:PropertyIsLike wildCard="%" singleChar="_" escapeChar="\">
                             <ogc:PropertyName>Identifier</ogc:PropertyName>
                             <ogc:Literal>urn:wmo:md:de-dwd%</ogc:Literal>
                           </ogc:PropertyIsLike>
-                          <!-- die zwei HVD-Ausreißer ohne URN-Schema -->
-                          <ogc:PropertyIsEqualTo>
+                          <ogc:PropertyIsLike wildCard="%" singleChar="_" escapeChar="\">
                             <ogc:PropertyName>Identifier</ogc:PropertyName>
-                            <ogc:Literal>de.dwd.geoserver.fach.RBSN_VPGB</ogc:Literal>
-                          </ogc:PropertyIsEqualTo>
-                          <ogc:PropertyIsEqualTo>
+                            <ogc:Literal>de.dwd.geoserver.%</ogc:Literal>
+                          </ogc:PropertyIsLike>
+                          <ogc:PropertyIsLike wildCard="%" singleChar="_" escapeChar="\">
                             <ogc:PropertyName>Identifier</ogc:PropertyName>
-                            <ogc:Literal>de.dwd.vorhersage.warnungen.geoportal</ogc:Literal>
-                          </ogc:PropertyIsEqualTo>
+                            <ogc:Literal>de.dwd.vorhersage.%</ogc:Literal>
+                          </ogc:PropertyIsLike>
                         </ogc:Or>
                         <ogc:PropertyIsEqualTo>
                           <ogc:PropertyName>Type</ogc:PropertyName>

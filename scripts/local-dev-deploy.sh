@@ -68,5 +68,5 @@ echo
 echo "Deployed."
 echo "  API ingress host: http://middleware.localtest.me:8080  (kind port-map 8080→80)"
 echo "  Trigger harvester: kubectl -n ${harvester_ns} create job --from=cronjob/\$(kubectl -n ${harvester_ns} get cronjob -o jsonpath='{.items[0].metadata.name}') harvest-\$(date +%s)"
-echo "  sql-to-arc: Postgres CR + db-init Job + converter Job in namespace ${sql_ns}"
+echo "  sql-to-arc: Postgres CR + converter Job (dump reload via init container) in namespace ${sql_ns}"
 echo "  Requires egress from the cluster to ${DUMP_URL:-https://repo.edaphobase.org/rep/dumps/FAIRagro.sql} (no local dump fallback)."

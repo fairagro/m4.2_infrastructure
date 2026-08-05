@@ -93,6 +93,12 @@ containers:
         value: "postgresql+psycopg://$(PGUSER):$(PGPASSWORD)@$(PGHOST):5432/$(PGDATABASE)"
     resources:
       {{- toYaml .Values.converter.resources | nindent 6 }}
+    # Explicit -c: do not rely solely on image CMD (matches chart/spec contract).
+    command:
+      - /middleware/sql_to_arc/sql_to_arc
+    args:
+      - -c
+      - /etc/sql_to_arc/config.yaml
     volumeMounts:
       - name: config
         mountPath: /etc/sql_to_arc

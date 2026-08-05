@@ -1,0 +1,24 @@
+# local_dev — kind: local image, no mTLS, Job only
+image:
+  repository: fairagro-sql-to-arc
+  tag: local
+
+converter:
+  job:
+    enabled: true
+
+tls:
+  enabled: false
+
+config:
+  log_level: DEBUG
+  rdi: edaphobase
+  rdi_url: https://edaphobase.org
+  max_concurrent_arc_builds: 2
+  api_client:
+    # In-cluster Service DNS (same target as local_dev harvester).
+    api_url: "http://fairagro-advanced-middleware-api.fairagro-advanced-middleware.svc.cluster.local:8000"
+    timeout: 600
+    client_cert_path: null
+    client_key_path: null
+    verify_ssl: false

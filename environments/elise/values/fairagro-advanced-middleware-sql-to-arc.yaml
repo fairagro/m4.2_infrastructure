@@ -1,0 +1,23 @@
+# elise — deployment test: one-shot converter Job, no CronJob
+image:
+  tag: 1.1.0
+
+postgres:
+  volume:
+    size: 5Gi
+
+converter:
+  job:
+    enabled: true
+
+config:
+  log_level: INFO
+  rdi: edaphobase
+  rdi_url: https://edaphobase.org
+  max_concurrent_arc_builds: 4
+  api_client:
+    api_url: "https://middleware-test.fairagro.net"
+    timeout: 600
+    client_cert_path: /run/secrets/tls/client.crt
+    client_key_path: /run/secrets/tls/client.key
+    verify_ssl: true

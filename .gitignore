@@ -7,3 +7,4 @@ elise_admin.yaml
 helmcharts/*/charts/*.tgz
 helmcharts/*/Chart.lock
 helmcharts/fairagro-advanced-middleware/Chart.yaml
+couchdb-data-*.tgz

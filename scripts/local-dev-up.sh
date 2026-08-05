@@ -49,6 +49,24 @@ echo "Waiting for ingress-nginx controller ..."
 # fails immediately with "no matching resources found" if the pod is not listed yet.
 kubectl -n ingress-nginx rollout status deployment/ingress-nginx-controller --timeout=180s
 
+# Zalando Postgres Operator (required by fairagro-advanced-middleware-sql-to-arc)
+if kubectl get crd postgresqls.acid.zalan.do >/dev/null 2>&1 \
+  && kubectl get deploy -A -l app.kubernetes.io/name=postgres-operator -o name 2>/dev/null | grep -q .; then
+  echo "postgres-operator already present."
+else
+  echo "Installing Zalando postgres-operator (Helm) ..."
+  helm repo add --force-update postgres-operator-charts https://opensource.zalando.com/postgres-operator/charts/postgres-operator >/dev/null
+  helm repo update postgres-operator-charts >/dev/null
+  # Defaults are fine for kind: Teams API off, watch all namespaces (teamId fairagro needs no team API).
+  helm upgrade --install postgres-operator postgres-operator-charts/postgres-operator \
+    --namespace postgres-operator \
+    --create-namespace \
+    --wait \
+    --timeout 5m
+  echo "Waiting for postgres-operator CRD ..."
+  kubectl wait --for=condition=Established crd/postgresqls.acid.zalan.do --timeout=120s
+fi
+
 echo
 echo "Local kind cluster is ready."
 echo "  source ${repo_root}/scripts/set_context.sh local_dev"

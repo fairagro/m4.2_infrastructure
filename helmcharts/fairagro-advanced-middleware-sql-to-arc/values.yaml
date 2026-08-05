@@ -1,0 +1,93 @@
+nameOverride: ""
+fullnameOverride: ""
+
+# -- Container image for sql-to-arc converter
+image:
+  repository: zalf/fairagro-advanced-middleware-sql_to_arc
+  tag: ""
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+
+# -- Zalando Postgres Operator CR (acid.zalan.do/v1). Requires cluster-wide postgres-operator.
+# -- Declares database `rdi` owned by `postgres.user`; dump reload is converter init container.
+postgres:
+  # -- metadata.name of the postgresql CR (and Service DNS name)
+  clusterName: fairagro-postgresql-sql-to-arc
+  teamId: fairagro
+  # -- DB role that owns `rdi` (operator creates credentials Secret)
+  user: sqltoarc
+  database: rdi
+  numberOfInstances: 1
+  version: "16"
+  volume:
+    # ~0.9Gi dump → ~1–3Gi on disk; 10Gi leaves headroom for indexes/WAL/growth
+    size: 10Gi
+    storageClass: ""
+  resources:
+    requests:
+      cpu: "500m"
+      memory: 1Gi
+    limits:
+      cpu: "2"
+      memory: 4Gi
+
+# -- Edaphobase dump reload (init container on converter Job/CronJob)
+bootstrap:
+  dumpUrl: https://repo.edaphobase.org/rep/dumps/FAIRagro.sql
+# Client tools for dump init (psql/pg_isready/wget); init script uses /bin/sh.
+  image: postgres:16-alpine
+  resources:
+    requests:
+      cpu: "100m"
+      memory: 256Mi
+    limits:
+      cpu: "1"
+      memory: 1Gi
+
+# -- Converter Job / CronJob
+converter:
+  job:
+    enabled: false
+    backoffLimit: 1
+    activeDeadlineSeconds: 14400
+  cronjob:
+    enabled: false
+    schedule: "0 3 * * 0"
+    concurrencyPolicy: Forbid
+    successfulJobsHistoryLimit: 3
+    failedJobsHistoryLimit: 3
+  resources:
+    requests:
+      cpu: "500m"
+      memory: 1Gi
+    limits:
+      cpu: "4"
+      memory: 8Gi
+
+# -- mTLS client material (PEM content from SOPS .enc.yaml overlays)
+tls:
+  enabled: true
+  mountPath: /run/secrets/tls
+  # -- Set via encrypted values: tls.clientCert / tls.clientKey
+  clientCert: ""
+  clientKey: ""
+
+# -- Non-secret sql-to-arc config.yaml.
+# -- DB URL is set as env SQL_TO_ARC_CONNECTION_STRING in the chart (K8s expands
+# -- $(PGUSER)/$(PGPASSWORD)/$(PGHOST)/$(PGDATABASE) from operator Secret + Service DNS).
+config:
+  log_level: INFO
+  rdi: edaphobase
+  rdi_url: https://edaphobase.org
+  max_concurrent_arc_builds: 4
+  api_client:
+    api_url: "https://middleware-dev.fairagro.net"
+    timeout: 600
+    client_cert_path: /run/secrets/tls/client.crt
+    client_key_path: /run/secrets/tls/client.key
+    verify_ssl: true
+  otel:
+    endpoint: null
+    log_console_spans: false
+    log_level: INFO

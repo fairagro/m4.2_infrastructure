@@ -3,7 +3,7 @@ fairagro-advanced-middleware-harvester-chart:
   schedule: "0 2 * * *"
 
   image:
-    tag: 1.4.0
+    tag: 1.4.1-rc.introduce-report-lib.35
 
   # =============================================================================
   # Resource requests and limits
@@ -109,70 +109,32 @@ fairagro-advanced-middleware-harvester-chart:
                   outputSchema="http://www.isotc211.org/2005/gmd">
 
                 <csw:Query typeNames="csw:Record">
-                  <csw:ElementSetName>summary</csw:ElementSetName>
+                  <csw:ElementSetName>full</csw:ElementSetName>
                   <csw:Constraint version="1.1.0">
                     <ogc:Filter>
                       <ogc:And>
                         <ogc:Or>
-                          <ogc:PropertyIsEqualTo>
-                            <ogc:PropertyName>OrganisationName</ogc:PropertyName>
-                            <ogc:Literal>Deutscher Wetterdienst</ogc:Literal>
-                          </ogc:PropertyIsEqualTo>
-                          <ogc:PropertyIsEqualTo>
-                            <ogc:PropertyName>OrganisationName</ogc:PropertyName>
-                            <ogc:Literal>DWD</ogc:Literal>
-                          </ogc:PropertyIsEqualTo>
-                          <ogc:PropertyIsEqualTo>
-                            <ogc:PropertyName>OrganisationName</ogc:PropertyName>
-                            <ogc:Literal>Deutscher Wetterdienst (DWD)</ogc:Literal>
-                          </ogc:PropertyIsEqualTo>
-                          <ogc:PropertyIsEqualTo>
-                            <ogc:PropertyName>OrganisationName</ogc:PropertyName>
-                            <ogc:Literal>Deutscher Wetterdienst (DWD</ogc:Literal>
-                          </ogc:PropertyIsEqualTo>
-                          <ogc:PropertyIsEqualTo>
-                            <ogc:PropertyName>OrganisationName</ogc:PropertyName>
-                            <ogc:Literal>Deutscher Wetterdienst (RD)</ogc:Literal>
-                          </ogc:PropertyIsEqualTo>
-                          <ogc:PropertyIsEqualTo>
-                            <ogc:PropertyName>OrganisationName</ogc:PropertyName>
-                            <ogc:Literal>Deutscher Wetterdienst (ZAK)</ogc:Literal>
-                          </ogc:PropertyIsEqualTo>
+                          <ogc:PropertyIsLike wildCard="%" singleChar="_" escapeChar="\">
+                            <ogc:PropertyName>Identifier</ogc:PropertyName>
+                            <ogc:Literal>urn:x-wmo:md:de.dwd.cdc::%</ogc:Literal>
+                          </ogc:PropertyIsLike>
+                          <ogc:PropertyIsLike wildCard="%" singleChar="_" escapeChar="\">
+                            <ogc:PropertyName>Identifier</ogc:PropertyName>
+                            <ogc:Literal>urn:wmo:md:de-dwd%</ogc:Literal>
+                          </ogc:PropertyIsLike>
+                          <ogc:PropertyIsLike wildCard="%" singleChar="_" escapeChar="\">
+                            <ogc:PropertyName>Identifier</ogc:PropertyName>
+                            <ogc:Literal>de.dwd.geoserver.%</ogc:Literal>
+                          </ogc:PropertyIsLike>
+                          <ogc:PropertyIsLike wildCard="%" singleChar="_" escapeChar="\">
+                            <ogc:PropertyName>Identifier</ogc:PropertyName>
+                            <ogc:Literal>de.dwd.vorhersage.%</ogc:Literal>
+                          </ogc:PropertyIsLike>
                         </ogc:Or>
                         <ogc:PropertyIsEqualTo>
                           <ogc:PropertyName>Type</ogc:PropertyName>
                           <ogc:Literal>dataset</ogc:Literal>
                         </ogc:PropertyIsEqualTo>
-                        <ogc:Or>
-                          <ogc:PropertyIsEqualTo>
-                            <ogc:PropertyName>ResponsiblePartyRole</ogc:PropertyName>
-                            <ogc:Literal>originator</ogc:Literal>
-                          </ogc:PropertyIsEqualTo>
-                          <ogc:PropertyIsEqualTo>
-                            <ogc:PropertyName>ResponsiblePartyRole</ogc:PropertyName>
-                            <ogc:Literal>pointOfContact</ogc:Literal>
-                          </ogc:PropertyIsEqualTo>
-                          <ogc:PropertyIsEqualTo>
-                            <ogc:PropertyName>ResponsiblePartyRole</ogc:PropertyName>
-                            <ogc:Literal>publisher</ogc:Literal>
-                          </ogc:PropertyIsEqualTo>
-                        </ogc:Or>
-                        <ogc:Not>
-                          <ogc:Or>
-                            <ogc:PropertyIsLike wildCard="%" singleChar="_" escapeChar="\">
-                              <ogc:PropertyName>Title</ogc:PropertyName>
-                              <ogc:Literal>%Model Output Statistics%</ogc:Literal>
-                            </ogc:PropertyIsLike>
-                            <ogc:PropertyIsLike wildCard="%" singleChar="_" escapeChar="\">
-                              <ogc:PropertyName>Title</ogc:PropertyName>
-                              <ogc:Literal>%GTS Bulletin%</ogc:Literal>
-                            </ogc:PropertyIsLike>
-                            <ogc:PropertyIsLike wildCard="%" singleChar="_" escapeChar="\">
-                              <ogc:PropertyName>Title</ogc:PropertyName>
-                              <ogc:Literal>%Meteogramm%</ogc:Literal>
-                            </ogc:PropertyIsLike>
-                          </ogc:Or>
-                        </ogc:Not>
                       </ogc:And>
                     </ogc:Filter>
                   </csw:Constraint>

@@ -49,11 +49,6 @@ initContainers:
 
         DUMP_FILE=/tmp/edaphobase.sql
         echo "Downloading Edaphobase dump from ${DUMP_URL} (no local fallback) ..."
-        export DEBIAN_FRONTEND=noninteractive
-        if ! (apt-get update -qq && apt-get install -y -qq --no-install-recommends wget ca-certificates >/dev/null); then
-          echo "ERROR: Failed to install wget/ca-certificates in bootstrap image." >&2
-          exit 1
-        fi
         if ! wget -O "$DUMP_FILE" "$DUMP_URL"; then
           echo "ERROR: Failed to download Edaphobase dump from ${DUMP_URL}." >&2
           echo "ERROR: No local dump fallback is configured; fix network egress or dumpUrl and retry." >&2

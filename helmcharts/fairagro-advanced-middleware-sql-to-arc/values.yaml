@@ -10,7 +10,7 @@ image:
 imagePullSecrets: []
 
 # -- Zalando Postgres Operator CR (acid.zalan.do/v1). Requires cluster-wide postgres-operator.
-# -- Declares database `rdi` owned by `postgres.user`; bootstrap Job only loads the dump.
+# -- Declares database `rdi` owned by `postgres.user`; dump reload is converter init container.
 postgres:
   # -- metadata.name of the postgresql CR (and Service DNS name)
   clusterName: fairagro-postgresql-sql-to-arc
@@ -32,13 +32,10 @@ postgres:
       cpu: "2"
       memory: 4Gi
 
-# -- Edaphobase dump bootstrap Job
+# -- Edaphobase dump reload (init container on converter Job/CronJob)
 bootstrap:
-  enabled: true
   dumpUrl: https://repo.edaphobase.org/rep/dumps/FAIRagro.sql
-  image: postgres:16
-  activeDeadlineSeconds: 7200
-  backoffLimit: 1
+  image: postgres:16-alpine
   resources:
     requests:
       cpu: "100m"

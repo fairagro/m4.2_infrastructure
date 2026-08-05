@@ -1,0 +1,143 @@
+fairagro-advanced-middleware-harvester-chart:
+  # -- CronJob schedule in standard cron syntax (TZ is controlled by timeZone).
+  schedule: "0 2 * * *"
+
+  image:
+    tag: 1.5.0
+
+  # =============================================================================
+  # Resource requests and limits
+  # =============================================================================
+  resources:
+    requests:
+      # -- Baseline CPU needed for a typical harvest run.
+      cpu: "100m"
+      # -- Baseline memory. The harvester buffers ARC payloads in memory.
+      memory: "256Mi"
+    limits:
+      # -- Upper CPU bound. The harvester is I/O-bound; burst headroom is sufficient.
+      cpu: "500m"
+      # -- Upper memory bound. Increase if harvesting very large catalogues.
+      memory: "1Gi"
+
+  # =============================================================================
+  # Harvester configuration — rendered as /etc/harvester/config.yaml
+  #
+  # This block is serialised to YAML verbatim and stored as a Kubernetes ConfigMap.
+  # It contains no sensitive values. Sensitive data (TLS cert content) is
+  # managed separately via the tls section below, which creates a K8s Secret.
+  # =============================================================================
+  config:
+    # -- Logging level for the harvester process.
+    # -- Allowed: DEBUG | INFO | WARNING | ERROR | CRITICAL
+    log_level: INFO
+
+    # -- OpenTelemetry / OTLP settings.
+    otel:
+      # -- OTLP HTTP collector endpoint. Set null to disable tracing export.
+      endpoint: null
+      # -- Print every span to stdout (useful for local debugging).
+      log_console_spans: false
+      # -- Minimum log level exported via OTLP.
+      log_level: INFO
+
+    # -- FAIRagro Middleware API client settings.
+    api_client:
+      # -- Base URL of the Middleware API (no trailing slash).
+      # -- Override at runtime via HARVESTER_API_CLIENT__API_URL env var.
+      api_url: "https://middleware.fairagro.net"
+      # -- Request timeout in seconds.
+      timeout: 30.0
+      # -- Maximum concurrent requests to the API.
+      max_concurrency: 10
+      # -- Retries for transient HTTP errors (5xx, connection resets).
+      max_retries: 3
+
+    # -- List of repositories to harvest. Each entry must specify exactly one
+    # -- plugin type (inspire or schema_org).
+    repositories:
+
+      - rdi: publisso
+        linked_data:
+          sitemap_url: "https://frl.publisso.de/find"
+          sitemap_type: regal_find
+          dataset_type: regal_jsonld
+          payload_type: regal_general
+          resource_base_url: "https://repository.publisso.de/resource/"
+          http:
+            respect_robots_txt: false
+
+      - rdi: bonares
+        inspire:
+          csw_url: "https://repository.dataservice.zalf.de/catalogue/csw"
+
+      - rdi: thunen_atlas
+        inspire:
+          csw_url: "https://atlas.thuenen.de/catalogue/csw"
+
+      - rdi: edal
+        schema_org:
+          sitemap_url: https://doi.ipk-gatersleben.de/sitemap.xml
+          sitemap_type: xml
+          dataset_type: html_jsonld
+          payload_type: general
+
+      - rdi: dwd
+        inspire:
+          csw_url: "https://gdk.gdi-de.org/gdi-de/srv/ger/csw"
+          # CSW-Abfrage nach DWD Datensaetzen. Die Zahl der Treffer unterscheidet sich von der
+          # Web-GUI (https://www.geoportal.de/search.html?q=Deutscher%20Wetterdienst,
+          # https://www.geoportal.de/search.html?q=DWD)
+          xml_query: |
+            <?xml version="1.0" encoding="UTF-8"?>
+            <csw:GetRecords
+                xmlns:csw="http://www.opengis.net/cat/csw/2.0.2"
+                xmlns:ogc="http://www.opengis.net/ogc"
+                service="CSW"
+                version="2.0.2"
+                resultType="results"
+                outputFormat="application/xml"
+                outputSchema="http://www.isotc211.org/2005/gmd">
+
+                <csw:Query typeNames="csw:Record">
+                  <csw:ElementSetName>full</csw:ElementSetName>
+                  <csw:Constraint version="1.1.0">
+                    <ogc:Filter>
+                      <ogc:And>
+                        <ogc:Or>
+                          <ogc:PropertyIsLike wildCard="%" singleChar="_" escapeChar="\">
+                            <ogc:PropertyName>Identifier</ogc:PropertyName>
+                            <ogc:Literal>urn:x-wmo:md:de.dwd.cdc::%</ogc:Literal>
+                          </ogc:PropertyIsLike>
+                          <ogc:PropertyIsLike wildCard="%" singleChar="_" escapeChar="\">
+                            <ogc:PropertyName>Identifier</ogc:PropertyName>
+                            <ogc:Literal>urn:wmo:md:de-dwd%</ogc:Literal>
+                          </ogc:PropertyIsLike>
+                          <ogc:PropertyIsLike wildCard="%" singleChar="_" escapeChar="\">
+                            <ogc:PropertyName>Identifier</ogc:PropertyName>
+                            <ogc:Literal>de.dwd.geoserver.%</ogc:Literal>
+                          </ogc:PropertyIsLike>
+                          <ogc:PropertyIsLike wildCard="%" singleChar="_" escapeChar="\">
+                            <ogc:PropertyName>Identifier</ogc:PropertyName>
+                            <ogc:Literal>de.dwd.vorhersage.%</ogc:Literal>
+                          </ogc:PropertyIsLike>
+                        </ogc:Or>
+                        <ogc:PropertyIsEqualTo>
+                          <ogc:PropertyName>Type</ogc:PropertyName>
+                          <ogc:Literal>dataset</ogc:Literal>
+                        </ogc:PropertyIsEqualTo>
+                      </ogc:And>
+                    </ogc:Filter>
+                  </csw:Constraint>
+                </csw:Query>
+
+            </csw:GetRecords>
+
+      # Non-Thünen datasets from the OpenAgrar portal (~775 records in the legacy harvest).
+      # - rdi: openagrar
+      #   schema_org:
+      #     sitemap_url: >-
+      #       https://www.openagrar.de/servlets/solr/select?core=main&q=category.top%3A%22mir_genres%3Aresearch_data%22+AND+objectType%3Amods+AND+category.top%3A%22state%3Apublished%22&rows=1000&fl=id&wt=json
+      #     sitemap_type: mycore_solr
+      #     dataset_type: html_jsonld
+      #     payload_type: general

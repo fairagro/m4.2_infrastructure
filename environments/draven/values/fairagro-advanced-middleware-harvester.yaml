@@ -35,7 +35,7 @@ fairagro-advanced-middleware-harvester-chart:
     # -- OpenTelemetry / OTLP settings.
     otel:
       # -- OTLP HTTP collector endpoint. Set null to disable tracing export.
-      endpoint: null
+      endpoint: http://signoz-otel-collector.monitoring.svc.draven.cluster:4318
       # -- Print every span to stdout (useful for local debugging).
       log_console_spans: false
       # -- Minimum log level exported via OTLP.
@@ -133,11 +133,10 @@ fairagro-advanced-middleware-harvester-chart:
 
             </csw:GetRecords>
 
-      # Non-Thünen datasets from the OpenAgrar portal (~775 records in the legacy harvest).
-      # - rdi: openagrar
-      #   schema_org:
-      #     sitemap_url: >-
-      #       https://www.openagrar.de/servlets/solr/select?core=main&q=category.top%3A%22mir_genres%3Aresearch_data%22+AND+objectType%3Amods+AND+category.top%3A%22state%3Apublished%22&rows=1000&fl=id&wt=json
-      #     sitemap_type: mycore_solr
-      #     dataset_type: html_jsonld
-      #     payload_type: general
+      - rdi: openagrar
+        schema_org:
+          sitemap_url: >-
+            https://www.openagrar.de/servlets/solr/select?core=main&q=category.top%3A%22mir_genres%3Aresearch_data%22+AND+objectType%3Amods+AND+category.top%3A%22state%3Apublished%22&rows=1000&fl=id&wt=json
+          sitemap_type: mycore_solr
+          dataset_type: html_jsonld
+          payload_type: general

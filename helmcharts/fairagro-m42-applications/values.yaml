@@ -1,6 +1,8 @@
+# Set a revision (e.g. HEAD) to enable the Argo Application; ~ / null disables it.
 basic_middleware_revision: HEAD
 advanced_middleware_revision: HEAD
 advanced_middleware_harvester_revision: HEAD
-advanced_middleware_sql_to_arc_revision: HEAD
+# Opt-in: enable only in envs that ship sql-to-arc value files (elise, fizz, …).
+advanced_middleware_sql_to_arc_revision: ~
 datahub_revision: HEAD
 cluster_name: ~

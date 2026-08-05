@@ -29,10 +29,10 @@ fairagro-advanced-middleware-api-chart:
         gbis: GBIS
         jki_datacube: "JKI Datacube"
         openagrar: "OpenAgrar Repository"
-        phenorob: "PhenoRob"
-        plabipd: "PLABIPD"
+        phenorob: PhenoRob
+        plabipd: PLABIPD
         publisso: Publisso
-        sradi: "SRADI"
+        sradi: SRADI
         thunen_atlas: "Thunen Atlas"
     celery: {}  # all further celery config is set via environment variables
     otel:

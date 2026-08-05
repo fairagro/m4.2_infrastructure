@@ -57,10 +57,15 @@ helm upgrade --install fairagro-advanced-middleware-harvester "$harvester_chart"
   --timeout 5m
 
 echo "Deploying fairagro-advanced-middleware-sql-to-arc ..."
+sql_helm_extra=()
+if [[ -n "${DUMP_URL:-}" ]]; then
+  sql_helm_extra+=(--set-string "bootstrap.dumpUrl=${DUMP_URL}")
+fi
 helm upgrade --install fairagro-advanced-middleware-sql-to-arc "$sql_chart" \
   --namespace "$sql_ns" \
   --create-namespace \
   -f "${env_values}/fairagro-advanced-middleware-sql-to-arc.yaml" \
+  "${sql_helm_extra[@]}" \
   --wait \
   --timeout 15m
 
@@ -69,4 +74,8 @@ echo "Deployed."
 echo "  API ingress host: http://middleware.localtest.me:8080  (kind port-map 8080→80)"
 echo "  Trigger harvester: kubectl -n ${harvester_ns} create job --from=cronjob/\$(kubectl -n ${harvester_ns} get cronjob -o jsonpath='{.items[0].metadata.name}') harvest-\$(date +%s)"
 echo "  sql-to-arc: Postgres CR + converter Job (dump reload via init container) in namespace ${sql_ns}"
-echo "  Requires egress from the cluster to ${DUMP_URL:-https://repo.edaphobase.org/rep/dumps/FAIRagro.sql} (no local dump fallback)."
+if [[ -n "${DUMP_URL:-}" ]]; then
+  echo "  Dump URL (via DUMP_URL): ${DUMP_URL} (no local dump fallback)."
+else
+  echo "  Dump URL: chart bootstrap.dumpUrl (override: DUMP_URL=... ./scripts/local-dev-deploy.sh)."
+fi

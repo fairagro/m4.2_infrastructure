@@ -35,6 +35,7 @@ postgres:
 # -- Edaphobase dump reload (init container on converter Job/CronJob)
 bootstrap:
   dumpUrl: https://repo.edaphobase.org/rep/dumps/FAIRagro.sql
+# Client tools for dump init (psql/pg_isready/wget). Official alpine image includes bash.
   image: postgres:16-alpine
   resources:
     requests:

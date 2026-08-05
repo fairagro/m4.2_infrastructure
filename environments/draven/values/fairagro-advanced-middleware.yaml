@@ -20,6 +20,20 @@ fairagro-advanced-middleware-api-chart:
       url: https://datahub.ipk-gatersleben.de
       group: FAIRagro-advanced-middleware
       max_workers: 8
+      rdi_gitlab_topics:
+        bonares: bonares
+        bonares_klib: "Bonares Knowledge Library"
+        dwd: DWD
+        edal: "e!DAL"
+        edaphobase: edaphobase
+        gbis: GBIS
+        jki_datacube: "JKI Datacube"
+        openagrar: "OpenAgrar Repository"
+        phenorob: "PhenoRob"
+        plabipd: "PLABIPD"
+        publisso: Publisso
+        sradi: "SRADI"
+        thunen_atlas: "Thunen Atlas"
     celery: {}  # all further celery config is set via environment variables
     otel:
       endpoint: http://signoz-otel-collector.monitoring.svc.draven.cluster:4318

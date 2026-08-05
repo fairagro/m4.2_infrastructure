@@ -1,5 +1,5 @@
 cluster_name: elise
-# elise is not on main yet — child apps must track the same branch as the wrapper.
+# Child apps track the default branch (HEAD), same as the wrapper on main.
 basic_middleware_revision: HEAD
 advanced_middleware_revision: HEAD
 advanced_middleware_harvester_revision: HEAD

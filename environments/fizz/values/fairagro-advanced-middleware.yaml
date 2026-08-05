@@ -1,6 +1,6 @@
 fairagro-advanced-middleware-api-chart:
   config:
-    log_level: INFO
+    log_level: DEBUG
     known_rdis:
       - bonares
       - dwd

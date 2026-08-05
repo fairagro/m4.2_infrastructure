@@ -54,7 +54,7 @@ fairagro-advanced-middleware-harvester-chart:
       max_retries: 3
 
     # -- List of repositories to harvest. Each entry must specify exactly one
-    # -- plugin type (inspire or schema_org).
+    # -- plugin type (inspire or linked_data).
     repositories:
 
       - rdi: publisso
@@ -76,11 +76,11 @@ fairagro-advanced-middleware-harvester-chart:
           csw_url: "https://atlas.thuenen.de/catalogue/csw"
 
       - rdi: edal
-        schema_org:
+        linked_data:
           sitemap_url: https://doi.ipk-gatersleben.de/sitemap.xml
           sitemap_type: xml
           dataset_type: html_jsonld
-          payload_type: general
+          payload_type: schema_org_general
 
       - rdi: dwd
         inspire:
@@ -134,9 +134,12 @@ fairagro-advanced-middleware-harvester-chart:
             </csw:GetRecords>
 
       - rdi: openagrar
-        schema_org:
+        linked_data:
           sitemap_url: >-
             https://www.openagrar.de/servlets/solr/select?core=main&q=category.top%3A%22mir_genres%3Aresearch_data%22+AND+objectType%3Amods+AND+category.top%3A%22state%3Apublished%22&rows=1000&fl=id&wt=json
           sitemap_type: mycore_solr
           dataset_type: html_jsonld
-          payload_type: general
+          payload_type: schema_org_general
+          http:
+            # OpenAgrar robots.txt Disallow: /servlets/ blocks Solr; M2M harvest needs this.
+            respect_robots_txt: false

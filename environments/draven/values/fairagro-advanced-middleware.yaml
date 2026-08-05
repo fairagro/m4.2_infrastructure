@@ -21,6 +21,7 @@ fairagro-advanced-middleware-api-chart:
       group: FAIRagro-advanced-middleware
       max_workers: 8
       rdi_gitlab_topics:
+        aeprints: "AGROECOLOGY EPrints"
         bonares: bonares
         bonares_klib: "Bonares Knowledge Library"
         dwd: DWD

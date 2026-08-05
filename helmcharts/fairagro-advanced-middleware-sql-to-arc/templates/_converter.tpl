@@ -30,10 +30,10 @@ initContainers:
     resources:
       {{- toYaml .Values.bootstrap.resources | nindent 6 }}
     command:
-      - /bin/bash
+      - /bin/sh
       - -ec
       - |
-        set -euo pipefail
+        set -eu
         echo "Waiting for Postgres at ${PGHOST}:${PGPORT} ..."
         for i in $(seq 1 90); do
           if pg_isready -h "$PGHOST" -p "$PGPORT" -U "$PGUSER" >/dev/null 2>&1; then

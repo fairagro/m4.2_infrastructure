@@ -1,6 +1,6 @@
 # fizz — scheduled converter CronJob (periodic Edaphobase → ARC runs)
 image:
-  tag: 1.1.1-introduce-report-lib.4
+  tag: 1.2.0
 
 converter:
   cronjob:
@@ -12,7 +12,7 @@ config:
   rdi_url: https://edaphobase.org
   max_concurrent_arc_builds: 4
   api_client:
-    api_url: "https://middleware-test.fairagro.net"
+    api_url: "https://middleware.fairagro.net"
     timeout: 600
     client_cert_path: /run/secrets/tls/client.crt
     client_key_path: /run/secrets/tls/client.key

@@ -1,4 +1,4 @@
-# elise — deployment test: one-shot converter Job, no CronJob
+# fizz — scheduled converter CronJob (periodic Edaphobase → ARC runs)
 image:
   tag: 1.1.1-introduce-report-lib.4
 

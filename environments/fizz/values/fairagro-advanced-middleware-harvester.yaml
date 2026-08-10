@@ -69,75 +69,77 @@ fairagro-advanced-middleware-harvester-chart:
 
       # - rdi: bonares
       #   inspire:
-      #     csw_url: "https://repository-staging.dataservice.zalf.de/catalogue/csw"
+      #     csw_url: "https://repository.dataservice.zalf.de/catalogue/csw"
 
       # - rdi: thunen_atlas
       #   inspire:
       #     csw_url: "https://atlas.thuenen.de/catalogue/csw"
 
       # - rdi: edal
-      #   schema_org:
+      #   linked_data:
       #     sitemap_url: https://doi.ipk-gatersleben.de/sitemap.xml
       #     sitemap_type: xml
       #     dataset_type: html_jsonld
-      #     payload_type: general
+      #     payload_type: schema_org_general
 
-      # Non-Thünen datasets from the OpenAgrar portal (~775 records in the legacy harvest).
-      # - rdi: openagrar
-      #   schema_org:
-      #     sitemap_url: >-
-      #       https://www.openagrar.de/servlets/solr/select?core=main&q=category.top%3A%22mir_genres%3Aresearch_data%22+AND+objectType%3Amods+AND+category.top%3A%22state%3Apublished%22&rows=1000&fl=id&wt=json
-      #     sitemap_type: mycore_solr
-      #     dataset_type: html_jsonld
-      #     payload_type: general
+      # - rdi: dwd
+      #   inspire:
+      #     csw_url: "https://gdk.gdi-de.org/gdi-de/srv/ger/csw"
+      #     # CSW-Abfrage nach DWD Datensaetzen. Die Zahl der Treffer unterscheidet sich von der
+      #     # Web-GUI (https://www.geoportal.de/search.html?q=Deutscher%20Wetterdienst,
+      #     # https://www.geoportal.de/search.html?q=DWD)
+      #     xml_query: |
+      #       <?xml version="1.0" encoding="UTF-8"?>
+      #       <csw:GetRecords
+      #           xmlns:csw="http://www.opengis.net/cat/csw/2.0.2"
+      #           xmlns:ogc="http://www.opengis.net/ogc"
+      #           service="CSW"
+      #           version="2.0.2"
+      #           resultType="results"
+      #           outputFormat="application/xml"
+      #           outputSchema="http://www.isotc211.org/2005/gmd">
 
-        - rdi: dwd
-          inspire:
-            csw_url: "https://gdk.gdi-de.org/gdi-de/srv/ger/csw"
-            # CSW-Abfrage nach DWD Datensaetzen. Die Zahl der Treffer unterscheidet sich von der
-            # Web-GUI (https://www.geoportal.de/search.html?q=Deutscher%20Wetterdienst,
-            # https://www.geoportal.de/search.html?q=DWD)
-            xml_query: |
-              <?xml version="1.0" encoding="UTF-8"?>
-              <csw:GetRecords
-                  xmlns:csw="http://www.opengis.net/cat/csw/2.0.2"
-                  xmlns:ogc="http://www.opengis.net/ogc"
-                  service="CSW"
-                  version="2.0.2"
-                  resultType="results"
-                  outputFormat="application/xml"
-                  outputSchema="http://www.isotc211.org/2005/gmd">
+      #           <csw:Query typeNames="csw:Record">
+      #             <csw:ElementSetName>full</csw:ElementSetName>
+      #             <csw:Constraint version="1.1.0">
+      #               <ogc:Filter>
+      #                 <ogc:And>
+      #                   <ogc:Or>
+      #                     <ogc:PropertyIsLike wildCard="%" singleChar="_" escapeChar="\">
+      #                       <ogc:PropertyName>Identifier</ogc:PropertyName>
+      #                       <ogc:Literal>urn:x-wmo:md:de.dwd.cdc::%</ogc:Literal>
+      #                     </ogc:PropertyIsLike>
+      #                     <ogc:PropertyIsLike wildCard="%" singleChar="_" escapeChar="\">
+      #                       <ogc:PropertyName>Identifier</ogc:PropertyName>
+      #                       <ogc:Literal>urn:wmo:md:de-dwd%</ogc:Literal>
+      #                     </ogc:PropertyIsLike>
+      #                     <ogc:PropertyIsLike wildCard="%" singleChar="_" escapeChar="\">
+      #                       <ogc:PropertyName>Identifier</ogc:PropertyName>
+      #                       <ogc:Literal>de.dwd.geoserver.%</ogc:Literal>
+      #                     </ogc:PropertyIsLike>
+      #                     <ogc:PropertyIsLike wildCard="%" singleChar="_" escapeChar="\">
+      #                       <ogc:PropertyName>Identifier</ogc:PropertyName>
+      #                       <ogc:Literal>de.dwd.vorhersage.%</ogc:Literal>
+      #                     </ogc:PropertyIsLike>
+      #                   </ogc:Or>
+      #                   <ogc:PropertyIsEqualTo>
+      #                     <ogc:PropertyName>Type</ogc:PropertyName>
+      #                     <ogc:Literal>dataset</ogc:Literal>
+      #                   </ogc:PropertyIsEqualTo>
+      #                 </ogc:And>
+      #               </ogc:Filter>
+      #             </csw:Constraint>
+      #           </csw:Query>
 
-                <csw:Query typeNames="csw:Record">
-                  <csw:ElementSetName>full</csw:ElementSetName>
-                  <csw:Constraint version="1.1.0">
-                    <ogc:Filter>
-                      <ogc:And>
-                        <ogc:Or>
-                          <ogc:PropertyIsLike wildCard="%" singleChar="_" escapeChar="\">
-                            <ogc:PropertyName>Identifier</ogc:PropertyName>
-                            <ogc:Literal>urn:x-wmo:md:de.dwd.cdc::%</ogc:Literal>
-                          </ogc:PropertyIsLike>
-                          <ogc:PropertyIsLike wildCard="%" singleChar="_" escapeChar="\">
-                            <ogc:PropertyName>Identifier</ogc:PropertyName>
-                            <ogc:Literal>urn:wmo:md:de-dwd%</ogc:Literal>
-                          </ogc:PropertyIsLike>
-                          <ogc:PropertyIsLike wildCard="%" singleChar="_" escapeChar="\">
-                            <ogc:PropertyName>Identifier</ogc:PropertyName>
-                            <ogc:Literal>de.dwd.geoserver.%</ogc:Literal>
-                          </ogc:PropertyIsLike>
-                          <ogc:PropertyIsLike wildCard="%" singleChar="_" escapeChar="\">
-                            <ogc:PropertyName>Identifier</ogc:PropertyName>
-                            <ogc:Literal>de.dwd.vorhersage.%</ogc:Literal>
-                          </ogc:PropertyIsLike>
-                        </ogc:Or>
-                        <ogc:PropertyIsEqualTo>
-                          <ogc:PropertyName>Type</ogc:PropertyName>
-                          <ogc:Literal>dataset</ogc:Literal>
-                        </ogc:PropertyIsEqualTo>
-                      </ogc:And>
-                    </ogc:Filter>
-                  </csw:Constraint>
-                </csw:Query>
+      #       </csw:GetRecords>
 
-              </csw:GetRecords>
+      - rdi: openagrar
+        linked_data:
+          sitemap_url: >-
+            https://www.openagrar.de/servlets/solr/select?core=main&q=category.top%3A%22mir_genres%3Aresearch_data%22+AND+objectType%3Amods+AND+category.top%3A%22state%3Apublished%22&rows=1000&fl=id&wt=json
+          sitemap_type: mycore_solr
+          dataset_type: html_jsonld
+          payload_type: schema_org_general
+          http:
+            # OpenAgrar robots.txt Disallow: /servlets/ blocks Solr; M2M harvest needs this.
+            respect_robots_txt: false

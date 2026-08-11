@@ -30,7 +30,7 @@ fairagro-advanced-middleware-harvester-chart:
   config:
     # -- Logging level for the harvester process.
     # -- Allowed: DEBUG | INFO | WARNING | ERROR | CRITICAL
-    log_level: DEBUG
+    log_level: INFO
 
     # -- OpenTelemetry / OTLP settings.
     otel:

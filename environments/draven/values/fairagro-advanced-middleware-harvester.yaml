@@ -3,7 +3,7 @@ fairagro-advanced-middleware-harvester-chart:
   schedule: "0 2 * * *"
 
   image:
-    tag: 1.6.0
+    tag: 1.7.0
 
   # =============================================================================
   # Resource requests and limits
@@ -69,11 +69,12 @@ fairagro-advanced-middleware-harvester-chart:
 
       - rdi: bonares
         inspire:
-          csw_url: "https://repository.dataservice.zalf.de/catalogue/csw"
+          csw_url: "https://repository.zalf.de/catalogue/csw"
 
       - rdi: thunen_atlas
         inspire:
           csw_url: "https://atlas.thuenen.de/catalogue/csw"
+          verify_ssl: false
 
       - rdi: edal
         linked_data:

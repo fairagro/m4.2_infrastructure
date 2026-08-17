@@ -2,12 +2,19 @@ fairagro-advanced-middleware-api-chart:
   config:
     log_level: INFO
     known_rdis:
+      - aeprints
       - bonares
+      - bonares_klib
       - dwd
       - edal
       - edaphobase
+      - gbis
+      - jki_datacube
       - openagrar
+      - phenorob
+      - plabipd
       - publisso
+      - sradi
       - thunen_atlas
     git_repo:
       url: https://datahub.ipk-gatersleben.de

@@ -25,13 +25,13 @@ fairagro-advanced-middleware-api-chart:
         bonares: bonares
         bonares_klib: BonaRes KLIB
         dwd: DWD
-        edal: "e!DAL"
+        edal: e!DAL
         edaphobase: edaphobase
         gbis: GBIS
         jki_datacube: JKI DataCube
         phenorob: PhenoRob
         plabipd: PlabiPD
-        openagrar: "OpenAgrar Repository"
+        openagrar: OpenAgrar Repository
         publisso: Publisso
         sradi: SRADI
         thunen_atlas: Thunen Atlas

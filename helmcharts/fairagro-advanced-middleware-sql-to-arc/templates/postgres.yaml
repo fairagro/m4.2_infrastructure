@@ -32,8 +32,7 @@ spec:
   postgresql:
     version: {{ .Values.postgres.version | quote }}
     parameters:
-      password_encryption: scram-sha-256
-      huge_pages: "off"
+      {{- toYaml .Values.postgres.parameters | nindent 6 }}
   patroni:
     initdb:
       set: huge_pages="off"

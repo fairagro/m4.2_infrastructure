@@ -3,7 +3,7 @@ fairagro-advanced-middleware-harvester-chart:
   schedule: "0 2 * * *"
 
   image:
-    tag: 2.0.2-rc.work-on-hashing-issues.39
+    tag: 2.0.2-rc.work-on-hashing-issues.40
 
   # =============================================================================
   # Resource requests and limits

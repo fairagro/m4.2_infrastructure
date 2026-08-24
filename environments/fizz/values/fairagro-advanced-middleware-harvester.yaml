@@ -67,9 +67,9 @@ fairagro-advanced-middleware-harvester-chart:
       #     http:
       #       respect_robots_txt: false
 
-      # - rdi: bonares
-      #   inspire:
-      #     csw_url: "https://repository.dataservice.zalf.de/catalogue/csw"
+      - rdi: bonares
+        inspire:
+          csw_url: "https://repository-e.dataservice.zalf.de/catalogue/csw"
 
       # - rdi: thunen_atlas
       #   inspire:

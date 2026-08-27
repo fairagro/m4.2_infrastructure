@@ -2,25 +2,28 @@ fairagro-advanced-middleware-api-chart:
   config:
     log_level: DEBUG
     known_rdis:
+      - aeprints
       - bonares
+      - bonares_klib
       - dwd
       - edal
       - edaphobase
+      - gbis
+      - jki_datacube
       - openagrar
+      - phenorob
+      - plabipd
       - publisso
+      - sradi
       - thunen_atlas
-    git_repo:
-      url: https://datahub.ipk-gatersleben.de
-      group: FAIRagro-advanced-middleware-test
-      max_workers: 4
-      rdi_gitlab_topics:
-        bonares: bonares
-        dwd: DWD
-        edal: "e!DAL"
-        edaphobase: edaphobase
-        openagrar: "OpenAgrar Repository"
-        publisso: Publisso
-        thunen_atlas: "Thunen Atlas"
+    # Consolidated catalog store: one shared GitLab repo with per-RDI JSON files.
+    # Token is supplied via fairagro-advanced-middleware.enc.yaml → arc_store.git.token
+    arc_store:
+      type: consolidated_git
+      git:
+        max_workers: 4
+      consolidated_git:
+        repo_url: https://datahub.ipk-gatersleben.de/fairagro-advanced-middleware-basic-layout/middleware_repo.git
     celery: {}  # all further celery config is set via environment variables
     otel:
       endpoint: http://signoz-otel-collector.monitoring.svc.fizz.cluster:4318
@@ -38,7 +41,7 @@ fairagro-advanced-middleware-api-chart:
   api:
     image:
       repository: zalf/fairagro-advanced-middleware-api
-      tag: 12.2.1
+      tag: 12.2.2-rc.consolidated-arc-store.39
     ingress:
       enabled: true
       mtlsEnabled: true
@@ -67,7 +70,7 @@ fairagro-advanced-middleware-api-chart:
   celery:
     image:
       repository: zalf/fairagro-advanced-middleware-api
-      tag: 12.2.1
+      tag: 12.2.2-rc.consolidated-arc-store.39
     worker:
       replicaCount: 2
       concurrency: 2

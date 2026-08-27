@@ -4,6 +4,9 @@ fairagro-advanced-middleware-api-chart:
     config:
         git_repo:
             token: ENC[AES256_GCM,data:D4XvpQ8Tt2IJAAWqy5I32p7v3Sh9qqMkqSP6tkhzMANIKpyAgu8gz0EjkEsydItkc+KGl/Q=,iv:S2J9Z2XCPGW+kEyQmjwqiellM1bzVLtjMoh8/nMc0rQ=,tag:ymMZ44Sg3sxrgsBahBJS2A==,type:str]
+        arc_store:
+            git:
+                token: ENC[AES256_GCM,data:bQYXIgWi/uXxEy3ydZu4QQIQg81A/GvgEoUDBA+pcFUMMV3BJnBtFiLF58+mBrmr6cQUoJ0=,iv:He/sgLA/iM6l8yCQzefA/TUI2C4V6lDW/JZCC9aKxbA=,tag:g4FEszkQgu0ewoD3OnRN6A==,type:str]
     rabbitmq:
         auth:
             username: ENC[AES256_GCM,data:HSGgd+qOEI6tq60OQWh1Vk5A/g==,iv:NFw9oRaGMYxpV1FUsYN6SBZ9AXupsNop0YL1ACzL+HY=,tag:AZflQ9gcQzUIHTHupbDGXg==,type:str]
@@ -30,8 +33,8 @@ sops:
             VkkxNmlsaXA5TEFVUEM3SzcvWUJCU1UKQP8khneNRx7f0yAybnEit6HprzOyDZSd
             Yz+nzxSVltc+k4J/Sy0ocog3pHRqTmnWvBtneLqpoTBv0+gEwptY4w==
             -----END AGE ENCRYPTED FILE-----
-    lastmodified: "2026-06-17T12:59:47Z"
-    mac: ENC[AES256_GCM,data:vmu/uzo53shEG4rHnWddQEyNrlXiD7VsomoKySdH2/jQVbhgU+KQkzhlv0Ow+hUMGUwbCTBok9CwZClIO1wMDjyXUk4edPfjYW/EQO0QTNDnMMDjFV82hBe1CS2BmYGn5VXZg+nfXSrzko2GNYB+gILSQu+uK2eeGnywdoQl2/I=,iv:hwnMy8wQg9ZNax4EuidEGu7jqazp8DhxUd88MLCLTF4=,tag:WANkuy36PEQeh5hEXtb3hA==,type:str]
+    lastmodified: "2026-08-27T09:32:00Z"
+    mac: ENC[AES256_GCM,data:eDoLZOpakzLqJ9mIh+T459mUV7BHiUVLMYkzs2L9Hx1aFOOxpQypTG7O7JkkcUWMdnwk8lSG2YCBUepO7F+xDBi5urH2lfXqnilwh0myHAZ6NMoJWmVlyK94PYHhy2sdiexmWPQradYr0Eayd8jwp5CiMywHBX8eMgTskqErEMU=,iv:cD1LzktAgpvh7pgoKn7PzmXB5MrQMN326ruF5+q8BFc=,tag:uW8KstWkYaTXVkoq7Kzxmw==,type:str]
     pgp:
         - created_at: "2026-06-17T12:59:06Z"
           enc: |-

@@ -16,6 +16,8 @@ fairagro-advanced-middleware-api-chart:
       - publisso
       - sradi
       - thunen_atlas
+    # Chart defaults still ship legacy git_repo; null clears it so only arc_store remains.
+    git_repo: null
     # Consolidated catalog store: one shared GitLab repo with per-RDI JSON files.
     # Token is supplied via fairagro-advanced-middleware.enc.yaml → arc_store.git.token
     arc_store:

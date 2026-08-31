@@ -38,15 +38,35 @@ fi
 # Login to argocd
 sops exec-env "${environment_path}/credentials/argocd_secrets.enc.yaml" 'argocd login $ARGOCD_SERVER --insecure --grpc-web-root-path $ARGOCD_PREFIX --username=$ARGOCD_ADMIN_USER --password=$ARGOCD_ADMIN_PASSWORD'
 
+manifest=$(mktemp)
+trap 'rm -f "$manifest"' EXIT
+
+# Multi-source: $values/ paths avoid helm-secrets path-traversal block on ../../environments/...
+cat > "$manifest" <<EOF
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: fairagro-m42-application-wrapper
+spec:
+  project: fairagro-m42
+  sources:
+    - repoURL: https://github.com/fairagro/m4.2_infrastructure.git
+      targetRevision: ${revision}
+      path: helmcharts/fairagro-m42-applications
+      helm:
+        valueFiles:
+          - \$values/environments/${environment}/values/fairagro-m42-applications.yaml
+    - repoURL: https://github.com/fairagro/m4.2_infrastructure.git
+      targetRevision: ${revision}
+      ref: values
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: fairagro-m42-applications
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+      - Prune=true
+EOF
+
 echo "Installing FAIRagro applications app on ${environment} (revision ${revision})..."
-argocd app create fairagro-m42-application-wrapper \
-    --upsert \
-    --repo "https://github.com/fairagro/m4.2_infrastructure.git" \
-    --revision "${revision}" \
-    --path "helmcharts/fairagro-m42-applications" \
-    --dest-server "https://kubernetes.default.svc" \
-    --project fairagro-m42 \
-    --dest-namespace fairagro-m42-applications \
-    --values "../../environments/${environment}/values/fairagro-m42-applications.yaml" \
-    --sync-option CreateNamespace=true \
-    --sync-option Prune=true
+argocd app create --upsert -f "$manifest"

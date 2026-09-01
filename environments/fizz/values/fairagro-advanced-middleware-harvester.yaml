@@ -3,7 +3,7 @@ fairagro-advanced-middleware-harvester-chart:
   schedule: "0 2 * * *"
 
   image:
-    tag: 3.0.2-rc.stable-rdf-resource-view.43
+    tag: 3.0.2-rc.migrate-regalmapper-onto-stabl.44
 
   # =============================================================================
   # Resource requests and limits
@@ -57,15 +57,15 @@ fairagro-advanced-middleware-harvester-chart:
     # -- plugin type (inspire or schema_org).
     repositories:
 
-      # - rdi: publisso
-      #   linked_data:
-      #     sitemap_url: "https://frl.publisso.de/find"
-      #     sitemap_type: regal_find
-      #     dataset_type: regal_jsonld
-      #     payload_type: regal_general
-      #     resource_base_url: "https://repository.publisso.de/resource/"
-      #     http:
-      #       respect_robots_txt: false
+      - rdi: publisso
+        linked_data:
+          sitemap_url: "https://frl.publisso.de/find"
+          sitemap_type: regal_find
+          dataset_type: regal_jsonld
+          payload_type: regal_general
+          resource_base_url: "https://repository.publisso.de/resource/"
+          http:
+            respect_robots_txt: false
 
       - rdi: bonares
         inspire:

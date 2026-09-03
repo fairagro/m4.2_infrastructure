@@ -3,7 +3,7 @@ fairagro-advanced-middleware-harvester-chart:
   schedule: "0 2 * * *"
 
   image:
-    tag: 3.0.2-rc.migrate-regalmapper-onto-stabl.44
+    tag: 3.0.2-rc.issue-146-linked-data-backpres.45
 
   # =============================================================================
   # Resource requests and limits

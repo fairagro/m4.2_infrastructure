@@ -59,6 +59,11 @@ postgres:
     checkpoint_completion_target: "0.9"
     wal_compression: "on"
     max_parallel_maintenance_workers: "2"
+    # Workaround: Spilo 4.0-p3 ships a buggy bg_mon that segfaults ~every 5s and
+    # kills all backends (zalf-rdm/misc#558 / zalando/spilo#1039). Drop bg_mon
+    # from the default Spilo preload list until the platform Spilo image is
+    # upgraded to >= 4.1-p1. sql-to-arc does not need bg_mon.
+    shared_preload_libraries: "pg_stat_statements,pgextwlist,pg_auth_mon,set_user,timescaledb,pg_cron,pg_stat_kcache"
 
 # -- Edaphobase dump reload (init container on converter Job/CronJob)
 bootstrap:

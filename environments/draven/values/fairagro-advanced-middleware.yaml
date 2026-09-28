@@ -2,27 +2,49 @@ fairagro-advanced-middleware-api-chart:
   config:
     log_level: INFO
     known_rdis:
+      - aeprints
       - bonares
+      - bonares_klib
       - dwd
       - edal
       - edaphobase
+      - gbis
+      - jki_datacube
       - openagrar
+      - phenorob
+      - plabipd
       - publisso
+      - sradi
       - thunen_atlas
     git_repo:
       url: https://datahub.ipk-gatersleben.de
       group: FAIRagro-advanced-middleware
       max_workers: 8
+      rdi_gitlab_topics:
+        aeprints: "AGROECOLOGY EPrints"
+        bonares: bonares
+        bonares_klib: "Bonares Knowledge Library"
+        dwd: DWD
+        edal: "e!DAL"
+        edaphobase: edaphobase
+        gbis: GBIS
+        jki_datacube: "JKI Datacube"
+        openagrar: "OpenAgrar Repository"
+        phenorob: PhenoRob
+        plabipd: PLABIPD
+        publisso: Publisso
+        sradi: SRADI
+        thunen_atlas: "Thunen Atlas"
     celery: {}  # all further celery config is set via environment variables
     otel:
       endpoint: http://signoz-otel-collector.monitoring.svc.draven.cluster:4318
       log_level: INFO
 
   rabbitmq:
-    image: rabbitmq:4.2.2
+    image: rabbitmq:4.3.4-alpine
 
   couchdb:
-    image: couchdb:3.3
+    image: couchdb:3.5.2.1
     persistence:
       enabled: true
       size: 40Gi
@@ -31,7 +53,7 @@ fairagro-advanced-middleware-api-chart:
     replicaCount: 4
     image:
       repository: zalf/fairagro-advanced-middleware-api
-      tag: 8.5.0
+      tag: 12.2.1
     ingress:
       enabled: true
       mtlsEnabled: true
@@ -60,7 +82,7 @@ fairagro-advanced-middleware-api-chart:
   celery:
     image:
       repository: zalf/fairagro-advanced-middleware-api
-      tag: 8.5.0
+      tag: 12.2.1
     worker:
       replicaCount: 4
       concurrency: 4

@@ -3,6 +3,6 @@ basic_middleware_revision: HEAD
 advanced_middleware_revision: HEAD
 advanced_middleware_harvester_revision: HEAD
 # Opt-in: enable only in envs that ship sql-to-arc value files (elise, fizz, …).
-advanced_middleware_sql_to_arc_revision: ~
+advanced_middleware_sql_to_arc_revision: HEAD
 datahub_revision: HEAD
 cluster_name: ~

@@ -67,7 +67,10 @@ initContainers:
         psql -v ON_ERROR_STOP=1 -d "$PGDATABASE" -c "DROP SCHEMA IF EXISTS public CASCADE; CREATE SCHEMA public; GRANT ALL ON SCHEMA public TO CURRENT_USER; GRANT ALL ON SCHEMA public TO public;"
 
         echo "Importing dump into database ${PGDATABASE} ..."
-        psql -v ON_ERROR_STOP=1 -d "$PGDATABASE" -f "$DUMP_FILE"
+        # Session-only: skip WAL flush waits on every COPY row. Source of truth
+        # is the dump; a crash mid-import is retried from scratch anyway.
+        PGOPTIONS="-c synchronous_commit=off -c statement_timeout=0" \
+          psql -v ON_ERROR_STOP=1 -d "$PGDATABASE" -f "$DUMP_FILE"
         echo "Dump reload complete."
 containers:
   - name: sql-to-arc

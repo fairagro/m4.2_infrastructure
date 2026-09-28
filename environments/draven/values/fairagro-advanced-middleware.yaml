@@ -16,25 +16,31 @@ fairagro-advanced-middleware-api-chart:
       - publisso
       - sradi
       - thunen_atlas
-    git_repo:
-      url: https://datahub.ipk-gatersleben.de
-      group: FAIRagro-advanced-middleware
-      max_workers: 8
-      rdi_gitlab_topics:
-        aeprints: "AGROECOLOGY EPrints"
-        bonares: bonares
-        bonares_klib: "Bonares Knowledge Library"
-        dwd: DWD
-        edal: "e!DAL"
-        edaphobase: edaphobase
-        gbis: GBIS
-        jki_datacube: "JKI Datacube"
-        openagrar: "OpenAgrar Repository"
-        phenorob: PhenoRob
-        plabipd: PLABIPD
-        publisso: Publisso
-        sradi: SRADI
-        thunen_atlas: "Thunen Atlas"
+    # git_repo:
+    #   url: https://datahub.ipk-gatersleben.de
+    #   group: FAIRagro-advanced-middleware
+    #   max_workers: 8
+    #   rdi_gitlab_topics:
+    #     aeprints: "AGROECOLOGY EPrints"
+    #     bonares: bonares
+    #     bonares_klib: "Bonares Knowledge Library"
+    #     dwd: DWD
+    #     edal: "e!DAL"
+    #     edaphobase: edaphobase
+    #     gbis: GBIS
+    #     jki_datacube: "JKI Datacube"
+    #     openagrar: "OpenAgrar Repository"
+    #     phenorob: PhenoRob
+    #     plabipd: PLABIPD
+    #     publisso: Publisso
+    #     sradi: SRADI
+    #     thunen_atlas: "Thunen Atlas"
+    arc_store:
+      type: consolidated_git
+      git:
+        max_workers: 4
+      consolidated_git:
+        repo_url: https://datahub.ipk-gatersleben.de/fairagro-advanced-middleware-basic-layout/middleware_repo.git
     celery: {}  # all further celery config is set via environment variables
     otel:
       endpoint: http://signoz-otel-collector.monitoring.svc.draven.cluster:4318
@@ -53,7 +59,7 @@ fairagro-advanced-middleware-api-chart:
     replicaCount: 4
     image:
       repository: zalf/fairagro-advanced-middleware-api
-      tag: 12.2.1
+      tag: 12.3.0
     ingress:
       enabled: true
       mtlsEnabled: true
@@ -82,7 +88,7 @@ fairagro-advanced-middleware-api-chart:
   celery:
     image:
       repository: zalf/fairagro-advanced-middleware-api
-      tag: 12.2.1
+      tag: 12.3.0
     worker:
       replicaCount: 4
       concurrency: 4

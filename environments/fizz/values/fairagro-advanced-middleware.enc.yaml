@@ -6,7 +6,7 @@ fairagro-advanced-middleware-api-chart:
         #ENC[AES256_GCM,data:xn9RvAeL/T/NcNoYEPAzG4pF9BXyrP2wa14ew0WtEaRSq9pAjDMtT+Og8TntE5GoALolMGCSSAjaznR+i4Z/Ycw=,iv:ZGzpIWjxHRRzx7Gihm41HrtKSu3Y2oWYZXRZ4//QbRM=,tag:bJ2JTaVg81j9BdLB69dQ8w==,type:comment]
         arc_store:
             git:
-                token: ENC[AES256_GCM,data:bQYXIgWi/uXxEy3ydZu4QQIQg81A/GvgEoUDBA+pcFUMMV3BJnBtFiLF58+mBrmr6cQUoJ0=,iv:He/sgLA/iM6l8yCQzefA/TUI2C4V6lDW/JZCC9aKxbA=,tag:g4FEszkQgu0ewoD3OnRN6A==,type:str]
+                token: ENC[AES256_GCM,data:niq69MMmOKHpqMofdUhHU92GxiuzTdfQoMcg8w1T1kfLXHSPXHHLzw3P/lOa5qM+I1wc5Xw=,iv:q8iiAEupIQO8SIi035rOHENzInrs/1tUrUCAJj/X+bo=,tag:WGr7cuHyLrgR0Ib0hzB2Vg==,type:str]
     rabbitmq:
         auth:
             username: ENC[AES256_GCM,data:HSGgd+qOEI6tq60OQWh1Vk5A/g==,iv:NFw9oRaGMYxpV1FUsYN6SBZ9AXupsNop0YL1ACzL+HY=,tag:AZflQ9gcQzUIHTHupbDGXg==,type:str]
@@ -33,8 +33,8 @@ sops:
             VkkxNmlsaXA5TEFVUEM3SzcvWUJCU1UKQP8khneNRx7f0yAybnEit6HprzOyDZSd
             Yz+nzxSVltc+k4J/Sy0ocog3pHRqTmnWvBtneLqpoTBv0+gEwptY4w==
             -----END AGE ENCRYPTED FILE-----
-    lastmodified: "2026-08-27T09:36:04Z"
-    mac: ENC[AES256_GCM,data:F93SHz9+f0XMN6Vkkmw9morx1jlgQZ9Mii2TiMj01wli814agGND6BLel5hLCdVq8Gl70zk9LZ3XsCxf4ZJ6m0h8Nmq7ltRdRATptAFu1LnlA9vuW3E+3tu4NwjYS0Ql18JE3OGHtC3siL94oQp8UpKjEXOj5CsxcbVWlxfC+vM=,iv:qO3GpWwz8s8S7tO7IfnnGdfauMKg8FWV+BaEuVjBbZQ=,tag:3MoUB8KFwXsCJxpEEuXLQg==,type:str]
+    lastmodified: "2026-09-28T09:32:58Z"
+    mac: ENC[AES256_GCM,data:SBMXEBg8pZ3Jh8e5cFnugZ7/aWw8ws1ha70/CMfnmWReAz1vcR6KrddI8bMKxNKQlpmTZM5k/Bp1wVRzY3VI5CCz33da7aBYlAaUvJA3GjLN/YDGWZ7YtBinJzzQQwKWjSpC98RziceJ4mDJOiU6us6dkHodLI1vbwHrQwF3554=,iv:h7AZCJrp5xiYUiO2vOgQ6E8wAlNX/yfWvXfd/2D0mcE=,tag:2snoJTNfMiXWtFadHs+kug==,type:str]
     pgp:
         - created_at: "2026-06-17T12:59:06Z"
           enc: |-

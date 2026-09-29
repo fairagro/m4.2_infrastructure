@@ -148,7 +148,7 @@ fairagro-advanced-middleware-harvester-chart:
       #   mapper:
       #     type: schema_org_general
 
-      - rdi: phenoroam
+      - rdi: phenorob
         oai_pmh:
           endpoint_url: "https://phenoroam.phenorob.de/geonetwork/srv/eng/oaipmh"
           metadata_prefix: phenoroam

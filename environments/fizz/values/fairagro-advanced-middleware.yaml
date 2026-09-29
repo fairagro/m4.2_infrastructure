@@ -64,7 +64,7 @@ fairagro-advanced-middleware-api-chart:
   api:
     image:
       repository: zalf/fairagro-advanced-middleware-api
-      tag: 12.3.1-rc.issue-517-dual-arc-store-slots.48
+      tag: 14.0.0
     ingress:
       enabled: true
       mtlsEnabled: true
@@ -93,7 +93,7 @@ fairagro-advanced-middleware-api-chart:
   celery:
     image:
       repository: zalf/fairagro-advanced-middleware-api
-      tag: 12.3.1-rc.issue-517-dual-arc-store-slots.48
+      tag: 14.0.0
     worker:
       replicaCount: 2
       concurrency: 2

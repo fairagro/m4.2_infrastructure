@@ -3,7 +3,7 @@ fairagro-advanced-middleware-harvester-chart:
   schedule: "0 2 * * *"
 
   image:
-    tag: 3.0.2-rc.issue-140-shared-payload-mappe.49
+    tag: 3.0.2-rc.issue-361-phenoroam-parser-map.50
 
   # =============================================================================
   # Resource requests and limits

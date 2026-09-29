@@ -58,20 +58,20 @@ fairagro-advanced-middleware-harvester-chart:
     # -- mapper: { type: ... } block (payload_type is deprecated).
     repositories:
 
-      - rdi: publisso
-        linked_data:
-          sitemap_url: "https://frl.publisso.de/find"
-          sitemap_type: regal_find
-          dataset_type: regal_jsonld
-          resource_base_url: "https://repository.publisso.de/resource/"
-          http:
-            respect_robots_txt: false
-        mapper:
-          type: regal_general
+      # - rdi: publisso
+      #   linked_data:
+      #     sitemap_url: "https://frl.publisso.de/find"
+      #     sitemap_type: regal_find
+      #     dataset_type: regal_jsonld
+      #     resource_base_url: "https://repository.publisso.de/resource/"
+      #     http:
+      #       respect_robots_txt: false
+      #   mapper:
+      #     type: regal_general
 
-      - rdi: bonares
-        inspire:
-          csw_url: "https://repository-e.dataservice.zalf.de/catalogue/csw"
+      # - rdi: bonares
+      #   inspire:
+      #     csw_url: "https://repository-e.dataservice.zalf.de/catalogue/csw"
 
       # - rdi: thunen_atlas
       #   inspire:
@@ -136,14 +136,23 @@ fairagro-advanced-middleware-harvester-chart:
 
       #       </csw:GetRecords>
 
-      - rdi: openagrar
-        linked_data:
-          sitemap_url: >-
-            https://www.openagrar.de/servlets/solr/select?core=main&q=category.top%3A%22mir_genres%3Aresearch_data%22+AND+objectType%3Amods+AND+category.top%3A%22state%3Apublished%22&rows=1000&fl=id&wt=json
-          sitemap_type: mycore_solr
-          dataset_type: html_jsonld
-          http:
-            # OpenAgrar robots.txt Disallow: /servlets/ blocks Solr; M2M harvest needs this.
-            respect_robots_txt: false
+      # - rdi: openagrar
+      #   linked_data:
+      #     sitemap_url: >-
+      #       https://www.openagrar.de/servlets/solr/select?core=main&q=category.top%3A%22mir_genres%3Aresearch_data%22+AND+objectType%3Amods+AND+category.top%3A%22state%3Apublished%22&rows=1000&fl=id&wt=json
+      #     sitemap_type: mycore_solr
+      #     dataset_type: html_jsonld
+      #     http:
+      #       # OpenAgrar robots.txt Disallow: /servlets/ blocks Solr; M2M harvest needs this.
+      #       respect_robots_txt: false
+      #   mapper:
+      #     type: schema_org_general
+
+      - rdi: phenoroam
+        oai_pmh:
+          endpoint_url: "https://phenoroam.phenorob.de/geonetwork/srv/eng/oaipmh"
+          metadata_prefix: phenoroam
+        parser:
+          type: phenoroam_xml
         mapper:
-          type: schema_org_general
+          type: phenoroam_general

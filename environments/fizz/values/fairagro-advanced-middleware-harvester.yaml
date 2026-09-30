@@ -3,7 +3,7 @@ fairagro-advanced-middleware-harvester-chart:
   schedule: "0 2 * * *"
 
   image:
-    tag: 3.0.2-rc.issue-143-inspire-mapper-to-pa.51
+    tag: 3.0.2-rc.issue-293-mycore-solr-generic-.52
 
   # =============================================================================
   # Resource requests and limits
@@ -59,16 +59,16 @@ fairagro-advanced-middleware-harvester-chart:
     # -- (linked_data.payload_type is deprecated).
     repositories:
 
-      # - rdi: publisso
-      #   linked_data:
-      #     sitemap_url: "https://frl.publisso.de/find"
-      #     sitemap_type: regal_find
-      #     dataset_type: regal_jsonld
-      #     resource_base_url: "https://repository.publisso.de/resource/"
-      #     http:
-      #       respect_robots_txt: false
-      #   mapper:
-      #     type: regal_general
+      - rdi: publisso
+        linked_data:
+          sitemap_url: "https://frl.publisso.de/find"
+          sitemap_type: regal_find
+          dataset_type: regal_jsonld
+          resource_base_url: "https://repository.publisso.de/resource/"
+          http:
+            respect_robots_txt: false
+        mapper:
+          type: regal_general
 
       # - rdi: bonares
       #   inspire:

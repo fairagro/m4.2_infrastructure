@@ -54,9 +54,10 @@ fairagro-advanced-middleware-harvester-chart:
       max_retries: 3
 
     # -- List of repositories to harvest. Each entry must specify exactly one
-    # -- plugin type (inspire, linked_data, …). inspire / linked_data / generic /
-    # -- oai_pmh also need a sibling mapper: { type: ... } block
-    # -- (linked_data.payload_type is deprecated).
+    # -- plugin type (inspire, linked_data, generic, oai_pmh).
+    # -- linked_data / generic / oai_pmh need sibling mapper: { type: ... }
+    # -- (and parser for generic / oai_pmh). inspire maps in-plugin — no mapper.
+    # -- linked_data.payload_type is deprecated (lifted to mapper.type).
     repositories:
 
       - rdi: publisso
@@ -73,14 +74,10 @@ fairagro-advanced-middleware-harvester-chart:
       # - rdi: bonares
       #   inspire:
       #     csw_url: "https://repository-e.dataservice.zalf.de/catalogue/csw"
-      #   mapper:
-      #     type: inspire_general
 
       # - rdi: thunen_atlas
       #   inspire:
       #     csw_url: "https://atlas.thuenen.de/catalogue/csw"
-      #   mapper:
-      #     type: inspire_general
 
       # - rdi: edal
       #   linked_data:
@@ -140,8 +137,6 @@ fairagro-advanced-middleware-harvester-chart:
                 </csw:Query>
 
             </csw:GetRecords>
-        mapper:
-          type: inspire_general
 
       # - rdi: openagrar
       #   linked_data:

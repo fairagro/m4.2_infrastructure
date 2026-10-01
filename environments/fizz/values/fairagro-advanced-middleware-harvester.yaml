@@ -62,6 +62,8 @@ fairagro-advanced-middleware-harvester-chart:
     # -- linked_data.payload_type and linked_data mycore_solr are deprecated.
     repositories:
 
+      # Keep linked_data (not generic): Regal JSON-LD needs context reload that
+      # the generic plugin does not perform yet — stay on regal_find/regal_jsonld.
       - rdi: publisso
         linked_data:
           sitemap_url: "https://frl.publisso.de/find"

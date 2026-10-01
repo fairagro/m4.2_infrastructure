@@ -3,7 +3,9 @@ fairagro-advanced-middleware-harvester-chart:
   schedule: "0 2 * * *"
 
   image:
-    tag: 3.0.2
+    # 3.1.0: DCAT-AP (sradi), pubplant_json_array (plabipd), inspire_general mapper,
+    # nested generic.protocol (mycore_solr), phenoroam OAI, linked_data mycore deprecation.
+    tag: 3.1.0
 
   # =============================================================================
   # Resource requests and limits
@@ -54,34 +56,47 @@ fairagro-advanced-middleware-harvester-chart:
       max_retries: 3
 
     # -- List of repositories to harvest. Each entry must specify exactly one
-    # -- plugin type (inspire or linked_data).
+    # -- plugin type (inspire, linked_data, generic, oai_pmh).
+    # -- inspire / linked_data / generic / oai_pmh need sibling mapper: { type: ... }
+    # -- (and parser for generic / oai_pmh). Prefer nested generic.protocol: { <type>: … }.
+    # -- linked_data.payload_type and linked_data mycore_solr are deprecated.
     repositories:
 
+      # Keep linked_data (not generic): Regal JSON-LD needs context reload that
+      # the generic plugin does not perform yet — stay on regal_find/regal_jsonld.
       - rdi: publisso
         linked_data:
           sitemap_url: "https://frl.publisso.de/find"
           sitemap_type: regal_find
           dataset_type: regal_jsonld
-          payload_type: regal_general
           resource_base_url: "https://repository.publisso.de/resource/"
           http:
             respect_robots_txt: false
+        mapper:
+          type: regal_general
 
       - rdi: bonares
         inspire:
           csw_url: "https://repository.zalf.de/catalogue/csw"
+        mapper:
+          type: inspire_general
 
       - rdi: thunen_atlas
         inspire:
           csw_url: "https://atlas.thuenen.de/catalogue/csw"
           verify_ssl: false
+        mapper:
+          type: inspire_general
 
       - rdi: edal
-        linked_data:
-          sitemap_url: https://doi.ipk-gatersleben.de/sitemap.xml
-          sitemap_type: xml
-          dataset_type: html_jsonld
-          payload_type: schema_org_general
+        generic:
+          protocol:
+            xml:
+              entry_url: https://doi.ipk-gatersleben.de/sitemap.xml
+        parser:
+          type: html_jsonld
+        mapper:
+          type: schema_org_general
 
       - rdi: dwd
         inspire:
@@ -133,14 +148,55 @@ fairagro-advanced-middleware-harvester-chart:
                 </csw:Query>
 
             </csw:GetRecords>
+        mapper:
+          type: inspire_general
 
       - rdi: openagrar
-        linked_data:
-          sitemap_url: >-
-            https://www.openagrar.de/servlets/solr/select?core=main&q=category.top%3A%22mir_genres%3Aresearch_data%22+AND+objectType%3Amods+AND+category.top%3A%22state%3Apublished%22&rows=1000&fl=id&wt=json
-          sitemap_type: mycore_solr
-          dataset_type: html_jsonld
-          payload_type: schema_org_general
-          http:
-            # OpenAgrar robots.txt Disallow: /servlets/ blocks Solr; M2M harvest needs this.
-            respect_robots_txt: false
+        # Canonical MyCoRe Solr discovery via generic (PR #385).
+        # Keep the OpenAgrar research-data filter on entry_url — defaults would be q=*:* .
+        generic:
+          protocol:
+            http:
+              # OpenAgrar robots.txt Disallow: /servlets/ blocks Solr; M2M harvest needs this.
+              respect_robots_txt: false
+            mycore_solr:
+              entry_url: >-
+                https://www.openagrar.de/servlets/solr/select?core=main&q=category.top%3A%22mir_genres%3Aresearch_data%22+AND+objectType%3Amods+AND+category.top%3A%22state%3Apublished%22&fl=id
+              page_size: 1000  # was rows=1000 on the legacy linked_data URL
+        parser:
+          type: html_jsonld
+        mapper:
+          type: schema_org_general
+
+      # SRADI — DCAT-AP / ckanext-dcat (PR #359, m4_rdi_portfolio#8)
+      - rdi: sradi
+        generic:
+          protocol:
+            dcat_ap:
+              entry_url: "https://agrihub.gis.lrg.tum.de/catalog.jsonld"
+        parser:
+          type: jsonld
+        mapper:
+          type: ckanext_dcat
+          catalog_name: "Smart Rural Areas Data Infrastructure (SRADI)"
+          catalog_url: "https://agrihub.gis.lrg.tum.de"
+
+      # PlabiPD / PubPlant genomes.json (PR #360, m4_rdi_portfolio#7)
+      - rdi: plabipd
+        generic:
+          protocol:
+            pubplant_json_array:
+              entry_url: "https://raw.githubusercontent.com/usadellab/pubplant2schemaorg/gh-pages/genomes.json"
+        parser:
+          type: jsonld
+        mapper:
+          type: schema_org_general
+
+      - rdi: phenorob
+        oai_pmh:
+          endpoint_url: "https://phenoroam.phenorob.de/geonetwork/srv/eng/oaipmh"
+          metadata_prefix: phenoroam
+        parser:
+          type: phenoroam_xml
+        mapper:
+          type: phenoroam_general

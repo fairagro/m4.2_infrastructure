@@ -3,7 +3,9 @@ fairagro-advanced-middleware-harvester-chart:
   schedule: "0 2 * * *"
 
   image:
-    tag: 3.0.2-rc.issue-293-mycore-solr-generic-.52
+    # 3.1.0: DCAT-AP (sradi), pubplant_json_array (plabipd), inspire_general mapper,
+    # nested generic.protocol (mycore_solr), phenoroam OAI, linked_data mycore deprecation.
+    tag: 3.1.0
 
   # =============================================================================
   # Resource requests and limits
@@ -55,37 +57,43 @@ fairagro-advanced-middleware-harvester-chart:
 
     # -- List of repositories to harvest. Each entry must specify exactly one
     # -- plugin type (inspire, linked_data, generic, oai_pmh).
-    # -- linked_data / generic / oai_pmh need sibling mapper: { type: ... }
-    # -- (and parser for generic / oai_pmh). inspire maps in-plugin — no mapper.
-    # -- linked_data.payload_type is deprecated (lifted to mapper.type).
+    # -- inspire / linked_data / generic / oai_pmh need sibling mapper: { type: ... }
+    # -- (and parser for generic / oai_pmh). Prefer nested generic.protocol: { <type>: … }.
+    # -- linked_data.payload_type and linked_data mycore_solr are deprecated.
     repositories:
 
-      # - rdi: publisso
-      #   linked_data:
-      #     sitemap_url: "https://frl.publisso.de/find"
-      #     sitemap_type: regal_find
-      #     dataset_type: regal_jsonld
-      #     resource_base_url: "https://repository.publisso.de/resource/"
-      #     http:
-      #       respect_robots_txt: false
-      #   mapper:
-      #     type: regal_general
+      - rdi: publisso
+        linked_data:
+          sitemap_url: "https://frl.publisso.de/find"
+          sitemap_type: regal_find
+          dataset_type: regal_jsonld
+          resource_base_url: "https://repository.publisso.de/resource/"
+          http:
+            respect_robots_txt: false
+        mapper:
+          type: regal_general
 
-      # - rdi: bonares
-      #   inspire:
-      #     csw_url: "https://repository-e.dataservice.zalf.de/catalogue/csw"
+      - rdi: bonares
+        inspire:
+          csw_url: "https://repository-e.dataservice.zalf.de/catalogue/csw"
+        mapper:
+          type: inspire_general
 
-      # - rdi: thunen_atlas
-      #   inspire:
-      #     csw_url: "https://atlas.thuenen.de/catalogue/csw"
+      - rdi: thunen_atlas
+        inspire:
+          csw_url: "https://atlas.thuenen.de/catalogue/csw"
+        mapper:
+          type: inspire_general
 
-      # - rdi: edal
-      #   linked_data:
-      #     sitemap_url: https://doi.ipk-gatersleben.de/sitemap.xml
-      #     sitemap_type: xml
-      #     dataset_type: html_jsonld
-      #   mapper:
-      #     type: schema_org_general
+      - rdi: edal
+        generic:
+          protocol:
+            xml:
+              entry_url: https://doi.ipk-gatersleben.de/sitemap.xml
+        parser:
+          type: html_jsonld
+        mapper:
+          type: schema_org_general
 
       - rdi: dwd
         inspire:
@@ -137,6 +145,8 @@ fairagro-advanced-middleware-harvester-chart:
                 </csw:Query>
 
             </csw:GetRecords>
+        mapper:
+          type: inspire_general
 
       - rdi: openagrar
         # Canonical MyCoRe Solr discovery via generic (PR #385).
@@ -152,6 +162,30 @@ fairagro-advanced-middleware-harvester-chart:
               page_size: 1000  # was rows=1000 on the legacy linked_data URL
         parser:
           type: html_jsonld
+        mapper:
+          type: schema_org_general
+
+      # SRADI — DCAT-AP / ckanext-dcat (PR #359, m4_rdi_portfolio#8)
+      - rdi: sradi
+        generic:
+          protocol:
+            dcat_ap:
+              entry_url: "https://agrihub.gis.lrg.tum.de/catalog.jsonld"
+        parser:
+          type: jsonld
+        mapper:
+          type: ckanext_dcat
+          catalog_name: "Smart Rural Areas Data Infrastructure (SRADI)"
+          catalog_url: "https://agrihub.gis.lrg.tum.de"
+
+      # PlabiPD / PubPlant genomes.json (PR #360, m4_rdi_portfolio#7)
+      - rdi: plabipd
+        generic:
+          protocol:
+            pubplant_json_array:
+              entry_url: "https://raw.githubusercontent.com/usadellab/pubplant2schemaorg/gh-pages/genomes.json"
+        parser:
+          type: jsonld
         mapper:
           type: schema_org_general
 

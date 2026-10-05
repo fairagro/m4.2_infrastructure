@@ -88,7 +88,6 @@ fairagro-advanced-middleware-harvester-chart:
       - rdi: thunen_atlas
         inspire:
           csw_url: "https://atlas.thuenen.de/catalogue/csw"
-          verify_ssl: false
         mapper:
           type: inspire_general
           # Placeholder text this RDI writes instead of leaving an optional field

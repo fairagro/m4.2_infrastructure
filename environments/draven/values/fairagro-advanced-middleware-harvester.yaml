@@ -80,6 +80,10 @@ fairagro-advanced-middleware-harvester-chart:
           csw_url: "https://repository.zalf.de/catalogue/csw"
         mapper:
           type: inspire_general
+          # Placeholder text this RDI writes instead of leaving an optional field
+          # empty; treated as absent. Nothing is dropped unless listed (harvester #413/#437).
+          placeholders:
+            values: ["None", "No information provided"]
 
       - rdi: thunen_atlas
         inspire:
@@ -87,6 +91,10 @@ fairagro-advanced-middleware-harvester-chart:
           verify_ssl: false
         mapper:
           type: inspire_general
+          # Placeholder text this RDI writes instead of leaving an optional field
+          # empty; treated as absent. Nothing is dropped unless listed (harvester #413/#437).
+          placeholders:
+            values: ["None", "No information provided"]
 
       - rdi: edal
         generic:
@@ -97,6 +105,9 @@ fairagro-advanced-middleware-harvester-chart:
           type: html_jsonld
         mapper:
           type: schema_org_general
+          # e!DAL renders an unexpanded $licenseURL template for some licences (harvester #413/#437).
+          placeholders:
+            unrendered_templates: true
 
       - rdi: dwd
         inspire:

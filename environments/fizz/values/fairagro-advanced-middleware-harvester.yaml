@@ -3,9 +3,9 @@ fairagro-advanced-middleware-harvester-chart:
   schedule: "0 2 * * *"
 
   image:
-    # 3.1.0: DCAT-AP (sradi), pubplant_json_array (plabipd), inspire_general mapper,
-    # nested generic.protocol (mycore_solr), phenoroam OAI, linked_data mycore deprecation.
-    tag: 3.1.0
+    # RC: allowed_context_url for jsonld/html_jsonld (#391); enables Publisso
+    # regal_find → generic + jsonld. Also: DCAT-AP, pubplant, inspire_general, mycore_solr.
+    tag: 3.1.1-rc.issue-391-jsonld-allowed-conte.53
 
   # =============================================================================
   # Resource requests and limits
@@ -62,16 +62,19 @@ fairagro-advanced-middleware-harvester-chart:
     # -- linked_data.payload_type and linked_data mycore_solr are deprecated.
     repositories:
 
-      # Keep linked_data (not generic): Regal JSON-LD needs context reload that
-      # the generic plugin does not perform yet — stay on regal_find/regal_jsonld.
+      # PUBLISSO FRL via Regal /find — generic + jsonld with FRL context pin (#391).
       - rdi: publisso
-        linked_data:
-          sitemap_url: "https://frl.publisso.de/find"
-          sitemap_type: regal_find
-          dataset_type: regal_jsonld
+        generic:
+          protocol:
+            http:
+              # FRL robots.txt is Disallow: /; /find is still a public machine API.
+              respect_robots_txt: false
+            regal_find:
+              entry_url: "https://frl.publisso.de/find"
           resource_base_url: "https://repository.publisso.de/resource/"
-          http:
-            respect_robots_txt: false
+        parser:
+          type: jsonld
+          allowed_context_url: "https://frl.publisso.de/context.json"
         mapper:
           type: regal_general
 
@@ -94,6 +97,8 @@ fairagro-advanced-middleware-harvester-chart:
               entry_url: https://doi.ipk-gatersleben.de/sitemap.xml
         parser:
           type: html_jsonld
+          # Live e!DAL pages use http://schema.org; http pin also accepts https.
+          allowed_context_url: "http://schema.org"
         mapper:
           type: schema_org_general
 
@@ -164,10 +169,12 @@ fairagro-advanced-middleware-harvester-chart:
               page_size: 1000  # was rows=1000 on the legacy linked_data URL
         parser:
           type: html_jsonld
+          allowed_context_url: "http://schema.org"
         mapper:
           type: schema_org_general
 
       # SRADI — DCAT-AP / ckanext-dcat (PR #359, m4_rdi_portfolio#8)
+      # Expanded DCAT-AP payloads typically have no remote @context — leave pin unset.
       - rdi: sradi
         generic:
           protocol:
@@ -188,6 +195,8 @@ fairagro-advanced-middleware-harvester-chart:
               entry_url: "https://raw.githubusercontent.com/usadellab/pubplant2schemaorg/gh-pages/genomes.json"
         parser:
           type: jsonld
+          # Exact IRI from genomes.json records (no trailing slash).
+          allowed_context_url: "http://schema.org"
         mapper:
           type: schema_org_general
 

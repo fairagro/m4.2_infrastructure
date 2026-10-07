@@ -5,7 +5,7 @@ fairagro-advanced-middleware-harvester-chart:
   image:
     # RC: allowed_context_url for jsonld/html_jsonld (#391); enables Publisso
     # regal_find → generic + jsonld. Also: DCAT-AP, pubplant, inspire_general, mycore_solr.
-    tag: 3.1.1-rc.issue-391-jsonld-allowed-conte.53
+    tag: 3.2.0
 
   # =============================================================================
   # Resource requests and limits

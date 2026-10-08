@@ -9,18 +9,22 @@ fairagro-advanced-middleware-api-chart:
       - openagrar
       - publisso
       - thunen_atlas
-    git_repo:
-      url: https://datahub-dev.ipk-gatersleben.de
-      group: FAIRagro-advanced-middleware-dev
-      max_workers: 4
+    # Nested ArcStore (issue #334): no top-level git_repo.
+    # Token: fairagro-advanced-middleware.enc.yaml → arc_store.git.token
+    arc_store:
+      git:
+        max_workers: 4
+      git_repo:
+        url: https://datahub-dev.ipk-gatersleben.de
+        group: FAIRagro-advanced-middleware-dev
     celery: {}  # all further celery config is set via environment variables
     otel: {}
 
   rabbitmq:
-    image: rabbitmq:4.2.2
+    image: rabbitmq:4.3.4-alpine
 
   couchdb:
-    image: couchdb:3.3
+    image: couchdb:3.5.2.1
     persistence:
       enabled: true
       size: 5Gi
@@ -28,7 +32,7 @@ fairagro-advanced-middleware-api-chart:
   api:
     image:
       repository: zalf/fairagro-advanced-middleware-api
-      tag: 8.7.1-rc.review-harvesting-api.11
+      tag: 14.0.1-rc.issue-258-embed-rdi-comments.49
     ingress:
       enabled: true
       mtlsEnabled: true
@@ -57,7 +61,7 @@ fairagro-advanced-middleware-api-chart:
   celery:
     image:
       repository: zalf/fairagro-advanced-middleware-api
-      tag: 8.7.1-rc.review-harvesting-api.11
+      tag: 14.0.1-rc.issue-258-embed-rdi-comments.49
     worker:
       replicaCount: 2
       concurrency: 2

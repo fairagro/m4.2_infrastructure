@@ -1,5 +1,6 @@
 # Local kind deployment values for the advanced middleware API.
-# Images are built from deps/ and loaded into kind (pullPolicy: Never).
+# Default: same published image tag as fizz. For a deps/ build, set
+# repository/tag/pullPolicy: Never as noted under api.image.
 
 # Skip cert-manager Issuer + Cloudflare secret templates in the umbrella chart
 # (templates render only when tls.key / tls.crt are unset).
@@ -18,20 +19,23 @@ fairagro-advanced-middleware-api-chart:
       - openagrar
       - publisso
       - thunen_atlas
-    git_repo:
-      # Point at a reachable Datahub when testing against real data, or keep
-      # placeholders and exercise API-only paths.
-      url: https://datahub.ipk-gatersleben.de
-      group: FAIRagro-advanced-middleware-test
-      max_workers: 2
-      rdi_gitlab_topics:
-        bonares: bonares
-        dwd: DWD
-        edal: "e!DAL"
-        edaphobase: edaphobase
-        openagrar: "OpenAgrar Repository"
-        publisso: Publisso
-        thunen_atlas: "Thunen Atlas"
+    # Nested ArcStore (issue #334): no top-level git_repo.
+    # Point at a reachable Datahub when testing against real data, or keep
+    # placeholders and exercise API-only paths. Token via env/secret if needed.
+    arc_store:
+      git:
+        max_workers: 2
+      git_repo:
+        url: https://datahub.ipk-gatersleben.de
+        group: FAIRagro-advanced-middleware-test
+        rdi_gitlab_topics:
+          bonares: bonares
+          dwd: DWD
+          edal: "e!DAL"
+          edaphobase: edaphobase
+          openagrar: "OpenAgrar Repository"
+          publisso: Publisso
+          thunen_atlas: "Thunen Atlas"
     celery: {}
     otel:
       endpoint: null
@@ -39,14 +43,14 @@ fairagro-advanced-middleware-api-chart:
     require_client_cert: false
 
   rabbitmq:
-    image: rabbitmq:4.2.2
+    image: rabbitmq:4.3.4-alpine
     auth:
       username: fairagro
       password: fairagro-local
       erlang_cookie: fairagro-local-cookie
 
   couchdb:
-    image: couchdb:3.3
+    image: couchdb:3.5.2.1
     auth:
       username: fairagro
       password: fairagro-local
@@ -56,9 +60,12 @@ fairagro-advanced-middleware-api-chart:
   api:
     replicaCount: 1
     image:
-      repository: fairagro-advanced-middleware-api
-      tag: local
-      pullPolicy: Never
+      # Same release as fizz (nested arc_store / dual-slot). Override to
+      # repository: fairagro-advanced-middleware-api / tag: local / pullPolicy: Never
+      # when loading a kind-built image from deps/.
+      repository: zalf/fairagro-advanced-middleware-api
+      tag: 14.0.1-rc.issue-258-embed-rdi-comments.49
+      pullPolicy: IfNotPresent
     ingress:
       enabled: true
       mtlsEnabled: false
@@ -74,9 +81,9 @@ fairagro-advanced-middleware-api-chart:
 
   celery:
     image:
-      repository: fairagro-advanced-middleware-api
-      tag: local
-      pullPolicy: Never
+      repository: zalf/fairagro-advanced-middleware-api
+      tag: 14.0.1-rc.issue-258-embed-rdi-comments.49
+      pullPolicy: IfNotPresent
     worker:
       replicaCount: 1
       concurrency: 1

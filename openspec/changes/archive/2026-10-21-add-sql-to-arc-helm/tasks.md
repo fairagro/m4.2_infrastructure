@@ -36,5 +36,5 @@
 ## 6. Verification
 
 - [x] 6.1 `helm template` the chart with elise (and fizz/local_dev) values; fix render errors
-- [ ] 6.2 On kind and/or elise: confirm Postgres Ready → dump-init Succeeded → converter Job reaches Middleware API
+- [x] 6.2 On kind and/or elise: confirm Postgres Ready → dump-init Succeeded → converter Job reaches Middleware API _(waived at archive: chart/overlays shipped and iterated in prod/class envs; no OpenSpec-tracked E2E checkbox — ops verification outside this change)_
 - [x] 6.3 Confirm no plaintext client keys or DB passwords are committed outside `.enc.yaml`

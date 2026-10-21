@@ -3,9 +3,10 @@ fairagro-advanced-middleware-harvester-chart:
   schedule: "0 2 * * *"
 
   image:
-    # 3.1.0: DCAT-AP (sradi), pubplant_json_array (plabipd), inspire_general mapper,
-    # nested generic.protocol (mycore_solr), phenoroam OAI, linked_data mycore deprecation.
-    tag: 3.1.0
+    # 3.2.1-rc.fizz-prerelease.55: main at f4984e9 — type-as-key config (#480; legacy
+    # mapper.type / parser.type still load with deprecation warnings), DWD
+    # individual_name_is_organisation (#489), source_url from JSON-LD identifiers (#499).
+    tag: 3.2.1-rc.fizz-prerelease.55
 
   # =============================================================================
   # Resource requests and limits
@@ -159,7 +160,10 @@ fairagro-advanced-middleware-harvester-chart:
 
             </csw:GetRecords>
         mapper:
-          type: inspire_general
+          inspire_general:
+            # DWD writes department names (RTH, KU31 ...) in individualName; treat them as
+            # organisation units, not Persons (harvester #393 / #489, infra#36).
+            individual_name_is_organisation: true
 
       - rdi: openagrar
         # Canonical MyCoRe Solr discovery via generic (PR #385).
@@ -183,7 +187,9 @@ fairagro-advanced-middleware-harvester-chart:
         generic:
           protocol:
             dcat_ap:
-              entry_url: "https://agrihub.gis.lrg.tum.de/catalog.jsonld"
+              # Only the CKAN "dataset" group: SRADI types methods, software, services,
+              # devices and projects as dcat:Dataset too (harvester #443 / #500, infra#35).
+              entry_url: "https://agrihub.gis.lrg.tum.de/catalog.jsonld?fq=groups:dataset"
         parser:
           type: jsonld
         mapper:

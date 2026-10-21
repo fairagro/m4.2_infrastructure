@@ -54,9 +54,10 @@ argocd app sync fairagro-m42-root
 argocd app get fairagro-m42-applications     # confirm targetRevision main vs *
 ```
 
-The script is idempotent (`--upsert`). If a live wrapper was created by the
-previous script version (same name/namespace), Root sync adopts the git-managed
-manifest — no manual delete is required in the normal case.
+The script is idempotent (`--upsert`). The previous script created
+`fairagro-m42-application-wrapper`; git now manages `fairagro-m42-applications`
+(same destination namespace). After Root sync, delete the legacy wrapper if both
+Applications exist — Root does **not** rename/adopt the old name.
 
 **`local_dev`** remains helm/kind-only (`./scripts/local-dev-*.sh`). It does not
 use an Argo Root for this workflow.

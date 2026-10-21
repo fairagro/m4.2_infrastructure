@@ -46,7 +46,7 @@ Cluster deploys for **fizz**, **elise**, and **draven** use Path A:
 4. CI must **not** rewrite Application YAML pins. Releases for draven are git
    tags only (see issue #42).
 
-**One-shot bootstrap** (requires SOPS access to `environments/<env>/secrets/argocd.enc.env`):
+**One-shot bootstrap** (requires SOPS access to `environments/<env>/credentials/argocd_secrets.enc.yaml`):
 
 ```bash
 ./scripts/setup_project_in_argocd.sh fizz    # or elise | draven

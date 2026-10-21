@@ -7,7 +7,8 @@
 # Usage: ./scripts/setup_project_in_argocd.sh <environment>
 #   environment: fizz | elise | draven
 #
-# Requires: argocd CLI, sops, GPG access to environments/<env>/secrets/argocd.enc.env
+# Requires: argocd CLI, sops, GPG/age access to
+#   environments/<env>/credentials/argocd_secrets.enc.yaml
 # Idempotent: safe to re-run (upsert Root + project).
 set -euo pipefail
 
@@ -32,7 +33,7 @@ case "$ENV" in
 esac
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-SECRET_FILE="$ROOT/environments/$ENV/secrets/argocd.enc.env"
+SECRET_FILE="$ROOT/environments/$ENV/credentials/argocd_secrets.enc.yaml"
 ARGOCD_DIR="$ROOT/environments/$ENV/argocd"
 
 if [[ ! -f "$SECRET_FILE" ]]; then
@@ -44,17 +45,11 @@ if [[ ! -d "$ARGOCD_DIR" ]]; then
   exit 1
 fi
 
-# shellcheck disable=SC1090
-source <(sops -d "$SECRET_FILE")
+# Login session persists for subsequent argocd commands (same as previous script).
+sops exec-env "$SECRET_FILE" \
+  'argocd login "$ARGOCD_SERVER" --insecure --grpc-web-root-path "$ARGOCD_PREFIX" --username="$ARGOCD_ADMIN_USER" --password="$ARGOCD_ADMIN_PASSWORD"'
 
-: "${ARGOCD_SERVER:?ARGOCD_SERVER missing from decrypted secrets}"
-: "${ARGOCD_USERNAME:?ARGOCD_USERNAME missing from decrypted secrets}"
-: "${ARGOCD_PASSWORD:?ARGOCD_PASSWORD missing from decrypted secrets}"
-
-export ARGOCD_SERVER
-argocd login "$ARGOCD_SERVER" --username "$ARGOCD_USERNAME" --password "$ARGOCD_PASSWORD" --grpc-web
-
-# Ensure AppProject exists (same as previous bootstrap).
+# Ensure AppProject exists (same destination/source scope as live clusters).
 argocd proj create fairagro-m42 \
   --description "FAIRagro m4.2 applications" \
   --src https://github.com/fairagro/m4.2_infrastructure.git \
@@ -62,9 +57,6 @@ argocd proj create fairagro-m42 \
   --upsert || true
 
 # Root Application: always tracks main → environments/<env>/argocd/
-# Upsert adopts an existing Root or creates a new one. After sync, Argo applies
-# the wrapper Application (fairagro-m42-applications) from git — replacing the
-# old script-created wrapper of the same name/namespace when present.
 ROOT_APP=fairagro-m42-root
 argocd app create "$ROOT_APP" \
   --project fairagro-m42 \
@@ -84,5 +76,5 @@ echo "Root Application '$ROOT_APP' upserted for env=$ENV (path=environments/${EN
 echo "Next: argocd app sync $ROOT_APP   # then confirm wrapper fairagro-m42-applications"
 echo "  fizz/elise → wrapper targetRevision=main"
 echo "  draven     → wrapper targetRevision='*'"
-echo "Migration: if a live wrapper was created by the old script, Root sync adopts"
-echo "  the same name/namespace from git (no manual delete required in normal cases)."
+echo "Migration: old script created 'fairagro-m42-application-wrapper'; git wrapper is"
+echo "  'fairagro-m42-applications'. After Root sync, delete the old wrapper if both exist."

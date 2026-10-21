@@ -1,8 +1,12 @@
-# Set a revision (e.g. HEAD) to enable the Argo Application; ~ / null disables it.
-basic_middleware_revision: HEAD
-advanced_middleware_revision: HEAD
-advanced_middleware_harvester_revision: HEAD
-# Opt-in: enable only in envs that ship sql-to-arc value files (elise, fizz, …).
-advanced_middleware_sql_to_arc_revision: HEAD
-datahub_revision: HEAD
+# Set a revision (e.g. main) to enable the Argo Application; ~ / null disables it.
+# Chart default is main (fizz-class). Production (draven) sets lock_children_to_revision: "*"
+# and non-null *_revision keys so children follow the same SemVer tag resolution as the wrapper.
+basic_middleware_revision: main
+advanced_middleware_revision: main
+advanced_middleware_harvester_revision: main
+# Opt-in: enable only in envs that ship sql-to-arc value files (elise, fizz, draven, …).
+advanced_middleware_sql_to_arc_revision: ~
+# When set (e.g. "*"), all enabled child Applications use this revision instead of
+# the string in each *_revision key. Null/empty *_revision still disables that app.
+lock_children_to_revision: ~
 cluster_name: ~

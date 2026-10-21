@@ -31,6 +31,36 @@ source ./scripts/set_context.sh local_dev
 
 Details: `environments/local_dev/README.md` and `deps/README.md`.
 
+### GitOps bootstrap (Argo CD) ###
+
+Cluster deploys for **fizz**, **elise**, and **draven** use Path A:
+
+1. A **Root** Application (`fairagro-m42-root`) always tracks `main` at
+   `environments/<env>/argocd/`.
+2. That directory holds the **wrapper** Application
+   (`fairagro-m42-applications`): fizz/elise pin `targetRevision: main`;
+   draven pins `targetRevision: '*'` (highest SemVer git tag).
+3. Child Applications come from the umbrella Helm chart; fizz-class children
+   use `main`, draven uses `lock_children_to_revision: "*"` so children share
+   the same SemVer resolution as the wrapper.
+4. CI must **not** rewrite Application YAML pins. Releases for draven are git
+   tags only (see issue #42).
+
+**One-shot bootstrap** (requires SOPS access to `environments/<env>/secrets/argocd.enc.env`):
+
+```bash
+./scripts/setup_project_in_argocd.sh fizz    # or elise | draven
+argocd app sync fairagro-m42-root
+argocd app get fairagro-m42-applications     # confirm targetRevision main vs *
+```
+
+The script is idempotent (`--upsert`). If a live wrapper was created by the
+previous script version (same name/namespace), Root sync adopts the git-managed
+manifest — no manual delete is required in the normal case.
+
+**`local_dev`** remains helm/kind-only (`./scripts/local-dev-*.sh`). It does not
+use an Argo Root for this workflow.
+
 As the project contains encrypted secrets (that are also instantiated when running the container),
 you will need to enter your personal `gpg` passphrase. This of course requires that your pgp key
 is registered within the project. If not, please ask a colleague to add your key. Any colleague

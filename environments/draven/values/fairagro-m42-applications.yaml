@@ -1,1 +1,8 @@
 cluster_name: draven
+# Children share SemVer tag resolution with the wrapper (targetRevision: '*').
+# Non-null *_revision enables the app; lock_children_to_revision supplies the pin.
+lock_children_to_revision: "*"
+basic_middleware_revision: "*"
+advanced_middleware_revision: "*"
+advanced_middleware_harvester_revision: "*"
+advanced_middleware_sql_to_arc_revision: "*"

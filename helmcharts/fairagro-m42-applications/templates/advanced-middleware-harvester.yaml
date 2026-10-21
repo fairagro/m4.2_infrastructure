@@ -1,4 +1,5 @@
 {{- if .Values.advanced_middleware_harvester_revision }}
+{{- $rev := include "fairagro-m42-applications.childRevision" (dict "root" . "key" "advanced_middleware_harvester_revision") }}
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -9,15 +10,22 @@ spec:
   sources:
     - repoURL: https://github.com/fairagro/m4.2_infrastructure.git
       path: helmcharts/fairagro-advanced-middleware-harvester
-      targetRevision: "{{.Values.advanced_middleware_harvester_revision}}"
+      targetRevision: "{{ $rev }}"
       helm:
         valueFiles:
           - $values/environments/{{ .Values.cluster_name }}/values/fairagro-advanced-middleware-harvester.yaml
           - $values/environments/{{ .Values.cluster_name }}/values/fairagro-advanced-middleware-harvester.enc.yaml
     - repoURL: https://github.com/fairagro/m4.2_infrastructure.git
-      targetRevision: "{{.Values.advanced_middleware_harvester_revision}}"
+      targetRevision: "{{ $rev }}"
       ref: values
   destination:
     server: https://kubernetes.default.svc
     namespace: fairagro-advanced-middleware-harvester
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - Prune=true
 {{- end }}

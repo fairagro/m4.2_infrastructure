@@ -1,0 +1,31 @@
+# Wrapper Application for draven (prod). Synced by the Root Application from main.
+# targetRevision: '*' — Argo resolves to the highest SemVer git tag (release track).
+# Optional: set a tagPrefix on the Application (Argo CD 2.x) if tags are namespaced, e.g. v*.
+# CI must not rewrite this pin; cut releases by tagging only (#42).
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: fairagro-m42-applications
+  namespace: fairagro-m42-applications
+spec:
+  project: fairagro-m42
+  sources:
+    - repoURL: https://github.com/fairagro/m4.2_infrastructure.git
+      path: helmcharts/fairagro-m42-applications
+      targetRevision: '*'
+      helm:
+        valueFiles:
+          - $values/environments/draven/values/fairagro-m42-applications.yaml
+    - repoURL: https://github.com/fairagro/m4.2_infrastructure.git
+      targetRevision: '*'
+      ref: values
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: fairagro-m42-applications
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - Prune=true

@@ -3,12 +3,12 @@
 ## 1. Chart scaffold
 
 - [x] 1.1 Create `helmcharts/fairagro-advanced-middleware-sql-to-arc/` with `Chart.yaml`, `values.yaml`, `.helmignore`, and helpers
-- [x] 1.2 Mirror DataHUB Zalando `postgresql` CR conventions (`teamId`, volume, users/`databases` including `rdi`, version); document dependency on cluster-wide postgres-operator
+- [x] 1.2 Mirror Zalando `postgresql` CR conventions (`teamId`, volume, users/`databases` including `rdi`, version); document dependency on cluster-wide postgres-operator
 - [x] 1.3 Add default values for image, Zalando CR sizing/storageClass, dump URL, converter config (`rdi`, `api_url`, TLS paths), Job vs CronJob toggles
 
 ## 2. Workload templates
 
-- [x] 2.1 Add `acid.zalan.do/v1` `postgresql` CR template (DataHUB pattern) with `rdi` under `databases:` / users
+- [x] 2.1 Add `acid.zalan.do/v1` `postgresql` CR template with `rdi` under `databases:` / users
 - [x] 2.2 Add dump-reload **init container** on converter Job/CronJob: wait for Postgres Ready; download and import Edaphobase dump into `rdi` on every run (clear error on failure; no local fallback); generous deadlines
 - [x] 2.3 Add converter Job + CronJob templates (values toggle); mount ConfigMap `config.yaml` via `-c`; mount client cert/key from Secret volumes; inject passwords via env vars
 - [x] 2.4 Add ConfigMap for non-secret `config.yaml`; Secret templates for TLS PEMs (volume mounts) and passwords/connection string (env vars)

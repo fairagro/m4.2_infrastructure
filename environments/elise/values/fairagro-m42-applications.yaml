@@ -1,6 +1,6 @@
 cluster_name: elise
-# Child apps track the default branch (HEAD), same as the wrapper on main.
-basic_middleware_revision: HEAD
-advanced_middleware_revision: HEAD
-advanced_middleware_harvester_revision: HEAD
-advanced_middleware_sql_to_arc_revision: HEAD
+# Explicit main pins (fizz-class); children track the default branch with the wrapper.
+basic_middleware_revision: main
+advanced_middleware_revision: main
+advanced_middleware_harvester_revision: main
+advanced_middleware_sql_to_arc_revision: main

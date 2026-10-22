@@ -31,6 +31,64 @@ source ./scripts/set_context.sh local_dev
 
 Details: `environments/local_dev/README.md` and `deps/README.md`.
 
+### GitOps bootstrap (Argo CD) ###
+
+Cluster deploys for **fizz**, **elise**, and **draven** use Path A:
+
+1. A **Root** Application (`fairagro-m42-root`) always tracks `main` at
+   `environments/<env>/argocd/`.
+2. That directory holds the **wrapper** Application
+   (`fairagro-m42-applications`): fizz/elise pin `targetRevision: main`;
+   draven pins `targetRevision: '*'` (highest SemVer git tag).
+3. Child Applications come from the umbrella Helm chart; fizz-class children
+   use `main`, draven uses `lock_children_to_revision: "*"` so children share
+   the same SemVer resolution as the wrapper.
+4. CI must **not** rewrite Application YAML pins. Releases for draven are git
+   tags only (see issue #42).
+
+#### Image pins (fizz trial vs draven promote)
+
+Image tags live **per environment overlay** (`environments/<env>/values/`), not as one
+shared “main version”:
+
+| Environment | Allowed pins | How they reach the cluster |
+|-------------|--------------|----------------------------|
+| fizz / elise | product **pre-releases** and releases | merge to `main` → Argo tracks `main` |
+| draven | product **releases only** (no `-rc` / SemVer pre-release) | promote PR on `main`, then infra SemVer **tag** → Argo `*` |
+
+An infra tag may still contain fizz/elise pre-release pins; that does **not** affect
+draven. `./scripts/check_draven_release_pins.sh` (and CI) enforce the draven-only rule.
+
+**Operator sequence** (one product change: api / harvester / sql-to-arc):
+
+1. Product: feature branch → **pre-release**
+2. Infra **fizz trial PR**: bump only `environments/fizz/values/...` `image.tag` (elise if needed) → merge → fizz auto-deploys
+3. Validate on fizz
+4. Product: merge → **prod release** (version now known)
+5. Infra **draven promote PR**: bump `environments/draven/values/...` to that prod release; optionally align fizz off `-rc` in the same or a follow-up PR
+6. Infra **release** (#42): validate-then-tag → draven follows `*`
+
+Do **not** bundle the fizz trial with the draven promote: the prod version is not known
+yet at trial time. Merging a draven promote updates `main` but the cluster stays on the
+previous tag until the release workflow cuts a new SemVer tag.
+
+**One-shot bootstrap** (requires SOPS access to `environments/<env>/credentials/argocd_secrets.enc.yaml`):
+
+```bash
+./scripts/setup_project_in_argocd.sh fizz    # or elise | draven
+argocd app sync fairagro-m42-root
+argocd app get fairagro-m42-applications     # confirm targetRevision main vs *
+./scripts/check_draven_release_pins.sh       # before cutting an infra release
+```
+
+The script is idempotent (`--upsert`). The previous script created
+`fairagro-m42-application-wrapper`; git now manages `fairagro-m42-applications`
+(same destination namespace). After Root sync, delete the legacy wrapper if both
+Applications exist — Root does **not** rename/adopt the old name.
+
+**`local_dev`** remains helm/kind-only (`./scripts/local-dev-*.sh`). It does not
+use an Argo Root for this workflow.
+
 As the project contains encrypted secrets (that are also instantiated when running the container),
 you will need to enter your personal `gpg` passphrase. This of course requires that your pgp key
 is registered within the project. If not, please ask a colleague to add your key. Any colleague

@@ -1,2 +1,6 @@
 cluster_name: fizz
-advanced_middleware_sql_to_arc_revision: HEAD
+# Explicit main pins (fizz-class); chart default is also main.
+basic_middleware_revision: main
+advanced_middleware_revision: main
+advanced_middleware_harvester_revision: main
+advanced_middleware_sql_to_arc_revision: main

@@ -1,0 +1,24 @@
+# Gate: environments/draven/values must not pin product pre-releases.
+# Used on PRs that touch draven overlays; also callable before infra SemVer tags (#42).
+name: check-draven-pins
+
+on:
+  pull_request:
+    paths:
+      - "environments/draven/values/**"
+      - "scripts/check_draven_release_pins.sh"
+      - ".github/workflows/check-draven-pins.yml"
+  workflow_dispatch:
+  # Future infra-release workflow can `workflow_call` this job or run the script directly.
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  check-draven-release-pins:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Reject pre-release image pins under environments/draven/values
+        run: ./scripts/check_draven_release_pins.sh

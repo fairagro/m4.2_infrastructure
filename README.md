@@ -33,13 +33,15 @@ Details: `environments/local_dev/README.md` and `deps/README.md`.
 
 ### GitOps bootstrap (Argo CD) ###
 
-Cluster deploys for **fizz**, **elise**, and **draven** use Path A:
+Cluster deploys for **fizz**, **elise**, and **draven** use Path A (App-of-Apps,
+**no** Root Application — avoids an extra version layer):
 
-1. A **Root** Application (`fairagro-m42-root`) always tracks `main` at
-   `environments/<env>/argocd/`.
-2. That directory holds the **wrapper** Application
+1. Checked-in **wrapper** Application under `environments/<env>/argocd/`
    (`fairagro-m42-applications`): fizz/elise pin `targetRevision: main`;
    draven pins `targetRevision: '*'` (highest SemVer git tag).
+2. Bootstrap applies that manifest once (script / `argocd app create -f`). Re-run
+   only when the wrapper YAML itself changes (rare). Workload pins live in
+   `environments/<env>/values/` (child `*_revision`, image tags).
 3. Child Applications come from the umbrella Helm chart; fizz-class children
    use `main`, draven uses `lock_children_to_revision: "*"` so children share
    the same SemVer resolution as the wrapper.
@@ -76,18 +78,18 @@ previous tag until the release workflow cuts a new SemVer tag.
 
 ```bash
 ./scripts/setup_project_in_argocd.sh fizz    # or elise | draven
-argocd app sync fairagro-m42-root
+argocd app sync fairagro-m42-applications
 argocd app get fairagro-m42-applications     # confirm targetRevision main vs *
 ./scripts/check_draven_release_pins.sh       # before cutting an infra release
 ```
 
-The script is idempotent (`--upsert`). The previous script created
-`fairagro-m42-application-wrapper`; git now manages `fairagro-m42-applications`
-(same destination namespace). After Root sync, delete the legacy wrapper if both
-Applications exist — Root does **not** rename/adopt the old name.
+The script is idempotent (`argocd app create --upsert -f …`). It applies
+`environments/<env>/argocd/fairagro-m42-applications.yaml`. If a legacy
+`fairagro-m42-application-wrapper` or an experimental `fairagro-m42-root` still
+exists, delete it after the new wrapper is healthy.
 
 **`local_dev`** remains helm/kind-only (`./scripts/local-dev-*.sh`). It does not
-use an Argo Root for this workflow.
+use Argo for this workflow.
 
 As the project contains encrypted secrets (that are also instantiated when running the container),
 you will need to enter your personal `gpg` passphrase. This of course requires that your pgp key

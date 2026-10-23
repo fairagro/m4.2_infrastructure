@@ -1,0 +1,29 @@
+# Wrapper Application for fizz (class-env). Synced by the Root Application from main.
+# targetRevision: main — every push to main auto-deploys when sync is automated.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: fairagro-m42-applications
+  namespace: fairagro-m42-applications
+spec:
+  project: fairagro-m42
+  sources:
+    - repoURL: https://github.com/fairagro/m4.2_infrastructure.git
+      path: helmcharts/fairagro-m42-applications
+      targetRevision: main
+      helm:
+        valueFiles:
+          - $values/environments/fizz/values/fairagro-m42-applications.yaml
+    - repoURL: https://github.com/fairagro/m4.2_infrastructure.git
+      targetRevision: main
+      ref: values
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: fairagro-m42-applications
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - Prune=true

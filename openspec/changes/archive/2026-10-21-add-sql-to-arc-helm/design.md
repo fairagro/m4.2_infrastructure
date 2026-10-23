@@ -53,9 +53,9 @@ Cluster roles (for scoping overlays):
 
 ### 3. Postgres: Zalando Postgres Operator (`acid.zalan.do/v1`)
 
-- **Choice:** Declare a `postgresql` custom resource (same pattern as `helmcharts/fairagro-datahub/templates/postgres-db.yaml`). The **cluster-wide Zalando Postgres Operator** reconciles the CR — do **not** ship a chart-owned Postgres Deployment/StatefulSet/Bitnami subchart.
-- **Why:** Operator is already installed cluster-wide on real clusters; matches existing infra (DataHUB); credentials/services follow operator conventions (e.g. `*.credentials.postgresql.acid.zalan.do`).
-- **CR content:** `teamId` (e.g. `fairagro`), volume/size/storageClass from values, users + **`databases` including `rdi`** (operator creates DB/user; dump reload is converter init container), Postgres version aligned with start-dev (15+) / cluster practice (DataHUB uses 16).
+- **Choice:** Declare a `postgresql` custom resource (Zalando Postgres Operator pattern). The **cluster-wide Zalando Postgres Operator** reconciles the CR — do **not** ship a chart-owned Postgres Deployment/StatefulSet/Bitnami subchart.
+- **Why:** Operator is already installed cluster-wide on real clusters; credentials/services follow operator conventions (e.g. `*.credentials.postgresql.acid.zalan.do`).
+- **CR content:** `teamId` (e.g. `fairagro`), volume/size/storageClass from values, users + **`databases` including `rdi`** (operator creates DB/user; dump reload is converter init container), Postgres version aligned with start-dev (15+) / cluster practice (16).
 - **Network:** Converter uses the operator-managed in-cluster Service DNS and Secret-backed password env vars. API URL points at in-cluster Advanced Middleware or an external URL as configured.
 - **Alternative rejected:** Hand-rolled / Bitnami Postgres in the chart — duplicates what the operator already provides.
 
@@ -99,7 +99,7 @@ Cluster roles (for scoping overlays):
 - **[Large dump / Job time]** Bootstrap may exceed default Job activeDeadline → set generous deadlines and resource requests. Each run resets `public` then re-imports (persistent operator volume must not keep stale objects).
 - **[Egress blocked to Edaphobase]** Download fails in locked-down clusters → Mitigation: fail the Job immediately with a clear log (URL + “no local fallback”); fix egress or dump URL in values — do not ship a silent alternate dump path.
 - **[mTLS / API URL mismatch]** Wrong API host or client cert → Mitigation: elise/fizz values point at the correct middleware API + dedicated (or interim harvester) client material; validate with one dry-run Job.
-- **[Operator / CR readiness]** Bootstrap must wait until the Zalando cluster is Ready and credentials Secret exists → Mitigation: sync-waves + wait-for conditions (same idea as DataHUB depending on operator).
+- **[Operator / CR readiness]** Bootstrap must wait until the Zalando cluster is Ready and credentials Secret exists → Mitigation: sync-waves + wait-for conditions.
 - **[Dual chart ownership later]** Local templates vs future OCI chart → Mitigation: keep values schema close to app config keys so an OCI swap is mostly Chart.yaml dependency change.
 - **[Argo hook ordering]** Hook Jobs can surprise sync → Mitigation: prefer explicit Job resources with documented sync waves (`argocd.argoproj.io/sync-wave`) over opaque hooks where possible.
 

@@ -20,7 +20,7 @@ context: |
   - fairagro-advanced-middleware — API umbrella → OCI api-chart (ARC ingest, CouchDB, RabbitMQ, Celery)
   - fairagro-advanced-middleware-harvester — harvest RDIs → API
   - fairagro-basic-middleware — legacy sitemap scrapers (BonaRes, e!DAL, OpenAgrar, Publisso, Thünen)
-  - fairagro-datahub — DataPLANT DataHUB
+  - fairagro-advanced-middleware-sql-to-arc — SQL dump → ARC converter (Zalando Postgres CR)
 
   Conventions:
   - Prefer editing environment values over chart defaults when change is cluster-specific
@@ -30,7 +30,7 @@ context: |
   - kubectl context via: source scripts/set_context.sh <environment>
 
   Domain: agricultural research data infrastructures (RDIs), INSPIRE/CSW, Schema.org/JSON-LD,
-  ARC packages, FAIR data middleware between RDIs and the FAIRagro Datahub.
+  ARC packages, FAIR data middleware between RDIs and ARC/git stores.
 
 rules:
   proposal:

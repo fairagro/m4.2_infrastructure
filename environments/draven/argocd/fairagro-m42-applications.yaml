@@ -1,4 +1,5 @@
-# Wrapper Application for draven (prod). Synced by the Root Application from main.
+# Wrapper Application for draven (prod). Apply via setup_project_in_argocd.sh
+# (or argocd/kubectl apply -f). No Root App — re-apply only if this file changes.
 # targetRevision: '*' — Argo resolves to the highest SemVer git tag (release track).
 # Optional: set a tagPrefix on the Application (Argo CD 2.x) if tags are namespaced, e.g. v*.
 # CI must not rewrite this pin; cut releases by tagging only (#42).

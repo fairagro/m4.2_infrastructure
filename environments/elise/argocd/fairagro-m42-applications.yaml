@@ -1,4 +1,5 @@
-# Wrapper Application for elise (class-env). Synced by the Root Application from main.
+# Wrapper Application for elise (class-env). Apply via setup_project_in_argocd.sh
+# (or argocd/kubectl apply -f). No Root App — re-apply only if this file changes.
 # targetRevision: main — every push to main auto-deploys when sync is automated.
 apiVersion: argoproj.io/v1alpha1
 kind: Application

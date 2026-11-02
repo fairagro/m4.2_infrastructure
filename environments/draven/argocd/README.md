@@ -1,4 +1,4 @@
-# Argo CD manifests — draven
+# Argo CD manifests — draven #
 
 GitOps Path A: the **wrapper** Application here uses `targetRevision: '*'` (highest
 SemVer git tag). Apply it with the bootstrap script (no Root Application).

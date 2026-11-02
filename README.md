@@ -48,7 +48,7 @@ Cluster deploys for **fizz**, **elise**, and **draven** use Path A (App-of-Apps,
 4. CI must **not** rewrite Application YAML pins. Releases for draven are git
    tags only (see issue #42).
 
-#### Image pins (fizz trial vs draven promote)
+#### Image pins (fizz trial vs draven promote) ####
 
 Image tags live **per environment overlay** (`environments/<env>/values/`), not as one
 shared “main version”:
@@ -87,7 +87,7 @@ The script is idempotent (`argocd app create --upsert -f …`). It applies
 `environments/<env>/argocd/fairagro-m42-applications.yaml`. If a legacy
 `fairagro-m42-application-wrapper` or an experimental `fairagro-m42-root` still
 exists, delete it after the new wrapper is healthy. If Root was created after
-#45 and owns the wrapper, use `--cascade=false` so the wrapper is kept:
+PR #45 and owns the wrapper, use `--cascade=false` so the wrapper is kept:
 
 ```bash
 argocd app delete fairagro-m42-root --cascade=false

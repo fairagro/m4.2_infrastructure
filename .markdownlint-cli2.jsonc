@@ -1,0 +1,31 @@
+{
+  // Single markdownlint config for VS Code (davidanson.vscode-markdownlint) and CLI
+  // (npx markdownlint-cli2 "**/*.md"). Same engine; this file is the only source of truth.
+  "config": {
+    "MD013": {
+      "line_length": 200,
+      "code_blocks": false,
+      "tables": false,
+      "headings": false
+    },
+    // README uses closed ATX (`## … ##`); OpenSpec is ignored below.
+    "MD003": {
+      "style": "atx_closed"
+    },
+    // Tables in README are readable without strict pipe alignment.
+    "MD060": false
+  },
+  "ignores": [
+    // OpenSpec-managed artifacts — schema templates start at ##; do not hand-lint for style.
+    "openspec/**",
+    ".cursor/commands/opsx-*.md",
+    ".cursor/skills/openspec-*/**",
+    ".github/prompts/opsx-*",
+    ".github/skills/openspec-*/**",
+    // Dependencies / build artifacts
+    "deps/**",
+    ".venv/**",
+    "**/node_modules/**",
+    "**/site-packages/**"
+  ]
+}

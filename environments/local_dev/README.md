@@ -1,4 +1,4 @@
-# Local kind environment for stack integration tests
+# Local kind environment for stack integration tests #
 
 Prerequisites (inside the Dev Container with DinD):
 
@@ -21,7 +21,7 @@ Context:
 source ./scripts/set_context.sh local_dev
 ```
 
-## Notes
+## Notes ##
 
 - Images are built from git submodules under `deps/` and never pushed.
 - `sql-to-arc` chart: `helmcharts/fairagro-advanced-middleware-sql-to-arc` (Zalando `postgresql` CR, converter Job with dump-reload init container). Values: `values/fairagro-advanced-middleware-sql-to-arc.yaml`.

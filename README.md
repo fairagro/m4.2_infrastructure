@@ -46,7 +46,7 @@ Cluster deploys for **fizz**, **elise**, and **draven** use Path A (App-of-Apps,
    use `main`, draven uses `lock_children_to_revision: "*"` so children share
    the same SemVer resolution as the wrapper.
 4. CI must **not** rewrite Application YAML pins. Releases for draven are git
-   tags only (see issue #42).
+   SemVer tags only (Actions workflow **release**, issue #42).
 
 #### Image pins (fizz trial vs draven promote) ####
 
@@ -68,11 +68,36 @@ draven. `./scripts/check_draven_release_pins.sh` (and CI) enforce the draven-onl
 3. Validate on fizz
 4. Product: merge → **prod release** (version now known)
 5. Infra **draven promote PR**: bump `environments/draven/values/...` to that prod release; optionally align fizz off `-rc` in the same or a follow-up PR
-6. Infra **release** (#42): validate-then-tag → draven follows `*`
+6. Infra **release** workflow on `main` (Actions → **release**): choose `version_bump`, set Soft
+   **fizz_validated**, validate-then-tag → draven follows `*`. Content rollback is **R2** (#57),
+   not this workflow; emergency pin is **R1** (#43).
 
 Do **not** bundle the fizz trial with the draven promote: the prod version is not known
 yet at trial time. Merging a draven promote updates `main` but the cluster stays on the
 previous tag until the release workflow cuts a new SemVer tag.
+
+#### Infra SemVer tags (draven) ####
+
+Cut tags only via **Actions → release** on `main` (do not push ad-hoc SemVer tags; a Ruleset
+may enforce this later). Inputs:
+
+- `version_bump`: `major` | `minor` | `patch` (default `patch`) — same manual model as product repos
+- `fizz_validated`: Soft checkbox — you validated relevant changes on fizz (honor-system; no
+  image-lineage check in this workflow)
+
+Gates before tag: Soft checkbox must be true; `./scripts/check_draven_release_pins.sh` must pass.
+The workflow does **not** rewrite Application YAML or env values.
+
+**Leitplanken** (human choice; CI does not auto-bump from commits):
+
+| Bump | When |
+|------|------|
+| `patch` | Normal case: image-pin promote, small config/docs in the tagged tree, most releases |
+| `minor` | New stack capability (new chart/child, meaningful template change, new RDI enabled on draven) |
+| `major` | Breaking for cluster ops (Values schema removal/rename, mandatory infra change) — rare |
+
+First tag when none exist: `patch`/`minor` → `0.1.0`; `major` → `1.0.0`.
+Preview locally: `./scripts/compute_next_infra_semver.sh patch` (uses existing git tags).
 
 **One-shot bootstrap** (requires SOPS access to `environments/<env>/credentials/argocd_secrets.enc.yaml`):
 
@@ -80,7 +105,8 @@ previous tag until the release workflow cuts a new SemVer tag.
 ./scripts/setup_project_in_argocd.sh fizz    # or elise | draven
 argocd app sync fairagro-m42-applications
 argocd app get fairagro-m42-applications     # confirm targetRevision main vs *
-./scripts/check_draven_release_pins.sh       # before cutting an infra release
+./scripts/check_draven_release_pins.sh       # same gate the release workflow runs
+./scripts/compute_next_infra_semver.sh patch # preview next infra SemVer tag
 ```
 
 The script is idempotent (`argocd app create --upsert -f …`). It applies

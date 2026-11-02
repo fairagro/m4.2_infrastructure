@@ -1,0 +1,103 @@
+# Infra SemVer release for draven (Argo targetRevision: '*').
+# Thin MVP (#42): manual bump + Soft fizz checkbox + draven pin gate → tag + GitHub Release.
+# Does not rewrite Application YAML or env values (golden rule).
+name: release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version_bump:
+        description: Version bump type (only allowed on main)
+        required: true
+        default: patch
+        type: choice
+        options:
+          - major
+          - minor
+          - patch
+      fizz_validated:
+        description: Soft attestation — relevant product changes were validated on fizz
+        required: true
+        type: boolean
+        default: false
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Validate then tag
+    runs-on: ubuntu-latest
+    steps:
+      - name: Assert main branch
+        run: |
+          if [[ "${{ github.ref_name }}" != "main" ]]; then
+            echo "::error::The Release workflow can only be triggered from the 'main' branch."
+            exit 1
+          fi
+
+      - name: Assert Soft fizz attestation
+        run: |
+          if [[ "${{ inputs.fizz_validated }}" != "true" ]]; then
+            echo "::error::Soft fizz attestation required: set 'fizz_validated' to true after validating on fizz."
+            exit 1
+          fi
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+
+      - name: Reject pre-release image pins under environments/draven/values
+        run: ./scripts/check_draven_release_pins.sh
+
+      - name: Compute next SemVer
+        id: version
+        run: |
+          next="$(./scripts/compute_next_infra_semver.sh "${{ inputs.version_bump }}")"
+          echo "version=${next}" >> "$GITHUB_OUTPUT"
+          # Prior plain SemVer tag (if any) for compare URL / notes
+          prior="$(git tag -l --sort=-v:refname | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | head -n1 || true)"
+          echo "prior=${prior}" >> "$GITHUB_OUTPUT"
+          echo "Next version: ${next} (bump=${{ inputs.version_bump }}, prior=${prior:-none})"
+
+      - name: Create annotated tag and GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.version.outputs.version }}
+          PRIOR: ${{ steps.version.outputs.prior }}
+          BUMP: ${{ inputs.version_bump }}
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git tag -a "${VERSION}" -m "infra release ${VERSION} (${BUMP})"
+          git push origin "refs/tags/${VERSION}"
+
+          notes_file="$(mktemp)"
+          {
+            echo "## Infra release \`${VERSION}\`"
+            echo
+            echo "- **Bump:** \`${BUMP}\`"
+            echo "- **Soft fizz attestation:** operator confirmed relevant changes were validated on fizz (honor-system; no lineage check)."
+            echo "- **Draven pins:** \`scripts/check_draven_release_pins.sh\` passed on this commit."
+            echo "- **Commit:** \`${GITHUB_SHA}\`"
+            echo
+            echo "Tags SHOULD be created only via this workflow (Ruleset enforcement may follow)."
+            echo "Rollback of tag content is R2 (#57), not this workflow; emergency pin is R1 (#43)."
+            if [[ -n "${PRIOR}" ]]; then
+              echo
+              echo "Compare: https://github.com/${GITHUB_REPOSITORY}/compare/${PRIOR}...${VERSION}"
+            fi
+          } >"${notes_file}"
+
+          gh release create "${VERSION}" \
+            --title "infra ${VERSION}" \
+            --notes-file "${notes_file}" \
+            --target "${GITHUB_SHA}"

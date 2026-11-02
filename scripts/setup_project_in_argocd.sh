@@ -2,8 +2,8 @@
 # One-shot GitOps bootstrap: upsert the wrapper Application from the checked-in
 # manifest at environments/<env>/argocd/fairagro-m42-applications.yaml (Path A).
 # No Root Application — the wrapper YAML changes rarely; re-run this script (or
-# kubectl/argocd apply -f) when it does. Pins for workloads live in
-# environments/<env>/values/ (child *_revision and image tags).
+# `argocd app create --upsert -f` / `kubectl apply -f`) when it does. Pins for
+# workloads live in environments/<env>/values/ (child *_revision and image tags).
 #
 # Usage: ./scripts/setup_project_in_argocd.sh <environment>
 #   environment: fizz | elise | draven
@@ -66,3 +66,5 @@ echo "  fizz/elise → targetRevision=main (auto-sync in manifest)"
 echo "  draven     → targetRevision='*'"
 echo "Migration: if 'fairagro-m42-application-wrapper' or 'fairagro-m42-root' still"
 echo "  exist, delete them after the new wrapper is healthy — they are obsolete."
+echo "  If Root was created after #45, use --cascade=false so the wrapper is kept:"
+echo "    argocd app delete fairagro-m42-root --cascade=false"

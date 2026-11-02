@@ -1,14 +1,14 @@
 # Argo CD manifests — draven
 
-GitOps Path A: the **Root** Application (`fairagro-m42-root`) tracks this directory
-on `main`. The wrapper Application here uses `targetRevision: '*'` so Argo follows
-the highest SemVer git tag (production release track). Child apps in values use
-`*` as well so they stay locked to that same tag resolution.
-
-Bootstrap once per cluster:
+GitOps Path A: the **wrapper** Application here uses `targetRevision: '*'` (highest
+SemVer git tag). Apply it with the bootstrap script (no Root Application).
+Child apps use `lock_children_to_revision: "*"` in values.
 
 ```bash
 ./scripts/setup_project_in_argocd.sh draven
+argocd app sync fairagro-m42-applications
 ```
+
+Re-run only when this YAML changes. Day-to-day pins: `../values/` + infra SemVer tags (#42).
 
 See the repository README section **GitOps bootstrap (Argo CD)**.

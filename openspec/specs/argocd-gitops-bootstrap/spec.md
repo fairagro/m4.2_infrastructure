@@ -2,9 +2,7 @@
 
 ## Purpose
 
-Path-A GitOps for Argo-backed clusters: a Root Application tracks `environments/<env>/argocd/` on `main`; checked-in wrapper Applications pin fizz-class to `main` and draven to SemVer `*`; child revision asymmetry and bootstrap via script/docs. CI must not rewrite Application pins.
-
-Synced from change `gitops-bootstrap` (archived).
+Path-A GitOps for Argo-backed clusters: checked-in wrapper Applications pin fizz-class to `main` and draven to SemVer `*`; child revision asymmetry; bootstrap applies the wrapper manifest from git (no Root Application — avoids an extra App-of-Apps layer). CI must not rewrite Application pins. Day-to-day version pins live in `environments/<env>/values/`.
 
 ## Requirements
 
@@ -17,14 +15,14 @@ The repository SHALL contain a plaintext Argo CD Application manifest for the m4
 - **WHEN** an operator opens `environments/fizz/argocd/` (and likewise elise, draven) on branch `main`
 - **THEN** a wrapper Application manifest is present that points at `helmcharts/fairagro-m42-applications` with multi-source valueFiles for that environment
 
-### Requirement: Root Application syncs argocd defs from main
+### Requirement: Bootstrap applies wrapper from git without a Root Application
 
-Each Argo-backed cluster SHALL be bootstrapped with a Root Application whose `targetRevision` is `main` and whose path is `environments/<env>/argocd`, so wrapper Application definitions are applied from git without CI rewriting them on each release.
+Each Argo-backed cluster SHALL be bootstrapped by applying the checked-in wrapper Application manifest (script and/or documented `argocd`/`kubectl apply -f`), using existing Argo credentials (SOPS). The repository MUST NOT require a Root Application that syncs `environments/<env>/argocd/` in order for Path A to work. Operators re-apply the wrapper only when that manifest changes.
 
-#### Scenario: Root apply creates or updates the wrapper Application
+#### Scenario: Bootstrap wrapper for fizz
 
-- **WHEN** the Root Application is synced successfully for environment `fizz`
-- **THEN** the wrapper Application for that cluster matches the manifest in `environments/fizz/argocd/` on `main`
+- **WHEN** an operator with Argo credentials runs the documented bootstrap for `fizz`
+- **THEN** the Application `fairagro-m42-applications` exists and matches `environments/fizz/argocd/fairagro-m42-applications.yaml`
 
 ### Requirement: fizz-class tracks main with automated sync
 
@@ -62,12 +60,3 @@ fizz-class child Application revisions SHALL default to `main` and MAY be overri
 
 - **WHEN** draven is configured for release-tag tracking
 - **THEN** enabled child `*_revision` values do not resolve independently to default-branch `HEAD`/`main` while the wrapper is intended to run a release tag snapshot
-
-### Requirement: Bootstrap script or documented one-shot Root create
-
-The repository SHALL provide a script and/or documented command that creates or updates the Root Application for a given environment using existing Argo credentials (SOPS), without requiring the operator to hand-author the Root manifest each time.
-
-#### Scenario: Bootstrap Root for fizz
-
-- **WHEN** an operator with Argo credentials runs the documented bootstrap for `fizz`
-- **THEN** a Root Application exists that syncs `environments/fizz/argocd` from `main`

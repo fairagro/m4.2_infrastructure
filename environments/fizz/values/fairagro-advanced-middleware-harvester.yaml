@@ -55,44 +55,46 @@ fairagro-advanced-middleware-harvester-chart:
       max_retries: 3
 
     # -- List of repositories to harvest. Each entry must specify exactly one
-    # -- plugin type (inspire, linked_data, generic, oai_pmh).
-    # -- inspire / linked_data / generic / oai_pmh need sibling mapper: { type: ... }
-    # -- (and parser for generic / oai_pmh). Prefer nested generic.protocol: { <type>: … }.
-    # -- linked_data.payload_type and linked_data mycore_solr are deprecated.
+    # -- plugin type (inspire, generic, oai_pmh). Prefer type-as-key mapper/parser
+    # -- (e.g. mapper: { inspire_general: {} }, parser: { jsonld: {} }).
+    # -- Prefer nested generic.protocol: { <type>: … }. inspire.placeholders (not
+    # -- mapper.placeholders). Catalog provenance via API known_rdis objects.
     repositories:
 
-      # Keep linked_data (not generic): Regal JSON-LD needs context reload that
-      # the generic plugin does not perform yet — stay on regal_find/regal_jsonld.
+      # Publisso via generic + regal_find (replaces deprecated linked_data, #47).
       - rdi: publisso
-        linked_data:
-          sitemap_url: "https://frl.publisso.de/find"
-          sitemap_type: regal_find
-          dataset_type: regal_jsonld
+        generic:
+          protocol:
+            http:
+              respect_robots_txt: false
+            regal_find:
+              entry_url: "https://frl.publisso.de/find"
           resource_base_url: "https://repository.publisso.de/resource/"
-          http:
-            respect_robots_txt: false
+        parser:
+          jsonld:
+            allowed_context_url: "https://frl.publisso.de/context.json"
         mapper:
-          type: regal_general
+          regal_general: {}
 
       - rdi: bonares
         inspire:
           csw_url: "https://repository-e.dataservice.zalf.de/catalogue/csw"
-        mapper:
-          type: inspire_general
           # Placeholder text this RDI writes instead of leaving an optional field
           # empty; treated as absent. Nothing is dropped unless listed (harvester #413/#437).
           placeholders:
             values: ["None", "No information provided"]
+        mapper:
+          inspire_general: {}
 
       - rdi: thunen_atlas
         inspire:
           csw_url: "https://atlas.thuenen.de/catalogue/csw"
-        mapper:
-          type: inspire_general
           # Placeholder text this RDI writes instead of leaving an optional field
           # empty; treated as absent. Nothing is dropped unless listed (harvester #413/#437).
           placeholders:
             values: ["None", "No information provided"]
+        mapper:
+          inspire_general: {}
 
       - rdi: edal
         generic:
@@ -100,12 +102,12 @@ fairagro-advanced-middleware-harvester-chart:
             xml:
               entry_url: https://doi.ipk-gatersleben.de/sitemap.xml
         parser:
-          type: html_jsonld
+          html_jsonld: {}
         mapper:
-          type: schema_org_general
-          # e!DAL renders an unexpanded $licenseURL template for some licences (harvester #413/#437).
-          placeholders:
-            unrendered_templates: true
+          schema_org_general:
+            # e!DAL renders an unexpanded $licenseURL template for some licences (harvester #413/#437).
+            placeholders:
+              unrendered_templates: true
 
       - rdi: dwd
         inspire:
@@ -178,11 +180,12 @@ fairagro-advanced-middleware-harvester-chart:
       #           https://www.openagrar.de/servlets/solr/select?core=main&q=category.top%3A%22mir_genres%3Aresearch_data%22+AND+objectType%3Amods+AND+category.top%3A%22state%3Apublished%22&fl=id
       #         page_size: 1000  # was rows=1000 on the legacy linked_data URL
       #   parser:
-      #     type: html_jsonld
+      #     html_jsonld: {}
       #   mapper:
-      #     type: schema_org_general
+      #     schema_org_general: {}
 
-      # SRADI — DCAT-AP / ckanext-dcat (PR #359, m4_rdi_portfolio#8)
+      # SRADI — DCAT-AP / ckanext-dcat (PR #359, m4_rdi_portfolio#8).
+      # Catalog name/url live on API known_rdis object for sradi (#50), not mapper.
       - rdi: sradi
         generic:
           protocol:
@@ -191,11 +194,9 @@ fairagro-advanced-middleware-harvester-chart:
               # devices and projects as dcat:Dataset too (harvester #443 / #500, infra#35).
               entry_url: "https://agrihub.gis.lrg.tum.de/catalog.jsonld?fq=groups:dataset"
         parser:
-          type: jsonld
+          jsonld: {}
         mapper:
-          type: ckanext_dcat
-          catalog_name: "Smart Rural Areas Data Infrastructure (SRADI)"
-          catalog_url: "https://agrihub.gis.lrg.tum.de"
+          ckanext_dcat: {}
 
       # PlabiPD / PubPlant genomes.json (PR #360, m4_rdi_portfolio#7)
       - rdi: plabipd
@@ -204,15 +205,15 @@ fairagro-advanced-middleware-harvester-chart:
             pubplant_json_array:
               entry_url: "https://raw.githubusercontent.com/usadellab/pubplant2schemaorg/gh-pages/genomes.json"
         parser:
-          type: jsonld
+          jsonld: {}
         mapper:
-          type: schema_org_general
+          schema_org_general: {}
 
       - rdi: phenorob
         oai_pmh:
           endpoint_url: "https://phenoroam.phenorob.de/geonetwork/srv/eng/oaipmh"
           metadata_prefix: phenoroam
         parser:
-          type: phenoroam_xml
+          phenoroam_xml: {}
         mapper:
-          type: phenoroam_general
+          phenoroam_general: {}

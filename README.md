@@ -99,10 +99,17 @@ The workflow does **not** rewrite Application YAML or env values.
 First tag when none exist: `patch`/`minor` → `0.1.0`; `major` → `1.0.0`.
 Preview locally: `./scripts/compute_next_infra_semver.sh patch` (uses existing git tags).
 
+**Chicken-egg for draven:** Argo `targetRevision: '*'` cannot resolve until at least one
+plain SemVer tag exists. Cut the **first** infra release (Actions → **release**) **before**
+running bootstrap for draven; otherwise `argocd app create` fails with
+`unable to resolve '*' to a commit SHA`. fizz/elise (`main`) have no such dependency.
+
 **One-shot bootstrap** (requires SOPS access to `environments/<env>/credentials/argocd_secrets.enc.yaml`):
 
 ```bash
-./scripts/setup_project_in_argocd.sh fizz    # or elise | draven
+./scripts/setup_project_in_argocd.sh fizz    # or elise (main — ok without tags)
+# draven: only after the first SemVer tag exists (see above)
+./scripts/setup_project_in_argocd.sh draven
 argocd app sync fairagro-m42-applications
 argocd app get fairagro-m42-applications     # confirm targetRevision main vs *
 ./scripts/check_draven_release_pins.sh       # same gate the release workflow runs
@@ -110,7 +117,8 @@ argocd app get fairagro-m42-applications     # confirm targetRevision main vs *
 ```
 
 The script is idempotent (`argocd app create --upsert -f …`). It applies
-`environments/<env>/argocd/fairagro-m42-applications.yaml`. If a legacy
+`environments/<env>/argocd/fairagro-m42-applications.yaml`. AppProject `fairagro-m42` is
+owned by cluster misc (`zalf-argocd-projects`); this script does not create it. If a legacy
 `fairagro-m42-application-wrapper` or an experimental `fairagro-m42-root` still
 exists, delete it after the new wrapper is healthy. If Root was created after
 PR #45 and owns the wrapper, use `--cascade=false` so the wrapper is kept:

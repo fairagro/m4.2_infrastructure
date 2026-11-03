@@ -14,8 +14,16 @@ fairagro-advanced-middleware-api-chart:
       - phenorob
       - plabipd
       - publisso
-      - sradi
+      # Object form so Investigation comments get description/url without harvester catalog_* (#50).
+      - id: sradi
+        description: "Smart Rural Areas Data Infrastructure (SRADI)"
+        url: "https://agrihub.gis.lrg.tum.de"
       - thunen_atlas
+    # Dual-slot ArcStore (issue #517 hard cut):
+    # - required arc_store: per-ARC git_repo (backend selected by nested key, no type)
+    # - optional consolidated_store: shared catalog repo
+    # Tokens: fairagro-advanced-middleware.enc.yaml →
+    #   arc_store.git.token + consolidated_store.git.token
     arc_store:
       git:
         max_workers: 4
@@ -60,7 +68,7 @@ fairagro-advanced-middleware-api-chart:
     replicaCount: 4
     image:
       repository: zalf/fairagro-advanced-middleware-api
-      tag: 14.0.0
+      tag: 14.1.0
     ingress:
       enabled: true
       mtlsEnabled: true
@@ -89,7 +97,7 @@ fairagro-advanced-middleware-api-chart:
   celery:
     image:
       repository: zalf/fairagro-advanced-middleware-api
-      tag: 14.0.0
+      tag: 14.1.0
     worker:
       replicaCount: 4
       concurrency: 4

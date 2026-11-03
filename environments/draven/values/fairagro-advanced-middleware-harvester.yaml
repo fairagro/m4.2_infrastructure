@@ -78,7 +78,7 @@ fairagro-advanced-middleware-harvester-chart:
 
       - rdi: bonares
         inspire:
-          csw_url: "https://repository-e.dataservice.zalf.de/catalogue/csw"
+          csw_url: "https://repository.zalf.de/catalogue/csw"
           # Placeholder text this RDI writes instead of leaving an optional field
           # empty; treated as absent. Nothing is dropped unless listed (harvester #413/#437).
           placeholders:

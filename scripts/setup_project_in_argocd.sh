@@ -10,7 +10,8 @@
 #
 # Requires: argocd CLI, sops, GPG/age access to
 #   environments/<env>/credentials/argocd_secrets.enc.yaml
-# Idempotent: safe to re-run (upsert project + wrapper).
+# Idempotent: safe to re-run (upsert wrapper). AppProject fairagro-m42 is owned by
+# cluster misc (zalf-argocd-projects); project admins cannot create/get projects.
 set -euo pipefail
 
 ENV="${1:-}"
@@ -49,12 +50,6 @@ fi
 # Login session persists for subsequent argocd commands.
 sops exec-env "$SECRET_FILE" \
   'argocd login "$ARGOCD_SERVER" --insecure --grpc-web-root-path "$ARGOCD_PREFIX" --username="$ARGOCD_ADMIN_USER" --password="$ARGOCD_ADMIN_PASSWORD"'
-
-argocd proj create fairagro-m42 \
-  --description "FAIRagro m4.2 applications" \
-  --src https://github.com/fairagro/m4.2_infrastructure.git \
-  --dest https://kubernetes.default.svc,\* \
-  --upsert || true
 
 # Apply checked-in wrapper (App-of-Apps → child Applications from umbrella chart).
 argocd app create --upsert -f "$WRAPPER_MANIFEST"

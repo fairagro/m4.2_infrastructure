@@ -10,7 +10,8 @@
 #
 # Requires: argocd CLI, sops, GPG/age access to
 #   environments/<env>/credentials/argocd_secrets.enc.yaml
-# Idempotent: safe to re-run (upsert project + wrapper).
+# Idempotent: safe to re-run (upsert wrapper). AppProject fairagro-m42 is owned by
+# cluster misc (zalf-argocd-projects); project admins cannot create/get projects.
 set -euo pipefail
 
 ENV="${1:-}"
@@ -50,12 +51,6 @@ fi
 sops exec-env "$SECRET_FILE" \
   'argocd login "$ARGOCD_SERVER" --insecure --grpc-web-root-path "$ARGOCD_PREFIX" --username="$ARGOCD_ADMIN_USER" --password="$ARGOCD_ADMIN_PASSWORD"'
 
-argocd proj create fairagro-m42 \
-  --description "FAIRagro m4.2 applications" \
-  --src https://github.com/fairagro/m4.2_infrastructure.git \
-  --dest https://kubernetes.default.svc,\* \
-  --upsert || true
-
 # Apply checked-in wrapper (App-of-Apps → child Applications from umbrella chart).
 argocd app create --upsert -f "$WRAPPER_MANIFEST"
 
@@ -63,7 +58,8 @@ echo
 echo "Wrapper Application upserted from $WRAPPER_MANIFEST (env=$ENV)."
 echo "Next: argocd app sync fairagro-m42-applications"
 echo "  fizz/elise → targetRevision=main (auto-sync in manifest)"
-echo "  draven     → targetRevision='*'"
+echo "  draven     → targetRevision='*' (requires at least one SemVer tag on the repo;"
+echo "               otherwise Argo cannot resolve the revision — cut release first)"
 echo "Migration: if 'fairagro-m42-application-wrapper' or 'fairagro-m42-root' still"
 echo "  exist, delete them after the new wrapper is healthy — they are obsolete."
 echo "  If Root was created after #45, use --cascade=false so the wrapper is kept:"

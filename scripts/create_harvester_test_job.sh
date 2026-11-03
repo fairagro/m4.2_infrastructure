@@ -1,11 +1,13 @@
 #!/usr/bin/env bash
-# Create a one-off harvester Job from the CronJob, safe under Argo CD automated prune.
+# Create a one-off harvester Job from the CronJob, safe under Argo CD automated prune
+# and still visible in the Argo CD UI under the harvester Application.
 #
-# Plain `kubectl create job --from=cronjob/...` copies app.kubernetes.io/instance (and
-# related) labels, so Argo treats the Job as managed and prunes it. This script:
+# Plain `kubectl create job --from=cronjob/...` is pruned because the Job is tracked
+# but not in Git desired state. This script:
 #   - picks the next free name test01, test02, … (zero-padded)
-#   - strips Argo/Helm instance tracking labels from Job + Pod template
-#   - sets argocd.argoproj.io/sync-options=Prune=false (+ IgnoreExtraneous)
+#   - keeps instance/tracking labels so Argo shows the Job in the app resource tree
+#   - sets argocd.argoproj.io/sync-options=Prune=false (do not delete)
+#   - sets compare-options=IgnoreExtraneous (app stays Synced; Job still listed)
 #
 # Usage:
 #   ./scripts/create_harvester_test_job.sh
@@ -26,7 +28,7 @@ while getopts "n:c:p:h" opt; do
     c) CRONJOB="$OPTARG" ;;
     p) PREFIX="$OPTARG" ;;
     h)
-      sed -n '2,18p' "$0" | sed 's/^# \?//'
+      sed -n '2,20p' "$0" | sed 's/^# \?//'
       exit 0
       ;;
     *)
@@ -72,17 +74,12 @@ kubectl create job "${JOB_NAME}" \
   -n "${NAMESPACE}" \
   --dry-run=client -o yaml \
 | yq '
-  del(.metadata.labels."app.kubernetes.io/instance")
-  | del(.metadata.labels."app.kubernetes.io/managed-by")
-  | del(.metadata.annotations."argocd.argoproj.io/tracking-id")
-  | del(.metadata.annotations."kubectl.kubernetes.io/last-applied-configuration")
-  | del(.spec.template.metadata.labels."app.kubernetes.io/instance")
-  | del(.spec.template.metadata.labels."app.kubernetes.io/managed-by")
-  | del(.spec.template.metadata.annotations."argocd.argoproj.io/tracking-id")
+  del(.metadata.annotations."kubectl.kubernetes.io/last-applied-configuration")
   | .metadata.annotations."argocd.argoproj.io/sync-options" = "Prune=false"
   | .metadata.annotations."argocd.argoproj.io/compare-options" = "IgnoreExtraneous"
 ' \
 | kubectl apply -f -
 
 echo "Created job/${JOB_NAME}"
+echo "Visible in Argo under Application fairagro-advanced-middleware-harvester (not pruned)."
 echo "Follow: kubectl -n ${NAMESPACE} logs -f job/${JOB_NAME}"

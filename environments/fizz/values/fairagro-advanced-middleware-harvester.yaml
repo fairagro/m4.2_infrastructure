@@ -3,10 +3,8 @@ fairagro-advanced-middleware-harvester-chart:
   schedule: "0 2 * * *"
 
   image:
-    # 3.2.1-rc.fizz-prerelease.55: main at f4984e9 — type-as-key config (#480; legacy
-    # mapper.type / parser.type still load with deprecation warnings), DWD
-    # individual_name_is_organisation (#489), source_url from JSON-LD identifiers (#499).
-    tag: 3.2.1-rc.fizz-prerelease.55
+    # 4.0.0 — fizz trial of current harvester prod release (type-as-key config path).
+    tag: 4.0.0
 
   # =============================================================================
   # Resource requests and limits

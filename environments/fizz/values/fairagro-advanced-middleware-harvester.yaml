@@ -102,12 +102,15 @@ fairagro-advanced-middleware-harvester-chart:
             xml:
               entry_url: https://doi.ipk-gatersleben.de/sitemap.xml
         parser:
-          html_jsonld: {}
+          # Live e!DAL pages use http://schema.org; http pin also accepts https forms.
+          html_jsonld:
+            allowed_context_url: "http://schema.org"
         mapper:
-          schema_org_general:
-            # e!DAL renders an unexpanded $licenseURL template for some licences (harvester #413/#437).
-            placeholders:
-              unrendered_templates: true
+          # placeholders is a mapper sibling (not under schema_org_general); harvester 4.0.
+          # e!DAL renders an unexpanded $licenseURL template for some licences (#413/#437).
+          placeholders:
+            unrendered_templates: true
+          schema_org_general: {}
 
       - rdi: dwd
         inspire:
@@ -205,7 +208,9 @@ fairagro-advanced-middleware-harvester-chart:
             pubplant_json_array:
               entry_url: "https://raw.githubusercontent.com/usadellab/pubplant2schemaorg/gh-pages/genomes.json"
         parser:
-          jsonld: {}
+          # Exact IRI from genomes.json records (no trailing slash).
+          jsonld:
+            allowed_context_url: "http://schema.org"
         mapper:
           schema_org_general: {}
 

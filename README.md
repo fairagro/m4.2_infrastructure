@@ -65,7 +65,9 @@ draven. `./scripts/check_draven_release_pins.sh` (and CI) enforce the draven-onl
 
 1. Product: feature branch → **pre-release**
 2. Infra **fizz trial PR**: bump only `environments/fizz/values/...` `image.tag` (elise if needed) → merge → fizz auto-deploys
-3. Validate on fizz
+3. Validate on fizz (for harvester: schedule a one-off Job with
+   `./scripts/create_harvester_test_job.sh` — see below; do **not** use plain
+   `kubectl create job --from=cronjob/…` under automated prune)
 4. Product: merge → **prod release** (version now known)
 5. Infra **draven promote PR**: bump `environments/draven/values/...` to that prod release; optionally align fizz off `-rc` in the same or a follow-up PR
 6. Infra **release** workflow on `main` (Actions → **release**): choose `version_bump`, set Soft
@@ -103,6 +105,22 @@ Preview locally: `./scripts/compute_next_infra_semver.sh patch` (uses existing g
 plain SemVer tag exists. Cut the **first** infra release (Actions → **release**) **before**
 running bootstrap for draven; otherwise `argocd app create` fails with
 `unable to resolve '*' to a commit SHA`. fizz/elise (`main`) have no such dependency.
+
+#### Harvester one-off test Jobs (fizz) ####
+
+Child Apps use automated sync with **prune**. A plain
+`kubectl create job --from=cronjob/fairagro-advanced-middleware-harvester` copies
+Argo tracking labels, so Argo deletes the Job again. Use:
+
+```bash
+source ./scripts/set_context.sh fizz
+./scripts/create_harvester_test_job.sh
+# → creates test01, test02, … without instance labels; annotates Prune=false
+kubectl -n fairagro-advanced-middleware-harvester logs -f job/test01
+```
+
+Optional: `PREFIX=manual ./scripts/create_harvester_test_job.sh` or
+`-n <namespace> -c <cronjob>`.
 
 **One-shot bootstrap** (requires SOPS access to `environments/<env>/credentials/argocd_secrets.enc.yaml`):
 

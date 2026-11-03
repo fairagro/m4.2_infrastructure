@@ -19,6 +19,6 @@ jobs:
   check-draven-release-pins:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Reject pre-release image pins under environments/draven/values
         run: ./scripts/check_draven_release_pins.sh

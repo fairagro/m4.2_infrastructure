@@ -197,7 +197,10 @@ fairagro-advanced-middleware-harvester-chart:
               # devices and projects as dcat:Dataset too (harvester #443 / #500, infra#35).
               entry_url: "https://agrihub.gis.lrg.tum.de/catalog.jsonld?fq=groups:dataset"
         parser:
-          jsonld: {}
+          # dcat_ap yields expanded JSON-LD (@graph, no remote @context) to the
+          # parser; pin silences the config-load warning (no remotes resolved).
+          jsonld:
+            allowed_context_url: "https://www.w3.org/ns/dcat#"
         mapper:
           ckanext_dcat: {}
 

@@ -109,13 +109,15 @@ running bootstrap for draven; otherwise `argocd app create` fails with
 #### Harvester one-off test Jobs (fizz) ####
 
 Child Apps use automated sync with **prune**. A plain
-`kubectl create job --from=cronjob/fairagro-advanced-middleware-harvester` copies
-Argo tracking labels, so Argo deletes the Job again. Use:
+`kubectl create job --from=cronjob/fairagro-advanced-middleware-harvester` is
+tracked but not in Git, so Argo deletes it. Use:
 
 ```bash
 source ./scripts/set_context.sh fizz
 ./scripts/create_harvester_test_job.sh
-# → creates test01, test02, … without instance labels; annotates Prune=false
+# → test01, test02, … ; keeps tracking labels (visible in Argo UI under the
+#   harvester Application); Prune=false + IgnoreExtraneous so it is not deleted
+#   and the app stays Synced
 kubectl -n fairagro-advanced-middleware-harvester logs -f job/test01
 ```
 

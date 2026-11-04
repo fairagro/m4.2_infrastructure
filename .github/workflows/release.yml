@@ -129,7 +129,7 @@ jobs:
             echo "- **Commit:** \`${GITHUB_SHA}\`"
             echo
             echo "Tags SHOULD be created only via this workflow (Ruleset enforcement may follow)."
-            echo "Rollback of tag content is R2 (#57), not this workflow; emergency pin is R1 (#43)."
+            echo "Rollback of tag content is a SemVer release rollback (#57), not this workflow; cluster emergency pin: docs/ops/emergency-pin.md (#68)."
             if [[ -n "${PRIOR}" && "${PRIOR}" != "${VERSION}" ]]; then
               echo
               echo "Compare: https://github.com/${GITHUB_REPOSITORY}/compare/${PRIOR}...${VERSION}"

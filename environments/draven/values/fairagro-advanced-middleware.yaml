@@ -2,23 +2,23 @@ fairagro-advanced-middleware-api-chart:
   config:
     log_level: INFO
     known_rdis:
-      - aeprints
-      - bonares
-      - bonares_klib
-      - dwd
-      - edal
-      - edaphobase
-      - gbis
-      - jki_datacube
-      - openagrar
-      - phenorob
-      - plabipd
-      - publisso
+      - id: aeprints
+      - id: bonares
+      - id: bonares_klib
+      - id: dwd
+      - id: edal
+      - id: edaphobase
+      - id: gbis
+      - id: jki_datacube
+      - id: openagrar
+      - id: phenorob
+      - id: plabipd
+      - id: publisso
       # Object form so Investigation comments get description/url without harvester catalog_* (#50).
       - id: sradi
         description: "Smart Rural Areas Data Infrastructure (SRADI)"
         url: "https://agrihub.gis.lrg.tum.de"
-      - thunen_atlas
+      - id: thunen_atlas
     # Dual-slot ArcStore (issue #517 hard cut):
     # - required arc_store: per-ARC git_repo (backend selected by nested key, no type)
     # - optional consolidated_store: shared catalog repo

@@ -2,13 +2,13 @@ fairagro-advanced-middleware-api-chart:
   config:
     log_level: INFO
     known_rdis:
-      - bonares
-      - dwd
-      - edal
-      - edaphobase
-      - openagrar
-      - publisso
-      - thunen_atlas
+      - id: bonares
+      - id: dwd
+      - id: edal
+      - id: edaphobase
+      - id: openagrar
+      - id: publisso
+      - id: thunen_atlas
     git_repo:
       url: https://datahub-dev.ipk-gatersleben.de
       group: FAIRagro-advanced-middleware-dev

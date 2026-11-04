@@ -11,13 +11,13 @@ fairagro-advanced-middleware-api-chart:
   config:
     log_level: DEBUG
     known_rdis:
-      - bonares
-      - dwd
-      - edal
-      - edaphobase
-      - openagrar
-      - publisso
-      - thunen_atlas
+      - id: bonares
+      - id: dwd
+      - id: edal
+      - id: edaphobase
+      - id: openagrar
+      - id: publisso
+      - id: thunen_atlas
     git_repo:
       # Point at a reachable Datahub when testing against real data, or keep
       # placeholders and exercise API-only paths.

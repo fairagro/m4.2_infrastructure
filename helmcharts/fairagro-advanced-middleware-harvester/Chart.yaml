@@ -19,13 +19,7 @@ type: application
 # Versions are expected to follow Semantic Versioning (https://semver.org/)
 version: 0.1.0
 
-# Subchart is vendored under vendor/ so we can map rdi_catalog → config.repositories.
-# Re-vendor (keep ConfigMap / helper patches):
-#   rm -rf vendor/fairagro-advanced-middleware-harvester-chart
-#   helm pull oci://registry-1.docker.io/zalf/fairagro-advanced-middleware-harvester-chart --version <ver> --untar -d vendor/
-#   # re-apply templates/_helpers.tpl repositoriesFromCatalog + templates/configmap.yaml patch
-#   helm dependency update .
 dependencies:
   - name: fairagro-advanced-middleware-harvester-chart
     version: 1.1.0
-    repository: "file://vendor/fairagro-advanced-middleware-harvester-chart"
+    repository: oci://registry-1.docker.io/zalf

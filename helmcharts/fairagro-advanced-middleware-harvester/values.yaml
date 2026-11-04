@@ -1,159 +1,17 @@
-# Umbrella defaults for the harvester OCI/subchart.
-# rdi_catalog: shared RDI definitions (enabled: false). Env overlays enable + override.
-# config.repositories is derived at render time — do not list repositories here.
-
 nameOverride: ""
 fullnameOverride: ""
+
 fairagro-advanced-middleware-harvester-chart:
   nameOverride: harvester
   tls:
     enabled: true
-    mountPath: /run/secrets/tls
+    # -- Directory path inside the container where TLS PEM files are mounted.
+    mountPath: "/run/secrets/tls"
   config:
     api_client:
+      # -- Verify the server's TLS certificate chain.
       verify_ssl: true
-      client_cert_path: /run/secrets/tls/client.crt
-      client_key_path: /run/secrets/tls/client.key
-  rdi_catalog:
-    publisso:
-      enabled: false
-      generic:
-        protocol:
-          http:
-            respect_robots_txt: false
-          regal_find:
-            entry_url: https://frl.publisso.de/find
-        resource_base_url: https://repository.publisso.de/resource/
-      parser:
-        jsonld:
-          allowed_context_url: https://frl.publisso.de/context.json
-      mapper:
-        regal_general: {}
-    bonares:
-      enabled: false
-      inspire:
-        csw_url: https://repository.zalf.de/catalogue/csw
-        placeholders:
-          values:
-            - None
-            - No information provided
-      mapper:
-        inspire_general: {}
-    thunen_atlas:
-      enabled: false
-      inspire:
-        csw_url: https://atlas.thuenen.de/catalogue/csw
-        placeholders:
-          values:
-            - None
-            - No information provided
-      mapper:
-        inspire_general: {}
-    edal:
-      enabled: false
-      generic:
-        protocol:
-          xml:
-            entry_url: https://doi.ipk-gatersleben.de/sitemap.xml
-      parser:
-        html_jsonld:
-          allowed_context_url: http://schema.org
-      mapper:
-        placeholders:
-          unrendered_templates: true
-        schema_org_general: {}
-    dwd:
-      enabled: false
-      inspire:
-        csw_url: https://gdk.gdi-de.org/gdi-de/srv/ger/csw
-        xml_query: |
-          <?xml version="1.0" encoding="UTF-8"?>
-          <csw:GetRecords
-              xmlns:csw="http://www.opengis.net/cat/csw/2.0.2"
-              xmlns:ogc="http://www.opengis.net/ogc"
-              service="CSW"
-              version="2.0.2"
-              resultType="results"
-              outputFormat="application/xml"
-              outputSchema="http://www.isotc211.org/2005/gmd">
-
-              <csw:Query typeNames="csw:Record">
-                <csw:ElementSetName>full</csw:ElementSetName>
-                <csw:Constraint version="1.1.0">
-                  <ogc:Filter>
-                    <ogc:And>
-                      <ogc:Or>
-                        <ogc:PropertyIsLike wildCard="%" singleChar="_" escapeChar="\">
-                          <ogc:PropertyName>Identifier</ogc:PropertyName>
-                          <ogc:Literal>urn:x-wmo:md:de.dwd.cdc::%</ogc:Literal>
-                        </ogc:PropertyIsLike>
-                        <ogc:PropertyIsLike wildCard="%" singleChar="_" escapeChar="\">
-                          <ogc:PropertyName>Identifier</ogc:PropertyName>
-                          <ogc:Literal>urn:wmo:md:de-dwd%</ogc:Literal>
-                        </ogc:PropertyIsLike>
-                        <ogc:PropertyIsLike wildCard="%" singleChar="_" escapeChar="\">
-                          <ogc:PropertyName>Identifier</ogc:PropertyName>
-                          <ogc:Literal>de.dwd.geoserver.%</ogc:Literal>
-                        </ogc:PropertyIsLike>
-                        <ogc:PropertyIsLike wildCard="%" singleChar="_" escapeChar="\">
-                          <ogc:PropertyName>Identifier</ogc:PropertyName>
-                          <ogc:Literal>de.dwd.vorhersage.%</ogc:Literal>
-                        </ogc:PropertyIsLike>
-                      </ogc:Or>
-                      <ogc:PropertyIsEqualTo>
-                        <ogc:PropertyName>Type</ogc:PropertyName>
-                        <ogc:Literal>dataset</ogc:Literal>
-                      </ogc:PropertyIsEqualTo>
-                    </ogc:And>
-                  </ogc:Filter>
-                </csw:Constraint>
-              </csw:Query>
-
-          </csw:GetRecords>
-      mapper:
-        inspire_general:
-          individual_name_is_organisation: true
-    openagrar:
-      enabled: false
-      generic:
-        protocol:
-          http:
-            respect_robots_txt: false
-          mycore_solr:
-            entry_url: https://www.openagrar.de/servlets/solr/select?core=main&q=category.top%3A%22mir_genres%3Aresearch_data%22+AND+objectType%3Amods+AND+category.top%3A%22state%3Apublished%22&fl=id
-            page_size: 1000
-      parser:
-        html_jsonld: {}
-      mapper:
-        schema_org_general: {}
-    sradi:
-      enabled: false
-      generic:
-        protocol:
-          dcat_ap:
-            entry_url: https://agrihub.gis.lrg.tum.de/catalog.jsonld?fq=groups:dataset
-      parser:
-        jsonld:
-          allowed_context_url: https://www.w3.org/ns/dcat#
-      mapper:
-        ckanext_dcat: {}
-    plabipd:
-      enabled: false
-      generic:
-        protocol:
-          pubplant_json_array:
-            entry_url: https://raw.githubusercontent.com/usadellab/pubplant2schemaorg/gh-pages/genomes.json
-      parser:
-        jsonld:
-          allowed_context_url: http://schema.org
-      mapper:
-        schema_org_general: {}
-    phenorob:
-      enabled: false
-      oai_pmh:
-        endpoint_url: https://phenoroam.phenorob.de/geonetwork/srv/eng/oaipmh
-        metadata_prefix: phenoroam
-      parser:
-        phenoroam_xml: {}
-      mapper:
-        phenoroam_general: {}
+      # -- Set to the tls.mountPath location when tls.enabled is true.
+      client_cert_path: "/run/secrets/tls/client.crt"
+      # -- Path to the client private key PEM file (for mutual TLS).
+      client_key_path: "/run/secrets/tls/client.key"

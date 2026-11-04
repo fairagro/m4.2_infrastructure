@@ -6,16 +6,16 @@ Harvester RDI definitions are copy-pasted as large `config.repositories:` lists 
 
 - Introduce a **harvester RDI catalog** as a map keyed by `rdi` in the **infra umbrella chart** (`helmcharts/fairagro-advanced-middleware-harvester`), with catalog defaults `enabled: false`.
 - Per environment: set `enabled: true` and sparse overrides (URLs, plugin knobs) under the same map keys — fizz slim, draven broad portfolio, same pattern for elise and local_dev.
-- Helm **map → list** so the upstream harvester ConfigMap still receives `config.repositories` as a list of enabled entries only.
+- Helm **map → list** so the harvester ConfigMap still receives `config.repositories` as a list of enabled entries only — implemented in the **product Helm chart** (`m4.2_middleware_harvester`), not by vendoring/forking the OCI chart in infra.
 - Prefer Helm’s native map merge for overrides; deeper merge helpers only if cheap.
-- Migrate existing env `repositories:` blocks into catalog defaults + thin env overlays; remove duplicated list bodies from env values where the catalog covers them.
-- **Non-goals:** unifying or generating API `config.known_rdis` from the harvester catalog; identical enabled sets across envs; `environments/common/` values file (umbrella chart is the shared home; local umbrellas have no release/version bump process).
+- After the chart release: migrate env `repositories:` blocks into catalog defaults + thin env overlays.
+- **Non-goals:** unifying or generating API `config.known_rdis`; identical enabled sets across envs; `environments/common/`; infra-local chart vendor/fork.
 
 ## Capabilities
 
 ### New Capabilities
 
-- `harvester-rdi-catalog`: Shared map-shaped RDI harvest definitions in the harvester umbrella chart, per-env enablement/overrides, and map→list rendering into upstream `config.repositories`.
+- `harvester-rdi-catalog`: Shared map-shaped RDI harvest definitions in the harvester umbrella chart, per-env enablement/overrides, and map→list rendering into upstream `config.repositories` (once the product chart supports it).
 
 ### Modified Capabilities
 
@@ -23,7 +23,7 @@ Harvester RDI definitions are copy-pasted as large `config.repositories:` lists 
 
 ## Impact
 
-- `helmcharts/fairagro-advanced-middleware-harvester/` (catalog defaults + map→list rendering; may need a thin local template/vendoring change because the OCI subchart serialises `config` verbatim).
-- Env overlays: `environments/{fizz,draven,elise,local_dev}/values/fairagro-advanced-middleware-harvester.yaml`.
+- Blocked on product chart support for optional `rdi_catalog` (issue in `fairagro/m4.2_middleware_harvester`).
+- Then: umbrella dependency bump, catalog defaults, env overlay migration.
 - No change to middleware API charts/`known_rdis`, Argo bootstrap, or release workflows.
 - Tracks GitHub issue #44 (parent epic #40).

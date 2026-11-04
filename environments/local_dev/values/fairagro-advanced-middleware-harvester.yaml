@@ -39,8 +39,10 @@ fairagro-advanced-middleware-harvester-chart:
       verify_ssl: false
       client_cert_path: null
       client_key_path: null
-    repositories:
-      - rdi: bonares
-        inspire:
-          csw_url: "https://repository-staging.dataservice.zalf.de/catalogue/csw"
-          max_records: 5
+
+  rdi_catalog:
+    bonares:
+      enabled: true
+      inspire:
+        csw_url: "https://repository-staging.dataservice.zalf.de/catalogue/csw"
+        max_records: 5

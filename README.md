@@ -71,8 +71,10 @@ draven. `./scripts/check_draven_release_pins.sh` (and CI) enforce the draven-onl
 4. Product: merge → **prod release** (version now known)
 5. Infra **draven promote PR**: bump `environments/draven/values/...` to that prod release; optionally align fizz off `-rc` in the same or a follow-up PR
 6. Infra **release** workflow on `main` (Actions → **release**): choose `version_bump`, set Soft
-   **fizz_validated**, validate-then-tag → draven follows `*`. Content rollback is **R2** (#57),
-   not this workflow; emergency pin is **R1** (#43).
+   **fizz_validated**, validate-then-tag → draven follows `*`. Content rollback is a
+   **SemVer release rollback** (#57), not this workflow; cluster-side **emergency pin**
+   is documented in [docs/ops/emergency-pin.md](docs/ops/emergency-pin.md) (issue #68).
+   Deploy failure notifications: #43.
 
 Do **not** bundle the fizz trial with the draven promote: the prod version is not known
 yet at trial time. Merging a draven promote updates `main` but the cluster stays on the
@@ -137,7 +139,9 @@ argocd app get fairagro-m42-applications     # confirm targetRevision main vs *
 ```
 
 The script is idempotent (`argocd app create --upsert -f …`). It applies
-`environments/<env>/argocd/fairagro-m42-applications.yaml`. AppProject `fairagro-m42` is
+`environments/<env>/argocd/fairagro-m42-applications.yaml`. **Do not re-run it while an
+emergency pin is active** — it would upsert git `*` / `main` and undo live pins
+([docs/ops/emergency-pin.md](docs/ops/emergency-pin.md)). AppProject `fairagro-m42` is
 owned by cluster misc (`zalf-argocd-projects`); this script does not create it. If a legacy
 `fairagro-m42-application-wrapper` or an experimental `fairagro-m42-root` still
 exists, delete it after the new wrapper is healthy. If Root was created after
@@ -163,7 +167,7 @@ To add a new user to the project, please peform these steps.
 
 On the machine where you have generated your key:
 
-* Find out the key fingerprint:
+- Find out the key fingerprint:
 
   ```bash
   userid=Any string that identifies yor gpg key
@@ -181,7 +185,7 @@ On the machine where you have generated your key:
   sub   cv25519 2023-07-24 [E]
   ```
 
-* Export the public key:
+- Export the public key:
 
   ```bash
   username=Your_Name
@@ -194,16 +198,16 @@ On the machine where you have generated your key:
 
 With in this project structure on any machine/dev container:
 
-* Import the key manually by:
+- Import the key manually by:
 
   ```bash
   gpg --import '<filename>`
   ```
 
-* cd into an environment folder
-* Add the public `gpg` key file to the folder `public_gpg_keys` without changing the filename
-* Add the key fingerprint to the file `.sops.yaml`
-* Re-encrypt all secret files:
+- cd into an environment folder
+- Add the public `gpg` key file to the folder `public_gpg_keys` without changing the filename
+- Add the key fingerprint to the file `.sops.yaml`
+- Re-encrypt all secret files:
 
   ```bash
   find . -name *.enc.yaml | xargs sops updatekeys

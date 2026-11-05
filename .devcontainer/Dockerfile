@@ -21,6 +21,7 @@ ARG KIND_VERSION=v0.29.0
 ARG GIT_LFS_VERSION=v3.6.1
 ARG NODE_VERSION=v22.23.1
 ARG OPENSPEC_VERSION=1.6.0
+ARG PRE_COMMIT_VERSION=4.3.0
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -54,6 +55,11 @@ RUN curl -fsSL "https://nodejs.org/dist/${NODE_VERSION}/node-${NODE_VERSION}-lin
 
 # ── OpenSpec (spec-driven planning; https://openspec.dev/) ────────────────────
 RUN npm install -g "@fission-ai/openspec@${OPENSPEC_VERSION}"
+
+# ── pre-commit (git hooks; commitlint/yamllint/gitleaks/shellcheck via config) ─
+# PEP 668: install into system site for the image user PATH.
+# hadolint ignore=DL3013
+RUN pip3 install --break-system-packages --no-cache-dir "pre-commit==${PRE_COMMIT_VERSION}"
 
 # ── GitHub CLI (APT repos) ────────────────────────────────────────────────────
 # hadolint ignore=DL3008

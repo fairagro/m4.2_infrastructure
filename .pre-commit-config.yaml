@@ -1,5 +1,6 @@
 # Local fail-early mirrors for PR quality gates (#46).
-# Install:
+# Dev Container: pre-commit is in the image; postCreate runs npm ci + hook install.
+# Manual:
 #   npm ci
 #   pipx install pre-commit   # or: uv tool install pre-commit
 #   pre-commit install --hook-type pre-commit --hook-type commit-msg

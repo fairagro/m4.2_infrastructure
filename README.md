@@ -14,7 +14,12 @@ The configuration lives at `.devcontainer/devcontainer.json`.
 ### PR quality gates ###
 
 PRs to `main` run automated Helm/YAML/commit/secret/shell checks (see
-[docs/ops/pr-quality-gates.md](docs/ops/pr-quality-gates.md)). Locally:
+[docs/ops/pr-quality-gates.md](docs/ops/pr-quality-gates.md)). In the Dev Container,
+`postCreateCommand` runs `npm ci` and installs pre-commit hooks (`pre-commit` +
+`commit-msg`, including commitlint). After a rebuild, commits fail early locally
+if messages violate Conventional Commits.
+
+Outside the container (or after cloning without rebuild):
 
 ```bash
 npm ci

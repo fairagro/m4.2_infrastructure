@@ -47,7 +47,9 @@
 	"postCreateCommand": {
 		"fix commandhistory permissions": "sudo chown -R vscode:vscode /commandhistory",
 		"import gpg keys": "bash ${containerWorkspaceFolder}/scripts/import-public-gpg-keys.sh",
-		"init submodules": "bash ${containerWorkspaceFolder}/scripts/init-submodules.sh"
+		"init submodules": "bash ${containerWorkspaceFolder}/scripts/init-submodules.sh",
+		"npm ci": "npm ci",
+		"pre-commit hooks": "pre-commit install --hook-type pre-commit --hook-type commit-msg"
 	},
 	"postStartCommand": {
 		"setup bashrc": "grep -qF 'source ${containerWorkspaceFolder}/scripts/load-env.sh' ~/.bashrc || echo 'source ${containerWorkspaceFolder}/scripts/load-env.sh' >> ~/.bashrc",

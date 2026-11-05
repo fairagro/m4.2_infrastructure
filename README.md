@@ -60,7 +60,7 @@ Cluster deploys for **fizz**, **elise**, and **draven** use Path A (App-of-Apps,
    use `main`, draven uses `lock_children_to_revision: "*"` so children share
    the same SemVer resolution as the wrapper.
 4. CI must **not** rewrite Application YAML pins. Releases for draven are git
-   SemVer tags only (Actions workflow **release**, issue #42).
+   SemVer tags only (Actions **release** #42; content rollback via **release-rollback** #57).
 
 #### Image pins (fizz trial vs draven promote) ####
 
@@ -85,10 +85,9 @@ draven. `./scripts/check_draven_release_pins.sh` (and CI) enforce the draven-onl
 4. Product: merge → **prod release** (version now known)
 5. Infra **draven promote PR**: bump `environments/draven/values/...` to that prod release; optionally align fizz off `-rc` in the same or a follow-up PR
 6. Infra **release** workflow on `main` (Actions → **release**): choose `version_bump`, set Soft
-   **fizz_validated**, validate-then-tag → draven follows `*`. Content rollback is a
-   **SemVer release rollback** (#57), not this workflow; cluster-side **emergency pin**
-   is documented in [docs/ops/emergency-pin.md](docs/ops/emergency-pin.md) (issue #68).
-   Deploy failure notifications: #43.
+   **fizz_validated**, validate-then-tag → draven follows `*`. To undo a bad tag without Argo UI,
+   run Actions → **release-rollback** (SemVer release rollback #57). Cluster-side **emergency pin**:
+   [docs/ops/emergency-pin.md](docs/ops/emergency-pin.md) (#68). Deploy failure notifications: #43.
 
 Do **not** bundle the fizz trial with the draven promote: the prod version is not known
 yet at trial time. Merging a draven promote updates `main` but the cluster stays on the
@@ -96,15 +95,23 @@ previous tag until the release workflow cuts a new SemVer tag.
 
 #### Infra SemVer tags (draven) ####
 
-Cut tags only via **Actions → release** on `main` (do not push ad-hoc SemVer tags; a Ruleset
-may enforce this later). Inputs:
+Cut tags only via Actions on `main` — **release** (forward) or **release-rollback** (content
+rollback). Do not push ad-hoc SemVer tags; a Ruleset may enforce this later.
+
+**Forward (`release`) inputs:**
 
 - `version_bump`: `major` | `minor` | `patch` (default `patch`) — same manual model as product repos
 - `fizz_validated`: Soft checkbox — you validated relevant changes on fizz (honor-system; no
   image-lineage check in this workflow)
 
-Gates before tag: Soft checkbox must be true; `./scripts/check_draven_release_pins.sh` must pass.
-The workflow does **not** rewrite Application YAML or env values.
+Gates: Soft checkbox true; `./scripts/check_draven_release_pins.sh` on the commit being tagged.
+Does **not** rewrite Application YAML or env values.
+
+**Rollback (`release-rollback`):** new **higher** tag (always **patch**) pointing at an older
+tag’s SHA so `*` follows the restored tree. Default target = **previous** plain SemVer
+(second-highest); optional `revert_to_tag` override. Requires `acknowledge_rollback`.
+No Soft fizz attestation. Pin gate runs on the restored tree. Fails if the target is already
+the highest SemVer tag.
 
 **Leitplanken** (human choice; CI does not auto-bump from commits):
 

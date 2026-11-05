@@ -21,7 +21,7 @@ Commit messages must pass [Conventional Commits](https://www.conventionalcommits
 | `pr-quality` | `argocd-yaml-parse` | Parse `environments/*/argocd/*.yaml` |
 | `pr-quality` | `yamllint` | Repo YAML hygiene (excludes Helm `templates/`) |
 | `pr-quality` | `commitlint` | Conventional Commits on PR commit range |
-| `pr-quality` | `gitleaks` | Secret scan |
+| `pr-quality` | `gitleaks` | Secret scan (MIT CLI; not `gitleaks-action`, which needs an org license) |
 | `pr-quality` | `shellcheck` | `scripts/*.sh` |
 | `check-draven-pins` | `check-draven-release-pins` | No pre-release image tags under `environments/draven/values/` (runs every PR; exits 0 when clean) |
 

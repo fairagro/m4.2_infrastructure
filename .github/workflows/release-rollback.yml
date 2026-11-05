@@ -1,0 +1,134 @@
+# SemVer release rollback for draven (Argo targetRevision: '*').
+# #57: new higher patch tag at an older tag's SHA (default: previous SemVer).
+# Does not rewrite Application YAML or env values (golden rule). No Soft fizz.
+name: release-rollback
+
+on:
+  workflow_dispatch:
+    inputs:
+      acknowledge_rollback:
+        description: >-
+          I understand this cuts a new higher SemVer tag pointing at the tree of
+          the target tag (draven * will follow); this is not a fizz re-validation
+        required: true
+        type: boolean
+        default: false
+      revert_to_tag:
+        description: >-
+          Optional override (plain X.Y.Z). Leave empty to roll back to the previous
+          SemVer tag (second-highest)
+        required: false
+        type: string
+        default: ""
+
+concurrency:
+  group: infra-semver-tag
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  rollback:
+    name: Rollback then tag
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Assert main branch
+        run: |
+          if [[ "${{ github.ref_name }}" != "main" ]]; then
+            echo "::error::The release-rollback workflow can only be triggered from the 'main' branch."
+            exit 1
+          fi
+
+      - name: Assert rollback acknowledgment
+        run: |
+          if [[ "${{ inputs.acknowledge_rollback }}" != "true" ]]; then
+            echo "::error::Set acknowledge_rollback to true to confirm SemVer release rollback."
+            exit 1
+          fi
+
+      - name: Checkout (tags for resolution)
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+          ref: ${{ github.sha }}
+
+      - name: Resolve rollback target
+        id: target
+        run: |
+          set -euo pipefail
+          git fetch --tags --force origin
+          ./scripts/resolve_infra_semver_rollback_target.sh "${{ inputs.revert_to_tag }}" | tee -a "$GITHUB_OUTPUT"
+
+      - name: Checkout target tree for pin gate
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+          ref: ${{ steps.target.outputs.target_sha }}
+
+      - name: Reject pre-release image pins under environments/draven/values
+        run: ./scripts/check_draven_release_pins.sh
+
+      - name: Compute next patch SemVer
+        id: version
+        run: |
+          set -euo pipefail
+          git fetch --tags --force origin
+          next="$(./scripts/compute_next_infra_semver.sh patch)"
+          echo "version=${next}" >> "$GITHUB_OUTPUT"
+          echo "Next version: ${next} (patch rollback to ${{ steps.target.outputs.target }})"
+
+      - name: Create annotated tag and GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.version.outputs.version }}
+          TARGET: ${{ steps.target.outputs.target }}
+          TARGET_SHA: ${{ steps.target.outputs.target_sha }}
+          HIGHEST: ${{ steps.target.outputs.highest }}
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          remote_tag_sha="$(git ls-remote --tags --refs origin "refs/tags/${VERSION}" | awk '{print $1}')"
+          if [[ -n "${remote_tag_sha}" ]]; then
+            if [[ "${remote_tag_sha}" != "${TARGET_SHA}" ]]; then
+              echo "::error::Tag ${VERSION} already exists at ${remote_tag_sha}, not at target ${TARGET_SHA}."
+              exit 1
+            fi
+            echo "Tag ${VERSION} already points at target commit; skipping tag create/push."
+          else
+            if git rev-parse -q --verify "refs/tags/${VERSION}" >/dev/null; then
+              echo "::error::Local tag ${VERSION} exists but is missing on origin; resolve manually."
+              exit 1
+            fi
+            git tag -a "${VERSION}" "${TARGET_SHA}" -m "infra rollback ${VERSION} to ${TARGET}"
+            git push origin "refs/tags/${VERSION}"
+          fi
+
+          notes_file="$(mktemp)"
+          {
+            echo "## Infra SemVer release rollback \`${VERSION}\`"
+            echo
+            echo "- **Rollback to:** \`${TARGET}\` (same tree / commit \`${TARGET_SHA}\`)"
+            echo "- **Was highest before this tag:** \`${HIGHEST}\`"
+            echo "- **Bump:** \`patch\` (rollback always patches)"
+            echo "- **Draven pins:** \`scripts/check_draven_release_pins.sh\` passed on the restored tree."
+            echo
+            echo "This is not a Soft fizz re-validation. Forward releases use Actions → **release**."
+            echo "Tags SHOULD be created only via **release** or **release-rollback**."
+            echo "Cluster emergency pin: docs/ops/emergency-pin.md (#68)."
+          } >"${notes_file}"
+
+          if gh release view "${VERSION}" >/dev/null 2>&1; then
+            echo "GitHub Release ${VERSION} already exists; leaving notes unchanged."
+          else
+            gh release create "${VERSION}" \
+              --title "infra ${VERSION} (rollback to ${TARGET})" \
+              --notes-file "${notes_file}" \
+              --target "${TARGET_SHA}"
+          fi

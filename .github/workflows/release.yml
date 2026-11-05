@@ -21,8 +21,9 @@ on:
         type: boolean
         default: false
 
+# Shared with release-rollback so forward + rollback cannot race SemVer tags (#57).
 concurrency:
-  group: ${{ github.workflow }}
+  group: infra-semver-tag
   cancel-in-progress: false
 
 # Least privilege: read at workflow scope; write only on the job that tags/releases.
@@ -128,8 +129,8 @@ jobs:
             echo "- **Draven pins:** \`scripts/check_draven_release_pins.sh\` passed on this commit."
             echo "- **Commit:** \`${GITHUB_SHA}\`"
             echo
-            echo "Tags SHOULD be created only via this workflow (Ruleset enforcement may follow)."
-            echo "Rollback of tag content is a SemVer release rollback (#57), not this workflow; cluster emergency pin: docs/ops/emergency-pin.md (#68)."
+            echo "Tags SHOULD be created only via Actions workflows **release** or **release-rollback** (Ruleset enforcement may follow)."
+            echo "Content rollback: Actions → **release-rollback** (#57). Cluster emergency pin: docs/ops/emergency-pin.md (#68)."
             if [[ -n "${PRIOR}" && "${PRIOR}" != "${VERSION}" ]]; then
               echo
               echo "Compare: https://github.com/${GITHUB_REPOSITORY}/compare/${PRIOR}...${VERSION}"

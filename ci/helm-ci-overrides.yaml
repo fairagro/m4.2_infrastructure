@@ -1,0 +1,18 @@
+# CI-only values for `helm template` without SOPS decrypt.
+# Never use as a real cluster overlay.
+fairagro-advanced-middleware-api-chart:
+  rabbitmq:
+    auth:
+      username: ci
+      password: ci
+  couchdb:
+    auth:
+      username: ci
+      password: ci
+
+fairagro-advanced-middleware-harvester-chart:
+  tls:
+    enabled: false
+
+tls:
+  enabled: false

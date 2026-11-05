@@ -11,6 +11,20 @@ This project delivers a dev container with all tools needed (kubectl, helm, sops
 Open the repository and choose **Reopen in Container** (or **Clone in Volume**).
 The configuration lives at `.devcontainer/devcontainer.json`.
 
+### PR quality gates ###
+
+PRs to `main` run automated Helm/YAML/commit/secret/shell checks (see
+[docs/ops/pr-quality-gates.md](docs/ops/pr-quality-gates.md)). Locally:
+
+```bash
+npm ci
+pre-commit install --hook-type pre-commit --hook-type commit-msg
+```
+
+Use Conventional Commits (`commitlint.config.cjs`). After CI lands, a repo admin
+should mark the listed check names **required** on the `main` ruleset (documented
+in the same ops page).
+
 ### Local stack (kind + DinD) ###
 
 To exercise API + harvester together without pushing to Docker Hub, use the `local_dev`

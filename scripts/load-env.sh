@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 (return 0 2>/dev/null) && sourced=1 || sourced=0
 if [ $sourced -eq 0 ]; then
   echo "ERROR, this script is meant to be sourced."
@@ -19,5 +20,6 @@ declare -F __start_kubectl &>/dev/null && complete -o default -F __start_kubectl
 declare -F __start_docker &>/dev/null && complete -o default -F __start_docker d
 
 # Helm secrets integration
-export HELM_SECRETS_SOPS_PATH=$(which sops)
-export HELM_SECRETS_HELM_PATH=$(which helm)
+HELM_SECRETS_SOPS_PATH=$(which sops)
+HELM_SECRETS_HELM_PATH=$(which helm)
+export HELM_SECRETS_SOPS_PATH HELM_SECRETS_HELM_PATH

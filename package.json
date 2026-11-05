@@ -1,0 +1,15 @@
+{
+  "name": "m4.2_infrastructure",
+  "private": true,
+  "description": "FAIRagro m4.2 infrastructure GitOps — commitlint and local npm quality pins",
+  "scripts": {
+    "commitlint": "commitlint --edit"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "21.2.4",
+    "@commitlint/config-conventional": "21.2.4"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

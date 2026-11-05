@@ -1,0 +1,28 @@
+# Cursor commit-message generation (sparkle)
+
+Guidance for Cursor Source Control "Generate commit message". Keep in sync with
+`commitlint.config.cjs` (Devinfra-aligned).
+
+When generating a Git commit message for this repository:
+
+- Use Conventional Commits only: `type(optional-scope): subject`
+- Allowed types: feat, fix, docs, style, refactor, perf, test, build, ci, chore, revert, deps
+- Choose `type` from the **full staged diff**, not from OpenSpec change names or only the last hunk
+
+## Hard type overrides (apply before guessing feat)
+
+- **OpenSpec /opsx-archive is always `chore` (optional scope `openspec`), never `feat`.** If the staged diff moves a
+  change under `openspec/changes/archive/` and/or syncs delta specs into `openspec/specs/`, that commit is opsx cleanup —
+  even when main specs gain new `### Requirement:` text. Example:
+  `chore(openspec): archive <change-name> and sync specs`
+- Other opsx housekeeping alone (propose/apply planning files without shipping runtime) → `chore` / `docs`, not `feat`
+- `feat` / `fix` only when the commit changes **shipped** behaviour (workflows, scripts, Helm/env runtime configs)
+  — not planning trees alone
+
+## Other rules
+
+- Prefer a short scope when clear (e.g. `ci(helm): …`, `fix(fizz): …`); omit when nothing fits
+- Cover every intentional change in the commit
+- Docs-only → `docs`; CI workflow wiring → `ci`; dependency bumps → `deps`
+- Breaking changes: `feat!:` / `fix!:` or a `BREAKING CHANGE:` footer
+- Subject: imperative mood, no trailing period

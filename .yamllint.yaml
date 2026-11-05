@@ -1,0 +1,28 @@
+# Level B: hygiene without fighting Helm values / long lines.
+extends: default
+
+ignore: |
+  **/templates/**
+  **/charts/*.tgz
+  **/*.enc.yaml
+  deps/**
+  node_modules/**
+  .git/**
+
+rules:
+  document-start: disable
+  line-length: disable
+  truthy: disable
+  braces:
+    max-spaces-inside: -1
+  brackets:
+    max-spaces-inside: -1
+  comments:
+    min-spaces-from-content: 1
+  comments-indentation: disable
+  indentation:
+    spaces: consistent
+    indent-sequences: consistent
+  trailing-spaces: enable
+  new-line-at-end-of-file: enable
+  key-duplicates: enable

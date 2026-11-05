@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 (return 0 2>/dev/null) && sourced=1 || sourced=0
 if [ $sourced -eq 0 ]; then
   echo "ERROR, this script is meant to be sourced."
@@ -93,8 +94,9 @@ else
 fi
 
 # set some environment variables for helm secrets and helmfile
-export HELM_SECRETS_SOPS_PATH=$(which sops)
-export HELM_SECRETS_HELM_PATH=$(which helm)
+HELM_SECRETS_SOPS_PATH=$(which sops)
+HELM_SECRETS_HELM_PATH=$(which helm)
+export HELM_SECRETS_SOPS_PATH HELM_SECRETS_HELM_PATH
 
 # import all public keyfiles into gpg keyring so sops can find them
 public_key_path="$environment_path/public_gpg_keys"
@@ -105,11 +107,17 @@ done
 shopt -u nullglob
 
 # Create Bash autocompletion for installed tools
+# shellcheck source=/dev/null
 source /etc/bash_completion
+# shellcheck disable=SC1090
 source <(kubectl completion bash)
+# shellcheck disable=SC1090
 source <(helm completion bash)
+# shellcheck disable=SC1090
 source <(argocd completion bash)
+# shellcheck disable=SC1090
 source <(docker completion bash)
+# shellcheck disable=SC1090
 source <(cmctl completion bash)
 
 # Setup aliases

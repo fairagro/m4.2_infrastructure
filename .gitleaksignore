@@ -1,0 +1,6 @@
+# Historical plaintext that lived briefly as *.enc.decoded.yaml (removed; gitignored).
+# New decoded/plaintext secrets must still fail the scan — do not path-ignore *.decoded.*.
+922a93c01ee6da7aea79ba3070ee0a5ec0975de3:environments/fizz/values/fairagro-advanced-middleware.enc.decoded.yaml:cloudflare-api-key:1
+922a93c01ee6da7aea79ba3070ee0a5ec0975de3:environments/fizz/values/fairagro-advanced-middleware.enc.decoded.yaml:generic-api-key:6
+922a93c01ee6da7aea79ba3070ee0a5ec0975de3:environments/fizz/values/fairagro-advanced-middleware.enc.decoded.yaml:generic-api-key:17
+922a93c01ee6da7aea79ba3070ee0a5ec0975de3:environments/fizz/values/fairagro-advanced-middleware.enc.decoded.yaml:gitlab-pat:6

@@ -1,0 +1,12 @@
+# Extends default rules. SOPS ciphertext trips generic/token heuristics.
+title = "m4.2_infrastructure"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "SOPS encrypted files and decrypt scratch (ciphertext / local artifacts)"
+paths = [
+  '''(?i).*\.enc\.ya?ml$''',
+  '''(?i).*\/\.decrypted~''',
+]

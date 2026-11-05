@@ -1,10 +1,10 @@
 # Emergency pin (Argo CD) #
 
 Emergency rollback **on the cluster**: temporarily run a known-good git revision
-while a lasting fix is prepared (usually a **release rollback via SemVer tag**,
-issue [#57](https://github.com/fairagro/m4.2_infrastructure/issues/57)). This is
-**not** the same as reverting `main` alone (draven follows SemVer **tags**, not
-`main`).
+while a lasting fix is prepared (usually a **SemVer release rollback** via Actions →
+**release-rollback**, issue [#57](https://github.com/fairagro/m4.2_infrastructure/issues/57)).
+This is **not** the same as reverting `main` alone (draven follows SemVer **tags**,
+not `main`).
 
 Tracking: issue [#68](https://github.com/fairagro/m4.2_infrastructure/issues/68)
 (parent epic [#40](https://github.com/fairagro/m4.2_infrastructure/issues/40)).
@@ -15,7 +15,7 @@ Tracking: issue [#68](https://github.com/fairagro/m4.2_infrastructure/issues/68)
 - Project admin **`fairagro-m42-admin`**
 
 Both may pause sync and set Application revisions. Colleagues **without** Argo
-access use the release / SemVer-tag rollback path instead (#57).
+access use Actions → **release-rollback** (SemVer release rollback, #57).
 
 ## Happy path vs rollback (short) ##
 
@@ -23,7 +23,8 @@ access use the release / SemVer-tag rollback path instead (#57).
 |------|----------------|
 | Happy | `feature/*` → PR → `main` → fizz auto-sync; draven promote PR → Actions **release** SemVer tag → draven `*` |
 | **Emergency pin** | Argo: sync-pause → pin wrapper **and** children to a known-good revision (this doc) |
-| **SemVer release rollback** | New **higher** SemVer tag whose tree matches an older good tag; `*` picks it up (#57) — no Argo UI required |
+| **SemVer release rollback** | Actions → **release-rollback**: new **higher** patch tag at previous (or override) tag SHA; `*` picks it up (#57) — no Argo UI |
+
 | Ruleset bypass | **Emergency only** (merge without normal gates); not a substitute for pin or SemVer rollback |
 
 Related: deploy failure notifications [#43](https://github.com/fairagro/m4.2_infrastructure/issues/43)
@@ -154,8 +155,8 @@ done
 
 Prefer a lasting content fix:
 
-1. Ship a **SemVer release rollback** (#57) or a normal fixed SemVer tag / `main`
-   commit as appropriate.
+1. Ship a **SemVer release rollback** (Actions → **release-rollback**, #57) or a
+   normal fixed SemVer tag / `main` commit as appropriate.
 2. Restore tracking, then automated sync:
 
 **Draven** (back to `*`):

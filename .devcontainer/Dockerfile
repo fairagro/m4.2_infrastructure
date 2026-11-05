@@ -45,21 +45,17 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ncat \
     && rm -rf /var/lib/apt/lists/*
 
-# ── Node.js + npm (official binary; apt node is too old for OpenSpec engines) ─
+# ── Node.js + OpenSpec + pre-commit (one layer; apt node is too old for OpenSpec) ─
+# PEP 668: pip --break-system-packages for image-wide pre-commit on PATH.
+# hadolint ignore=DL3013
 RUN curl -fsSL "https://nodejs.org/dist/${NODE_VERSION}/node-${NODE_VERSION}-linux-x64.tar.xz" \
         | tar -xJ --strip-components=1 -C /usr/local \
             "node-${NODE_VERSION}-linux-x64/bin" \
             "node-${NODE_VERSION}-linux-x64/lib" \
             "node-${NODE_VERSION}-linux-x64/include" \
-            "node-${NODE_VERSION}-linux-x64/share"
-
-# ── OpenSpec (spec-driven planning; https://openspec.dev/) ────────────────────
-RUN npm install -g "@fission-ai/openspec@${OPENSPEC_VERSION}"
-
-# ── pre-commit (git hooks; commitlint/yamllint/gitleaks/shellcheck via config) ─
-# PEP 668: install into system site for the image user PATH.
-# hadolint ignore=DL3013
-RUN pip3 install --break-system-packages --no-cache-dir "pre-commit==${PRE_COMMIT_VERSION}"
+            "node-${NODE_VERSION}-linux-x64/share" \
+    && npm install -g "@fission-ai/openspec@${OPENSPEC_VERSION}" \
+    && pip3 install --break-system-packages --no-cache-dir "pre-commit==${PRE_COMMIT_VERSION}"
 
 # ── GitHub CLI (APT repos) ────────────────────────────────────────────────────
 # hadolint ignore=DL3008

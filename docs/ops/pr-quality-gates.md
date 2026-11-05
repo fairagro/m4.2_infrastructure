@@ -22,6 +22,8 @@ Commit messages must pass [Conventional Commits](https://www.conventionalcommits
 | `pr-quality` | `yamllint` | Repo YAML hygiene (excludes Helm `templates/`) |
 | `pr-quality` | `commitlint` | Conventional Commits on PR commit range |
 | `pr-quality` | `gitleaks` | Full-history secret scan via MIT CLI (`.gitleaks.toml` / `.gitleaksignore`; not licensed `gitleaks-action`) |
+| `pr-quality` | `shellcheck` | `scripts/*.sh` |
+| `check-draven-pins` | `check-draven-release-pins` | No pre-release image tags under `environments/draven/values/` (runs every PR; exits 0 when clean) |
 
 ### gitleaks: CI vs pre-commit
 
@@ -29,8 +31,6 @@ Commit messages must pass [Conventional Commits](https://www.conventionalcommits
 - **pre-commit** only scans the files in the commit you are making. It does **not** re-scan history. It also does nothing until hooks are installed (`pre-commit install …`). Commits made without that install (or with `--no-verify`) never see the local hook.
 
 Known-history fingerprints that are already purged from the tree live in `.gitleaksignore`. Do not blanket-ignore `*.decoded.*` in config — new plaintext leaks should still fail.
-| `pr-quality` | `shellcheck` | `scripts/*.sh` |
-| `check-draven-pins` | `check-draven-release-pins` | No pre-release image tags under `environments/draven/values/` (runs every PR; exits 0 when clean) |
 
 ## Admin: mark required status checks
 

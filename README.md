@@ -85,10 +85,9 @@ draven. `./scripts/check_draven_release_pins.sh` (and CI) enforce the draven-onl
 4. Product: merge → **prod release** (version now known)
 5. Infra **draven promote PR**: bump `environments/draven/values/...` to that prod release; optionally align fizz off `-rc` in the same or a follow-up PR
 6. Infra **release** workflow on `main` (Actions → **release**): choose `version_bump`, set Soft
-   **fizz_validated**, validate-then-tag → draven follows `*`. Content rollback is a
-   **SemVer release rollback** (#57), not this workflow; cluster-side **emergency pin**
-   is documented in [docs/ops/emergency-pin.md](docs/ops/emergency-pin.md) (issue #68).
-   Deploy failure notifications: #43.
+   **fizz_validated**, validate-then-tag → draven follows `*`. To undo a bad tag without Argo UI,
+   run Actions → **release-rollback** (SemVer release rollback #57). Cluster-side **emergency pin**:
+   [docs/ops/emergency-pin.md](docs/ops/emergency-pin.md) (#68). Deploy failure notifications: #43.
 
 Do **not** bundle the fizz trial with the draven promote: the prod version is not known
 yet at trial time. Merging a draven promote updates `main` but the cluster stays on the

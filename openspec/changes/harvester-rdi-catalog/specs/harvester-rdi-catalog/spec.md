@@ -35,7 +35,7 @@ Environment value files under `environments/{fizz,draven,elise,local_dev}/values
 
 ### Requirement: Map-to-list rendering into upstream config
 
-The harvester umbrella SHALL render enabled `rdi_catalog` entries into `config.repositories` as a YAML list for the harvester ConfigMap consumed by the CronJob. Disabled entries MUST be omitted. The `enabled` field MUST NOT appear on rendered repository objects. List order SHALL be deterministic (stable sort by RDI id).
+The harvester deployment (product chart via the umbrella) SHALL render enabled `rdi_catalog` entries into `config.repositories` as a YAML list for the harvester ConfigMap consumed by the CronJob. Disabled entries MUST be omitted. The `enabled` field MUST NOT appear on rendered repository objects. List order SHALL be deterministic (stable sort by RDI id).
 
 #### Scenario: Enabled entries become list items
 

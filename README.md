@@ -65,7 +65,7 @@ Cluster deploys for **fizz**, **elise**, and **draven** use Path A (App-of-Apps,
    use `main`, draven uses `lock_children_to_revision: "*"` so children share
    the same SemVer resolution as the wrapper.
 4. CI must **not** rewrite Application YAML pins. Releases for draven are git
-   SemVer tags only (Actions workflow **release**, issue #42).
+   SemVer tags only (Actions **release** #42; content rollback via **release-rollback** #57).
 
 #### Image pins (fizz trial vs draven promote) ####
 
@@ -100,15 +100,26 @@ previous tag until the release workflow cuts a new SemVer tag.
 
 #### Infra SemVer tags (draven) ####
 
-Cut tags only via **Actions → release** on `main` (do not push ad-hoc SemVer tags; a Ruleset
-may enforce this later). Inputs:
+Cut tags only via Actions on `main` — **release** (forward) or **release-rollback** (content
+rollback). Do not push ad-hoc SemVer tags; a Ruleset may enforce this later.
+
+**Forward (`release`) inputs:**
 
 - `version_bump`: `major` | `minor` | `patch` (default `patch`) — same manual model as product repos
 - `fizz_validated`: Soft checkbox — you validated relevant changes on fizz (honor-system; no
   image-lineage check in this workflow)
 
-Gates before tag: Soft checkbox must be true; `./scripts/check_draven_release_pins.sh` must pass.
-The workflow does **not** rewrite Application YAML or env values.
+Gates: Soft checkbox true; `./scripts/check_draven_release_pins.sh` on the commit being tagged.
+Does **not** rewrite Application YAML or env values.
+
+**Rollback (`release-rollback`):** new **higher** tag (always **patch**) pointing at an older
+tag’s SHA so `*` follows the restored tree. Default target = **previous distinct baseline**
+(newest SemVer older than the oldest tag sharing the highest tag’s SHA — skips tips a prior
+rollback already jumped over); optional `revert_to_tag` override. After a rollback that
+restored an older tree, empty default may refuse — pass an explicit older tag instead of
+re-selecting a superseded release. Requires `acknowledge_rollback`. No Soft fizz attestation.
+Pin gate runs on the restored tree; next patch version is computed from scripts on `main`.
+Fails if the target is already the highest SemVer tag.
 
 **Leitplanken** (human choice; CI does not auto-bump from commits):
 

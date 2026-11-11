@@ -1,10 +1,10 @@
 # Emergency pin (Argo CD) #
 
 Emergency rollback **on the cluster**: temporarily run a known-good git revision
-while a lasting fix is prepared (usually a **SemVer release rollback** via Actions
-→ **release-rollback**, issue [#57](https://github.com/fairagro/m4.2_infrastructure/issues/57)).
-This is **not** the same as reverting `main` alone (draven follows SemVer **tags**, not
-`main`).
+while a lasting fix is prepared (usually a **SemVer release rollback** via Actions →
+**release-rollback**, issue [#57](https://github.com/fairagro/m4.2_infrastructure/issues/57)).
+This is **not** the same as reverting `main` alone (draven follows SemVer **tags**,
+not `main`).
 
 Tracking: issue [#68](https://github.com/fairagro/m4.2_infrastructure/issues/68)
 (parent epic [#40](https://github.com/fairagro/m4.2_infrastructure/issues/40)).

@@ -1,4 +1,5 @@
 {
+  "json.schemaDownload.enable": true,
   "github.copilot.chat.commitMessageGeneration.instructions": [
     {
       "text": "Use Conventional Commits: type(optional-scope): subject. Types: feat, fix, docs, style, refactor, perf, test, build, ci, chore, revert, deps. HARD OVERRIDE: if the staged diff is /opsx-archive (move under openspec/changes/archive/ and/or sync deltas into openspec/specs/), type MUST be chore (optional scope openspec), NEVER feat. Example: chore(openspec): archive <name> and sync specs. feat/fix only for shipped runtime behaviour (workflows/scripts/Helm/env), not planning trees alone. Prefer optional short scope when clear. Cover full staged diff. Docs-only → docs; CI → ci; Renovate → deps. Breaking: feat!: or BREAKING CHANGE:. Subject imperative, no trailing period."

@@ -64,12 +64,17 @@ The repository SHALL provide a GitHub Actions workflow distinct from the forward
 
 ### Requirement: Rollback target is previous SemVer or optional override
 
-When the optional override input is empty, the rollback workflow MUST resolve the target tag as the second-highest existing plain SemVer tag (`X.Y.Z`). When the override is non-empty, the workflow MUST use that value as the target tag if and only if it matches plain SemVer and exists. The workflow MUST fail if acknowledgment is false, if previous cannot be resolved (fewer than two plain SemVer tags), if an override is invalid or missing, or if the resolved target equals the current highest plain SemVer tag.
+When the optional override input is empty, the rollback workflow MUST resolve the target tag as the newest plain SemVer tag (`X.Y.Z`) that is strictly older than the oldest existing tag sharing the highest tag's commit SHA (so a prior rollback that re-tagged an older tree does not make empty-default select a superseded tip between that baseline and the highest tag). When the override is non-empty, the workflow MUST use that value as the target tag if and only if it matches plain SemVer and exists. The workflow MUST fail if acknowledgment is false, if previous cannot be resolved (no older distinct baseline below that shared-SHA origin, or fewer than two usable tags), if an override is invalid or missing, or if the resolved target equals the current highest plain SemVer tag.
 
 #### Scenario: Default previous
 
-- **WHEN** an operator leaves the override empty, acknowledgment is true, and plain SemVer tags include at least `1.2.0` and `1.2.1` with `1.2.1` highest
+- **WHEN** an operator leaves the override empty, acknowledgment is true, and plain SemVer tags include at least `1.2.0` and `1.2.1` with distinct SHAs and `1.2.1` highest
 - **THEN** the workflow uses `1.2.0` as the target tag
+
+#### Scenario: Empty default refuses superseded tip after rollback alias
+
+- **WHEN** tags `1.2.0`@C0, `1.2.1`@C1 (bad), and `1.2.2`@C0 (rollback alias) exist and override is empty
+- **THEN** the workflow fails without selecting `1.2.1` (no older baseline below `1.2.0`)
 
 #### Scenario: Override tag
 
@@ -88,7 +93,7 @@ When the optional override input is empty, the rollback workflow MUST resolve th
 
 ### Requirement: Rollback tag is patch bump at target SHA
 
-The rollback workflow MUST compute the next version with a **patch** bump from the highest existing plain SemVer tag (same first-tag rules as forward release when applicable) and MUST create the new annotated tag pointing at the git object of the target tag (same tree; no new commit required). GitHub Release notes MUST state that the release is a SemVer release rollback to the target tag and MUST identify the new and target versions.
+The rollback workflow MUST compute the next version with a **patch** bump from the highest existing plain SemVer tag using the `compute_next_infra_semver.sh` (or equivalent) from the workflow dispatch tip on `main` (not from the checked-out target tree), and MUST create the new annotated tag pointing at the git object of the target tag (same tree; no new commit required). GitHub Release notes MUST state that the release is a SemVer release rollback to the target tag and MUST identify the new and target versions.
 
 #### Scenario: Patch tag on previous SHA
 

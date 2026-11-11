@@ -16,7 +16,10 @@ on:
       revert_to_tag:
         description: >-
           Optional override (plain X.Y.Z). Leave empty to roll back to the previous
-          SemVer tag (second-highest)
+          distinct baseline (newest SemVer older than the oldest tag sharing the
+          highest tag's SHA — skips tips a prior rollback already jumped over).
+          After a rollback that restored an older tree, empty may refuse; pass an
+          explicit older tag instead of re-selecting a superseded bad release
         required: false
         type: string
         default: ""
@@ -63,6 +66,17 @@ jobs:
           git fetch --tags --force origin
           ./scripts/resolve_infra_semver_rollback_target.sh "${{ inputs.revert_to_tag }}" | tee -a "$GITHUB_OUTPUT"
 
+      # Version bump uses scripts from the dispatch tip (main), not the older target tree,
+      # so later compute_next_infra_semver.sh changes still apply when rolling back far.
+      - name: Compute next patch SemVer
+        id: version
+        run: |
+          set -euo pipefail
+          git fetch --tags --force origin
+          next="$(./scripts/compute_next_infra_semver.sh patch)"
+          echo "version=${next}" >> "$GITHUB_OUTPUT"
+          echo "Next version: ${next} (patch rollback to ${{ steps.target.outputs.target }})"
+
       - name: Checkout target tree for pin gate
         uses: actions/checkout@v5
         with:
@@ -72,15 +86,6 @@ jobs:
 
       - name: Reject pre-release image pins under environments/draven/values
         run: ./scripts/check_draven_release_pins.sh
-
-      - name: Compute next patch SemVer
-        id: version
-        run: |
-          set -euo pipefail
-          git fetch --tags --force origin
-          next="$(./scripts/compute_next_infra_semver.sh patch)"
-          echo "version=${next}" >> "$GITHUB_OUTPUT"
-          echo "Next version: ${next} (patch rollback to ${{ steps.target.outputs.target }})"
 
       - name: Create annotated tag and GitHub Release
         env:

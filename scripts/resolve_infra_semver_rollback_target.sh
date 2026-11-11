@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 # Resolve the target tag for a SemVer release rollback (#57).
 # Usage: resolve_infra_semver_rollback_target.sh [override_tag]
-#   override empty → second-highest plain SemVer (previous)
+#   override empty → previous distinct baseline: newest plain SemVer strictly older
+#   than the oldest tag that shares the highest tag's SHA (skips superseded tips
+#   that a prior rollback already jumped over).
 # Prints to stdout (for GITHUB_OUTPUT / eval):
 #   target=<tag>
 #   target_sha=<sha>
@@ -23,13 +25,41 @@ if [[ ${#tags[@]} -eq 0 || -z "${tags[0]:-}" ]]; then
 fi
 
 highest="${tags[0]}"
+highest_sha="$(git rev-list -n1 "${highest}")"
+if [[ -z "${highest_sha}" ]]; then
+  echo "Could not resolve SHA for highest tag ${highest}." >&2
+  exit 1
+fi
 
 if [[ -z "${override}" ]]; then
-  if [[ ${#tags[@]} -lt 2 ]]; then
-    echo "Need at least two plain SemVer tags to resolve previous (highest=${highest})." >&2
+  # Oldest tag that points at the same tree as highest (rollback aliases share SHA).
+  origin="${highest}"
+  for t in "${tags[@]}"; do
+    sha="$(git rev-list -n1 "${t}")"
+    if [[ "${sha}" == "${highest_sha}" ]]; then
+      origin="${t}"
+    fi
+  done
+
+  target=""
+  for t in "${tags[@]}"; do
+    if [[ "${t}" == "${highest}" ]]; then
+      continue
+    fi
+    # version-sort: skip tags that are not strictly older than origin
+    newer="$(printf '%s\n%s\n' "${t}" "${origin}" | sort -V | tail -n1)"
+    if [[ "${newer}" != "${origin}" || "${t}" == "${origin}" ]]; then
+      continue
+    fi
+    target="${t}"
+    break
+  done
+
+  if [[ -z "${target}" ]]; then
+    echo "No older distinct SemVer baseline below ${origin} (highest=${highest} sha=${highest_sha})." >&2
+    echo "Empty revert_to_tag cannot roll back further; pass an explicit older X.Y.Z override." >&2
     exit 1
   fi
-  target="${tags[1]}"
 else
   if [[ ! "${override}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
     echo "Override must be plain SemVer X.Y.Z (got: ${override})." >&2

@@ -113,10 +113,13 @@ Gates: Soft checkbox true; `./scripts/check_draven_release_pins.sh` on the commi
 Does **not** rewrite Application YAML or env values.
 
 **Rollback (`release-rollback`):** new **higher** tag (always **patch**) pointing at an older
-tag’s SHA so `*` follows the restored tree. Default target = **previous** plain SemVer
-(second-highest); optional `revert_to_tag` override. Requires `acknowledge_rollback`.
-No Soft fizz attestation. Pin gate runs on the restored tree. Fails if the target is already
-the highest SemVer tag.
+tag’s SHA so `*` follows the restored tree. Default target = **previous distinct baseline**
+(newest SemVer older than the oldest tag sharing the highest tag’s SHA — skips tips a prior
+rollback already jumped over); optional `revert_to_tag` override. After a rollback that
+restored an older tree, empty default may refuse — pass an explicit older tag instead of
+re-selecting a superseded release. Requires `acknowledge_rollback`. No Soft fizz attestation.
+Pin gate runs on the restored tree; next patch version is computed from scripts on `main`.
+Fails if the target is already the highest SemVer tag.
 
 **Leitplanken** (human choice; CI does not auto-bump from commits):
 

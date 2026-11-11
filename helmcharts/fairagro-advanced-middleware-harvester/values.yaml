@@ -1,5 +1,6 @@
 # Umbrella defaults for harvester OCI chart (rdi_catalog #44).
 # Catalog entries default enabled: false; envs enable + sparse-override.
+# Rendered repository list order is stable-sorted by RDI id (product chart).
 nameOverride: ''
 fullnameOverride: ''
 fairagro-advanced-middleware-harvester-chart:
@@ -12,12 +13,17 @@ fairagro-advanced-middleware-harvester-chart:
       verify_ssl: true
       client_cert_path: /run/secrets/tls/client.crt
       client_key_path: /run/secrets/tls/client.key
+    # Empty list keeps fail-closed upstream: do not set parallel repositories
+    # when rdi_catalog is in use.
     repositories: []
   rdi_catalog:
     bonares:
       enabled: false
       inspire:
+        # Prod CSW; fizz/elise/local_dev override to test/staging URLs.
         csw_url: https://repository.zalf.de/catalogue/csw
+        # Placeholder text this RDI writes instead of leaving an optional field
+        # empty; treated as absent (harvester #413/#437).
         placeholders:
           values:
           - None
@@ -28,6 +34,9 @@ fairagro-advanced-middleware-harvester-chart:
       enabled: false
       inspire:
         csw_url: https://gdk.gdi-de.org/gdi-de/srv/ger/csw
+        # CSW query for DWD datasets. Hit counts differ from the web GUI
+        # (https://www.geoportal.de/search.html?q=Deutscher%20Wetterdienst,
+        # https://www.geoportal.de/search.html?q=DWD).
         xml_query: |
           <?xml version="1.0" encoding="UTF-8"?>
           <csw:GetRecords
@@ -74,6 +83,9 @@ fairagro-advanced-middleware-harvester-chart:
           </csw:GetRecords>
       mapper:
         inspire_general:
+          # DWD writes department names (RTH, KU31 ...) in individualName;
+          # treat them as organisation units, not Persons
+          # (harvester #393 / #489, infra#36).
           individual_name_is_organisation: true
     edal:
       enabled: false
@@ -82,12 +94,20 @@ fairagro-advanced-middleware-harvester-chart:
           xml:
             entry_url: https://doi.ipk-gatersleben.de/sitemap.xml
       parser:
+        # Live e!DAL pages use http://schema.org; http pin also accepts https.
         html_jsonld:
           allowed_context_url: http://schema.org
       mapper:
+        # placeholders is a mapper sibling (not under schema_org_general).
+        # e!DAL renders an unexpanded $licenseURL template for some licences
+        # (#413/#437).
         placeholders:
           unrendered_templates: true
         schema_org_general: {}
+    # Disabled by default: /receive/ scraping hits OpenAgrar PoW gate
+    # (harvester #271, basic#257). Re-enable with mycore_rest + mods_xml
+    # (harvester #523). robots.txt Disallow:/servlets/ blocks Solr; M2M
+    # harvest needs respect_robots_txt: false.
     openagrar:
       enabled: false
       generic:
@@ -110,6 +130,7 @@ fairagro-advanced-middleware-harvester-chart:
         phenoroam_xml: {}
       mapper:
         phenoroam_general: {}
+    # PlabiPD / PubPlant genomes.json (PR #360, m4_rdi_portfolio#7)
     plabipd:
       enabled: false
       generic:
@@ -117,10 +138,12 @@ fairagro-advanced-middleware-harvester-chart:
           pubplant_json_array:
             entry_url: https://raw.githubusercontent.com/usadellab/pubplant2schemaorg/gh-pages/genomes.json
       parser:
+        # Exact IRI from genomes.json records (no trailing slash).
         jsonld:
           allowed_context_url: http://schema.org
       mapper:
         schema_org_general: {}
+    # Publisso via generic + regal_find (replaces deprecated linked_data, #47).
     publisso:
       enabled: false
       generic:
@@ -135,13 +158,19 @@ fairagro-advanced-middleware-harvester-chart:
           allowed_context_url: https://frl.publisso.de/context.json
       mapper:
         regal_general: {}
+    # SRADI — DCAT-AP / ckanext-dcat (PR #359, m4_rdi_portfolio#8).
+    # Catalog name/url live on API known_rdis object for sradi (#50), not mapper.
     sradi:
       enabled: false
       generic:
         protocol:
           dcat_ap:
+            # Only the CKAN "dataset" group: SRADI types methods, software,
+            # services, devices and projects as dcat:Dataset too
+            # (harvester #443 / #500, infra#35).
             entry_url: https://agrihub.gis.lrg.tum.de/catalog.jsonld?fq=groups:dataset
       parser:
+        # dcat_ap yields expanded JSON-LD; pin silences config-load warning.
         jsonld:
           allowed_context_url: https://www.w3.org/ns/dcat#
       mapper:
@@ -150,6 +179,8 @@ fairagro-advanced-middleware-harvester-chart:
       enabled: false
       inspire:
         csw_url: https://atlas.thuenen.de/catalogue/csw
+        # Placeholder text this RDI writes instead of leaving an optional field
+        # empty; treated as absent (harvester #413/#437).
         placeholders:
           values:
           - None

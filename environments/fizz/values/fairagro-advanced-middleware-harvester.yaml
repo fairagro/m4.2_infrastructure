@@ -1,5 +1,6 @@
 fairagro-advanced-middleware-harvester-chart:
-  schedule: 0 2 * * *
+  # CronJob schedule (TZ controlled by timeZone).
+  schedule: "0 2 * * *"
   image:
     tag: 4.0.0
   resources:
@@ -26,6 +27,7 @@ fairagro-advanced-middleware-harvester-chart:
     bonares:
       enabled: true
       inspire:
+        # fizz uses BonaRes test CSW (draven keeps umbrella prod URL).
         csw_url: https://repository-e.dataservice.zalf.de/catalogue/csw
     thunen_atlas:
       enabled: true

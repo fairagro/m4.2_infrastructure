@@ -1,5 +1,6 @@
 fairagro-advanced-middleware-harvester-chart:
-  schedule: 0 2 * * *
+  # CronJob schedule (TZ controlled by timeZone).
+  schedule: "0 2 * * *"
   resources:
     requests:
       cpu: 100m
@@ -22,6 +23,10 @@ fairagro-advanced-middleware-harvester-chart:
     bonares:
       enabled: true
       inspire:
+        # Staging CSW for elise.
         csw_url: https://repository-staging.dataservice.zalf.de/catalogue/csw
+    # Intentional behaviour change vs pre-migration legacy schema_org block:
+    # enable modern catalog shape (generic + html_jsonld + schema_org_general),
+    # aligned with fizz/draven.
     edal:
       enabled: true

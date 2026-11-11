@@ -1,5 +1,8 @@
+# Local kind deployment values for the middleware harvester.
+# Talks to the in-cluster API Service (no public ingress / mTLS).
 fairagro-advanced-middleware-harvester-chart:
-  schedule: 0 0 1 1 *
+  # Effectively disabled CronJob; use test Job helpers for local runs.
+  schedule: "0 0 1 1 *"
   image:
     registry: docker.io
     repository: fairagro-advanced-middleware-harvester
@@ -32,5 +35,6 @@ fairagro-advanced-middleware-harvester-chart:
     bonares:
       enabled: true
       inspire:
+        # Staging CSW; cap records for fast local smoke.
         csw_url: https://repository-staging.dataservice.zalf.de/catalogue/csw
         max_records: 5

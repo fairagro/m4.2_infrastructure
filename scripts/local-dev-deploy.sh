@@ -6,9 +6,9 @@ repo_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
 cluster_name="${KIND_CLUSTER_NAME:-fairagro-local}"
 env_values="${repo_root}/environments/local_dev/values"
 
-api_chart="${repo_root}/helmcharts/fairagro-advanced-middleware"
-harvester_chart="${repo_root}/helmcharts/fairagro-advanced-middleware-harvester"
-sql_chart="${repo_root}/helmcharts/fairagro-advanced-middleware-sql-to-arc"
+api_chart="${repo_root}/charts/fairagro-advanced-middleware"
+harvester_chart="${repo_root}/charts/fairagro-advanced-middleware-harvester"
+sql_chart="${repo_root}/charts/fairagro-advanced-middleware-sql-to-arc"
 
 api_ns="fairagro-advanced-middleware"
 harvester_ns="fairagro-advanced-middleware-harvester"

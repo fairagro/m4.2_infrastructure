@@ -9,7 +9,7 @@
 
 - [x] 2.1 Set fizz-class `environments/*/values/fairagro-m42-applications.yaml` child `*_revision` defaults explicitly to `main` where we enable apps (replace reliance on opaque `HEAD` where touched)
 - [x] 2.2 Implement draven child lock: either chart support (preferred if small) so children share the release revision, or document + set draven values so enabled `*_revision` cannot stay as bare `HEAD`
-- [x] 2.3 Add automated sync on child Application templates in `helmcharts/fairagro-m42-applications` for fizz-class behaviour (and draven as designed)
+- [x] 2.3 Add automated sync on child Application templates in `charts/fairagro-m42-applications` for fizz-class behaviour (and draven as designed)
 
 ## 3. Bootstrap Root script / docs
 

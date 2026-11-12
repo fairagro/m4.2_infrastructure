@@ -39,7 +39,7 @@ Cluster roles (for scoping overlays):
 
 ### 1. Chart name and layout
 
-- **Choice:** Chart path `helmcharts/fairagro-advanced-middleware-sql-to-arc/` with templates for the Zalando `postgresql` CR, converter Job/CronJob (dump-init + convert), ConfigMap, TLS Secrets, ServiceAccount as needed.
+- **Choice:** Chart path `charts/fairagro-advanced-middleware-sql-to-arc/` with templates for the Zalando `postgresql` CR, converter Job/CronJob (dump-init + convert), ConfigMap, TLS Secrets, ServiceAccount as needed.
 - **Why not harvester-style OCI umbrella only?** No OCI sql-to-arc chart exists today; waiting blocks deployability.
 - **Follow-up:** If upstream publishes an OCI chart, thin this repo chart to a dependency wrapper like the harvester.
 
@@ -76,7 +76,7 @@ Cluster roles (for scoping overlays):
 
 ### 6. Argo / naming / namespaces
 
-- **Application:** Template under `helmcharts/fairagro-m42-applications/templates/` (e.g. `advanced-middleware-sql-to-arc.yaml`), valueFiles under `environments/<cluster>/values/fairagro-advanced-middleware-sql-to-arc.yaml` + `.enc.yaml`.
+- **Application:** Template under `charts/fairagro-m42-applications/templates/` (e.g. `advanced-middleware-sql-to-arc.yaml`), valueFiles under `environments/<cluster>/values/fairagro-advanced-middleware-sql-to-arc.yaml` + `.enc.yaml`.
 - **Namespace:** dedicated (e.g. `fairagro-advanced-middleware-sql-to-arc`), not shared with harvester.
 - **Revision key:** e.g. `advanced_middleware_sql_to_arc_revision` on the umbrella values.
 - **v1 target clusters:** **elise** (required); **fizz** optional/when ready; **draven** not in scope.

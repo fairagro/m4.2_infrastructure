@@ -2,7 +2,7 @@
 
 ## 1. Chart scaffold
 
-- [x] 1.1 Create `helmcharts/fairagro-advanced-middleware-sql-to-arc/` with `Chart.yaml`, `values.yaml`, `.helmignore`, and helpers
+- [x] 1.1 Create `charts/fairagro-advanced-middleware-sql-to-arc/` with `Chart.yaml`, `values.yaml`, `.helmignore`, and helpers
 - [x] 1.2 Mirror Zalando `postgresql` CR conventions (`teamId`, volume, users/`databases` including `rdi`, version); document dependency on cluster-wide postgres-operator
 - [x] 1.3 Add default values for image, Zalando CR sizing/storageClass, dump URL, converter config (`rdi`, `api_url`, TLS paths), Job vs CronJob toggles
 
@@ -16,7 +16,7 @@
 
 ## 3. Argo CD wiring
 
-- [x] 3.1 Add Application template under `helmcharts/fairagro-m42-applications/templates/` for advanced-middleware-sql-to-arc (dedicated namespace + valueFiles)
+- [x] 3.1 Add Application template under `charts/fairagro-m42-applications/templates/` for advanced-middleware-sql-to-arc (dedicated namespace + valueFiles)
 - [x] 3.2 Add umbrella revision/enable keys (e.g. `advanced_middleware_sql_to_arc_revision`) in m42-applications values defaults
 - [x] 3.3 Verify with `helm template` that manifests render for elise (and fizz if present)
 

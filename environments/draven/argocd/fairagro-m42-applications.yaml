@@ -13,7 +13,7 @@ spec:
   project: fairagro-m42
   sources:
     - repoURL: https://github.com/fairagro/m4.2_infrastructure.git
-      path: helmcharts/fairagro-m42-applications
+      path: charts/fairagro-m42-applications
       targetRevision: '*'
       helm:
         valueFiles:

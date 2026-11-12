@@ -49,4 +49,3 @@ Selector labels
 app.kubernetes.io/name: {{ include "fairagro-basic-middleware.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
-

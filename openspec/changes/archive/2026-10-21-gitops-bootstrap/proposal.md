@@ -26,7 +26,7 @@ The wrapper Argo CD Application is created on-the-fly by `scripts/setup_project_
 
 - New paths: `environments/{fizz,elise,draven}/argocd/*.yaml` (plaintext Application manifests; no secrets in these files).
 - Script/docs: `scripts/setup_project_in_argocd.sh` and README or ops notes for one-shot Root create.
-- Possible small changes to `helmcharts/fairagro-m42-applications` values/templates for child revision defaults / lock behaviour.
+- Possible small changes to `charts/fairagro-m42-applications` values/templates for child revision defaults / lock behaviour.
 - Env values `fairagro-m42-applications.yaml` may set explicit `*_revision: main` (fizz-class) or tag-aligned revisions (draven) as designed.
 - Clusters: operators must apply Root once per Argo instance; existing live wrapper apps need a documented migration (upsert / adopt) without requiring downtime beyond a sync.
 - Tracks GitHub issue #41 (parent epic #40).

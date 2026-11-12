@@ -1,0 +1,79 @@
+# Pre-commit for m4.2_infrastructure (foundation + gitops hooks — no middleware/ gates).
+# Sync path: docs/synced-paths.yaml profile `infra-consumer` (Infra target only — not product repos).
+# Install as root `.pre-commit-config.yaml` in Infra (copy/symlink) or point PRE_COMMIT_CONFIG_FILE at this file.
+# Product repos use `.pre-commit-config.yaml` instead. See docs/quality.md.
+#
+# Hook map (#351/#353): foundation hygiene + gitleaks + actionlint + md + commitlint/commit-path-check + helm-lint.
+# Not included: ruff/mypy/bandit/pylint/vulture/import-linter/uv-audit/pytest/CST.
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: trailing-whitespace
+        exclude: ^\.agents/skills/(gh|docker|hadolint|uv|scan-secrets)/
+      - id: end-of-file-fixer
+        exclude: ^\.agents/skills/(gh|docker|hadolint|uv|scan-secrets)/
+      - id: check-yaml
+        # Vendor skills + Go-templated Helm (canonical charts/*; deprecated helm|helmchart). Harmless if absent (#63/#349).
+        exclude: ^(\.agents/skills/(gh|docker|hadolint|uv|scan-secrets)/|(charts|helm|helmchart)(/[^/]+)*/templates/.*\.ya?ml$)
+      - id: check-added-large-files
+        exclude: ^\.agents/skills/(gh|docker|hadolint|uv|scan-secrets)/
+      - id: check-merge-conflict
+        exclude: ^\.agents/skills/(gh|docker|hadolint|uv|scan-secrets)/
+      - id: check-toml
+        exclude: ^\.agents/skills/(gh|docker|hadolint|uv|scan-secrets)/
+      - id: debug-statements
+        exclude: ^\.agents/skills/(gh|docker|hadolint|uv|scan-secrets)/
+
+  - repo: local
+    hooks:
+      - id: commitlint
+        name: commitlint (Conventional Commits)
+        # Requires commit-msg stage: uv run pre-commit install --hook-type commit-msg
+        entry: npx --no -- commitlint --edit
+        language: system
+        stages: [commit-msg]
+
+      - id: commit-path-check
+        name: commit path check (feat/fix vs staged paths)
+        entry: bash scripts/commit-path-check.sh
+        language: system
+        stages: [commit-msg]
+
+      - id: gitleaks
+        name: gitleaks secret scan
+        entry: gitleaks protect --staged --verbose
+        language: system
+        pass_filenames: false
+
+      - id: actionlint
+        name: actionlint (GitHub Actions workflows)
+        # Binary from versions.env (Dev Container / scripts/install-pinned-tool.sh actionlint)
+        entry: actionlint
+        language: system
+        files: ^\.github/workflows/
+
+      - id: prettier-md
+        name: prettier format:md
+        entry: npm run format:md
+        language: system
+        files: \.(md|mdc)$
+        pass_filenames: false
+        exclude: ^\.agents/skills/(gh|docker|hadolint|uv|scan-secrets)/
+
+      - id: markdownlint
+        name: markdownlint-cli2
+        entry: npm run lint:md
+        language: system
+        files: \.(md|mdc)$
+        pass_filenames: false
+        exclude: ^\.agents/skills/(gh|docker|hadolint|uv|scan-secrets)/
+
+      - id: helm-lint
+        name: helm lint
+        # Discovers charts/<chart>/ (canonical) plus deprecated helmchart|helm; no-op without charts.
+        entry: bash scripts/run-helm-lint.sh
+        language: system
+        files: ^(charts|helm|helmchart)/
+        pass_filenames: false

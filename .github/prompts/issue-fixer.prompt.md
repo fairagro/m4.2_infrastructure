@@ -1,0 +1,26 @@
+---
+description: "Triage and fix a GitHub issue (OpenSpec for Feature/Refactoring; Task/Bug fast path; no auto fix commits)"
+---
+
+# issue-fixer
+
+Triage and fix a GitHub issue following `.agents/skills/issue-fixer/SKILL.md`:
+
+- Fetch + triage via `m42-ai issue-view` (type, labels, body, **comments**). On conflict, **newer comment wins**
+- When explore is required: explore **in-skill** (no `/opsx-explore`)
+- Branch as `{channel}/issue-<n>-<slug>` (`build` / `ci` / `docs` — see skill; not bare `issue-…` / `feature/`)
+- **Feature / Refactoring:** issue branch → follow openspec-propose → pause → apply → pause → draft PR → archive (last
+  `go`). **Docs-only** (Markdown/comments only, no skill file): same as Bug path — no OpenSpec. Markdown under
+  `openspec/specs/` or `openspec/changes/` is **not** docs-only
+- **Task / Bug / cheap Security:** issue branch → implement → pause → draft PR (no OpenSpec unless the user asks or a
+  skill file is in scope)
+- Misfiled Task that clearly changes `openspec/specs/`: pause once (retype Feature or `use opsx`)
+- `/review-fixer` and `/create-issue` do **not** run `/opsx-*`
+- Real delta specs when a capability contract changes; `skip_specs: true` only for docs/tooling with no spec delta
+- Draft PR only when the tip has **real** commits ahead of `main` — never empty bootstrap
+- Implement only in the working tree — do **not** auto-commit or auto-push fix commits
+- Every pause after uncommitted skill edits: print a Suggested Conventional Commits subject (skill Handoff commit
+  message); do not steer to Cursor sparkle for that handoff
+- Split deferred work via create-issue (`sub-of` vs `linked`)
+
+Do not mark the PR ready.

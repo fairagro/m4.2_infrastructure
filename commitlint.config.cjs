@@ -2,7 +2,7 @@
 module.exports = {
   extends: ["@commitlint/config-conventional"],
   rules: {
-    // Renovate uses commitMessagePrefix "deps:" (shared renovate.json / Devinfra).
+    // Renovate uses commitMessagePrefix "deps:" (shared renovate.json).
     "type-enum": [
       2,
       "always",

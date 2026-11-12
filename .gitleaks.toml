@@ -1,12 +1,16 @@
 # Extends default rules. SOPS ciphertext trips generic/token heuristics.
+# Infra-owned (not Devinfra-synced). Keep history allowlists here so sync can
+# replace `.gitleaksignore` without re-breaking CI.
 title = "m4.2_infrastructure"
 
 [extend]
 useDefault = true
 
 [allowlist]
-description = "SOPS encrypted files and decrypt scratch (ciphertext / local artifacts)"
+description = "SOPS encrypted files, decrypt scratch, and known purged history paths"
 paths = [
   '''(?i).*\.enc\.ya?ml$''',
   '''(?i).*\/\.decrypted~''',
+  # Historical briefly-committed plaintext (removed; still in git history).
+  '''(?i)environments/.*/fairagro-advanced-middleware\.enc\.decoded\.ya?ml$''',
 ]

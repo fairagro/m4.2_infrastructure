@@ -1,0 +1,270 @@
+# Renovate (shared dependency updates)
+
+Canonical Renovate config and GitHub workflow live in this Devinfra repo and are intended for sync into the three m4.2
+product repos ([#13](https://github.com/fairagro/m4.2_middleware_devinfra/issues/13) / [`docs/sync.md`](sync.md)).
+
+| Artifact                                                              | Role                              |
+| --------------------------------------------------------------------- | --------------------------------- |
+| [`renovate.json`](../renovate.json)                                   | Shared Renovate config (SoT)      |
+| [`.github/workflows/renovate.yml`](../.github/workflows/renovate.yml) | Per-repo self-hosted Renovate job |
+
+**Do not** hand-edit these after sync in product checkouts — see [`docs/synced-paths.yaml`](synced-paths.yaml).
+
+## Workflow must not pass `configurationFile: renovate.json`
+
+[`renovatebot/github-action`](https://github.com/renovatebot/github-action) treats `configurationFile` as **global**
+config (`RENOVATE_CONFIG_FILE`). Renovate still loads the cloned repo’s `renovate.json` as **repository** config.
+`customManagers` is mergeable, so the same regex managers are registered twice → Dependency Extraction `regex`
+`fileCount` ≈ 2× pins, then `Cannot find replaceString` / `Error updating branch: update failure` on `versions.env-*`
+branches (Dependency Dashboard #80).
+
+The shared workflow therefore passes only `token` and lets Renovate discover in-repo `renovate.json` once. If you need a
+separate global/bot config file, name it something that is **not** a
+[repository config filename](https://docs.renovatebot.com/configuration-options/) (e.g. `renovate-global.json`) and keep
+repo rules in `renovate.json` only.
+
+## GitHub Actions secret: `DEVINFRA_BOT_TOKEN`
+
+The workflow does **not** use SOPS and does **not** rely on `GITHUB_TOKEN` alone.
+
+Use **one** bot
+[fine-grained personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-fine-grained-personal-access-token)
+for **both** Renovate and [product sync](sync.md), stored as repository Actions secret **`DEVINFRA_BOT_TOKEN`**
+(Devinfra + each product after adoption).
+
+### Repository access
+
+Grant the token access to these repositories (same PAT, multi-repo resource owner selection in the PAT UI):
+
+- `fairagro/m4.2_middleware_devinfra`
+- `fairagro/m4.2_advanced_middleware_api`
+- `fairagro/m4.2_sql_to_arc`
+- `fairagro/m4.2_middleware_harvester`
+- `fairagro/m4.2_infrastructure` (Slice 2 — Renovate + sync; see checklist below)
+
+### Repository permissions (GUI vs API)
+
+Fine-grained PAT **GUI** labels differ from the **REST/API** permission keys used when creating tokens via the API
+([permissions reference](https://docs.github.com/en/rest/authentication/permissions-required-for-fine-grained-personal-access-tokens)).
+Use this mapping:
+
+| GUI label (Create fine-grained PAT) | API permission key     | Access                         | Needed for                                                   |
+| ----------------------------------- | ---------------------- | ------------------------------ | ------------------------------------------------------------ |
+| Metadata                            | `metadata`             | Read-only (often auto-granted) | Repo identity / baseline                                     |
+| Contents                            | `contents`             | Read and write                 | Clone, branches, commits (Renovate + sync)                   |
+| Pull requests                       | `pull_requests`        | Read and write                 | Open/update PRs (Renovate + sync)                            |
+| Workflows                           | `workflows`            | Read and write                 | Push changes under `.github/workflows/` (sync)               |
+| Issues                              | `issues`               | Read and write                 | Renovate + sync `SYNC-FOLLOWUP` product issues               |
+| Dependabot alerts                   | `vulnerability_alerts` | Read-only                      | Renovate `vulnerabilityAlerts` (read GitHub Dependabot CVEs) |
+
+**Do not confuse** GUI **Workflows** (`workflows`) with **Actions** (`actions`). **Workflows** is required to create or
+modify workflow _files_; **Actions** covers workflow _runs_/logs and is not required for the current Renovate/sync
+setup.
+
+Example API fragment (repository permissions object):
+
+```json
+{
+  "metadata": "read",
+  "contents": "write",
+  "pull_requests": "write",
+  "workflows": "write",
+  "issues": "write",
+  "vulnerability_alerts": "read"
+}
+```
+
+Until the secret exists, scheduled Renovate runs fail; after setting it, use **Actions → Renovate → Run workflow**. Sync
+dry-run: **Actions → Sync products → Run workflow** (`dry_run=true` by default).
+
+### Slice 2 checklist: Infra Renovate + sync (`m4.2_infrastructure`)
+
+Operator steps (not automated in CI). Order matters — do **not** unskip live Infra sync before PAT + secret exist.
+
+1. Extend the fine-grained PAT repository access to include `fairagro/m4.2_infrastructure` (same permission table as
+   above).
+2. Set repository Actions secret **`DEVINFRA_BOT_TOKEN`** on Infra to that PAT.
+3. On Devinfra: **Actions → Sync products → Run workflow** with `dry_run=true` and `skip_infrastructure=false` to
+   confirm the resolved allow includes `renovate.json`, `.github/workflows/renovate.yml`, and `versions.env` (not
+   product `.devcontainer/**` / `.python-version`). Unused product pins in `versions.env` are harmless on Infra — they
+   do not install tools until a Dockerfile or hook reads them.
+4. When dry-run looks right: live sync with `dry_run=false` and `skip_infrastructure=false` (push runs still default
+   `skip_infrastructure=true` until operators choose to change that default later).
+5. On Infra: run **Renovate** once (`workflow_dispatch`), then note status on
+   [infra#80](https://github.com/fairagro/m4.2_infrastructure/issues/80).
+6. **Dependabot wind-down (Infra, after Renovate is green):** remove Dependabot **version updates**
+   (`.github/dependabot.yml` ecosystems that duplicate Renovate); keep Dependabot **alerts**; prefer Renovate for
+   security remediation PRs. That edit stays in the Infra repo — this Devinfra doc is the plan only.
+
+### `gitAuthor` (avoid Mend default)
+
+Self-hosted Renovate without `gitAuthor` falls back to Mend’s `renovate@whitesourcesoftware.com`, which logs a WARN and
+can mark commits **Unverified** under Vigilant Mode
+([renovate discussion #39309](https://github.com/renovatebot/renovate/discussions/39309)).
+
+Shared [`renovate.json`](../renovate.json) sets `gitAuthor` to the GitHub user that owns `DEVINFRA_BOT_TOKEN`, using
+that user’s noreply address (`Name <id+login@users.noreply.github.com>`). Today that is
+`Carsten Scharfenberg <138563220+Zalfsten@users.noreply.github.com>`.
+
+Without a global bot config file, Renovate may still **WARN at process start** about Mend’s
+`renovate@whitesourcesoftware.com` before it loads the repo’s `renovate.json`. The workflow therefore also sets
+`RENOVATE_GIT_AUTHOR` to the same string so the warning does not appear; commits already used the repo `gitAuthor` (see
+lock-file PR authorship). If the PAT owner changes, update **both** `renovate.json` `gitAuthor` and the workflow env
+value.
+
+## Local CLI dry-run
+
+The Dev Container pins the **Renovate npm CLI** via `RENOVATE_VERSION` in [`versions.env`](../versions.env) (`renovate`
+on `PATH`). That pin is for local dry-runs only. CI runs
+[`renovatebot/github-action`](../.github/workflows/renovate.yml) at its own Action version (currently `v46.3.12`) — keep
+the Action major aware of the CLI major when bumping either pin; they are not the same artifact.
+
+The **npm CLI** itself is pinned as `NPM_VERSION` in `versions.env` (regex custom manager, `datasourceTemplate: npm`).
+It is independent of `NODE_VERSION` (Node tarball). Bump npm in Devinfra via Renovate; do not hand-edit the pin in
+product checkouts.
+
+**Grouping (`versions.env` SoT):** updates that touch `versions.env` / `.python-version` are split so one stale branch
+cannot abort the whole toolchain (#316 / Dependency Dashboard #80):
+
+| Group                            | Contents                                                                                              |
+| -------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| `versions.env mirrored npm pins` | `prettier` / `markdownlint-cli2` in `package.json` / lock **and** their `versions.env` regex pins     |
+| `versions.env uv pin`            | `UV_VERSION` only (keeps `vulnerabilityAlerts` uv bumps off the daily CLI mega-branch)                |
+| `versions.env runtime pins`      | `python` (incl. `.python-version`), `node`, `npm`, `alpine`, `pip`, `pyinstaller`, Dev Container base |
+| `versions.env CLI pins`          | Remaining `versions.env` tool pins (kubectl/helm/trivy/…, OpenSpec, Renovate CLI, …)                  |
+
+All four use **`recreateWhen: always`** so Renovate recreates the group branch from base instead of patching an
+inconsistent branch (`Cannot find replaceString` / `update failure`). The former single “CLI pins” mega-branch mixed
+runtime + tool bumps and failed when a mid-group replace missed an already-updated string (#80). Mirrored npm stays one
+group so Prettier / markdownlint SoT cannot diverge from the lockfile. `NPM_VERSION` lives in the **runtime** group;
+`RENOVATE_VERSION` / `OPENSPEC_VERSION` stay in the CLI-pins group (not in `package.json`).
+
+**Symlink:** `.devcontainer/.env` → `versions.env` is Compose SoT only. It is listed in Renovate `ignorePaths` so the
+regex managers do not scan the same pin file twice via the symlink (duplicate Detection / double apply).
+
+**`v`-prefixed pins:** For `NODE_VERSION` / GitHub-release CLIs, capture the version **without** the leading `v`
+(`NODE_VERSION=v(?<currentValue>…)` + `autoReplaceStringTemplate` `…=v{{newValue}}`). Capturing `v1.2.3` while
+`extractVersionTemplate` strips `v` for lookup makes `newValue` (`1.2.3`) disagree with the re-extracted `currentValue`
+(`v1.2.3`) → silent `Value is not updated` / `Error updating branch: update failure` (#80).
+
+Other managers (Actions, Dockerfiles outside those files) keep their own groups. Product Renovate still has those synced
+files **disabled** (bump in Devinfra, then sync).
+
+From the repo root (no PR creation):
+
+```bash
+renovate --version
+# Config / dependency discovery only (adjust flags to your Renovate major as needed):
+LOG_LEVEL=debug renovate --platform=local --dry-run=full
+```
+
+Use a GitHub token in the environment when the dry-run must query GitHub datasources (`GITHUB_COM_TOKEN` /
+`DEVINFRA_BOT_TOKEN`). Prefer the personal-token helpers for interactive `gh` work (`GH_TOKEN`); the automation bot PAT
+is separate from developer `GH_TOKEN`.
+
+## Dependabot migration (products + Infra)
+
+| Keep                                                                                 | Drop / avoid                                                                                        |
+| ------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------- |
+| **Dependabot alerts** (Security tab) — Renovate reads them via `vulnerabilityAlerts` | **Dependabot version updates** (`.github/dependabot.yml`)                                           |
+| Prefer **Renovate** for dependency update PRs **and** vulnerability remediation PRs  | Running Dependabot version updates **and** Renovate as general updaters (duplicate PRs)             |
+| Dependency graph + Dependabot alerts enabled on the repo                             | Dependabot **security update** PRs when Renovate owns fixes (two bots opening the same remediation) |
+
+**Infra:** same plan after Slice-2 Renovate is green (see checklist above). Today Infra may still carry a
+`dependabot.yml` (e.g. `devcontainers`); remove version-update ecosystems there in the Infra repo once Renovate owns
+those updates — do not edit Infra from Devinfra sync.
+
+**Recommended:** turn off Dependabot **security update** PRs so only Renovate opens vulnerability fix PRs. Keep
+**alerts** enabled (Security tab). Shared `renovate.json` enables:
+
+- **`vulnerabilityAlerts`** — fix PRs from GitHub Dependabot alerts (labels `dependencies` + `security`, schedule
+  `at any time`, still subject to `prHourlyLimit` / `prConcurrentLimit`).
+- **`osvVulnerabilityAlerts`** — fix PRs from [OSV](https://osv.dev) for **direct** dependencies on Renovate-supported
+  datasources (e.g. `npm`, `pypi`). Not a transitive lockfile scanner.
+
+Neither knob consumes **Code Scanning** findings (including Trivy SARIF from `reusable-check`). Those stay on Security →
+Code scanning; remediation there is still normal Renovate version bumps / lockfile maintenance / manual pins.
+
+`DEVINFRA_BOT_TOKEN` MUST include read access to Dependabot alerts (`vulnerability_alerts`) or GitHub-sourced
+`vulnerabilityAlerts` PRs will not appear.
+
+**Hard requirement after Renovate enablement:** product repos MUST **not** ship `.github/dependabot.yml` (or any
+version-update schedule). Alerts are configured in the repo Security tab — they do **not** need that file. Leaving
+`package-ecosystem: uv` / `devcontainers` / `docker` version updates enabled reopens weekly PRs that fight Renovate and
+Devinfra sync SoT (seen on harvester / sql-to-arc). Spot-check: delete the file in every product that still has it;
+close open Dependabot version-update PRs that only touch shared or Renovate-owned surfaces.
+
+## Adoption / sync (#13)
+
+1. Land config + workflow here; set `DEVINFRA_BOT_TOKEN` on Devinfra; smoke-test Renovate and Sync products with
+   `workflow_dispatch`.
+2. Sync `renovate.json`, `.github/workflows/renovate.yml`, `versions.env`, and other allowlisted paths into API /
+   sql-to-arc / harvester (and Infra after the Slice-2 checklist) via [`docs/sync.md`](sync.md).
+3. Set `DEVINFRA_BOT_TOKEN` per consumer repo for Renovate; **delete** `.github/dependabot.yml` if present (version
+   updates off; alerts stay); converge onto the shared config (drop divergent local rules unless documented as a thin
+   overlay / `extends`).
+
+### What consumer Renovate must not bump
+
+Shared `renovate.json` disables updates in the three product repos **and** Infra for **Devinfra-owned** pins/files (SoT
+stays here; consumers get them via sync):
+
+| Disabled in products                                              | Why                                                                        |
+| ----------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| `versions.env`, `.python-version`                                 | Toolchain SoT — bump in Devinfra only                                      |
+| `package.json`, `package-lock.json`                               | Synced npm toolchain SoT (Prettier / markdownlint-cli2, …)                 |
+| `docker/Dockerfile.product-app.base`                              | Synced base image                                                          |
+| `.devcontainer/Dockerfile`                                        | Synced Dev Container image                                                 |
+| `.devcontainer/devcontainer.json`                                 | Synced Dev Container config (including feature pins)                       |
+| `.devcontainer/devcontainer-lock.json`                            | Feature lock — bump/generate in Devinfra if committed; not SoT in products |
+| `.devcontainer/docker-compose.yml`, `.devcontainer/starship.toml` | Synced Dev Container compose / prompt                                      |
+| `renovate.json`, `.github/workflows/renovate.yml`                 | Shared Renovate SoT                                                        |
+| `.github/workflows/codeql.yml`                                    | Shared CodeQL SoT — toolchain pins stay in `versions.env`                  |
+| Package `docker/dockerfile` (`# syntax=…`)                        | Frontend pin tracked in Devinfra; avoid duplicate product PRs              |
+
+| Disabled in Infra                                 | Why                             |
+| ------------------------------------------------- | ------------------------------- |
+| `versions.env`                                    | Pin SoT — bump in Devinfra only |
+| `package.json`, `package-lock.json`               | Synced npm toolchain SoT        |
+| `renovate.json`, `.github/workflows/renovate.yml` | Shared Renovate SoT             |
+
+**Dev Container features / locks:** bump `ghcr.io/devcontainers/features/…` (and any `devcontainer-lock.json`) in
+**Devinfra**, then sync. Products must not merge Dependabot or Renovate PRs that only retarget shared `.devcontainer/*`
+SoT. Devinfra does not currently commit `devcontainer-lock.json`; do not treat a product-only lock edit as the SoT.
+
+Product Renovate **still** updates product-local deps (e.g. `middleware/` pep621, product last-stage `FROM` images,
+product-only workflows other than synced CodeQL/Renovate). Close any open product PRs that only touch the disabled paths
+after this config is synced.
+
+### Manual Dockerfile pins (not Renovate)
+
+Shared Renovate does **not** bump Alpine apk pins from APKINDEX, nor ad-hoc inline `name==…` pip pins inside product
+Dockerfiles. Fleet **apk pin style (B):** declare versions only as Dockerfile `ARG` defaults, reference them in
+`apk add`:
+
+```dockerfile
+ARG CA_CERTIFICATES_VERSION=20260611-r0
+RUN apk add --no-cache "ca-certificates=${CA_CERTIFICATES_VERSION}"
+```
+
+`ARG FOO_BAR_VERSION` maps to apk package `foo-bar` when that name exists in APKINDEX. If the derived name is missing
+(e.g. `LIBSTDCXX_VERSION` → `libstdcxx`), the updater resolves the package from the first `"pkg=${ARG}"` / `pkg=${ARG}`
+usage in the same Dockerfile, then from a small override map (`LIBSTDCXX_VERSION` → `libstdc++`). Do **not** use inline
+literals `pkg=X.Y.Z-rN` (style A) — the updater fails loud if it finds them. Toolchain pins (`PYTHON_VERSION`, …) stay
+in `versions.env`, not as apk ARG defaults.
+
+For those pins, run the synced helper:
+
+```bash
+./scripts/update-dockerfile-pins.sh
+./scripts/update-dockerfile-pins.sh docker/Dockerfile.<component>
+```
+
+With no path, it updates every `docker/Dockerfile.*` except `Dockerfile.product-app.base`. Pass a path to limit to one
+file. It does **not** write `*.bak` sidecars — use git to roll back. It refreshes apk **ARG** defaults (APKINDEX main +
+community) and Dockerfile `name==` pins from PyPI. Missing APKINDEX packages or leftover inline apk version literals
+exit non-zero. It does **not** edit `versions.env` (Devinfra Renovate + sync). After sync, remove divergent local copies
+(`update-apk-dependencies.sh`, `update-docker-pins.sh`, etc.).
+
+Reusable `reusable-renovate.yml` is **out of scope** for now — the thin workflow is expected to stay identical across
+repos via sync.

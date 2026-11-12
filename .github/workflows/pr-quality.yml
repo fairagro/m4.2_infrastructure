@@ -21,7 +21,9 @@ jobs:
         uses: azure/setup-helm@v4
         with:
           version: v3.22.1
-      - name: Helm template fizz+draven matrix
+      - name: Install kubeconform
+        run: sudo PINNED_TOOL_INSTALL_DIR=/usr/local/bin bash scripts/install-pinned-tool.sh kubeconform
+      - name: Helm template fizz+draven matrix (+ leaf kubeconform)
         run: ./scripts/ci_helm_template_matrix.sh
 
   argocd-yaml-parse:

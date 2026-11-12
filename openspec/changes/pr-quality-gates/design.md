@@ -10,7 +10,8 @@ review but `require_last_push_approval: false` and no required status checks. De
 **Goals:** Required-check-ready CI; local fail-early; conventional commits + steering; PR checklist; admin doc for
 ruleset.
 
-**Non-Goals:** last_push_approval; actionlint; kubeconform; ggshield; Ruleset API edits.
+**Non-Goals:** last_push_approval; ggshield; Ruleset API edits; offline CRD schema packs. Actionlint CI (#95) and leaf
+kubeconform (#75) ship inside existing `pr-quality` jobs (not deferred forever).
 
 ## Decisions
 
@@ -22,7 +23,7 @@ ruleset.
    exclude `**/templates/**` (and chart package tarballs).
 4. **commitlint = Devinfra `commitlint.config.cjs`**; skip `commit-path-check`.
 5. **gitleaks** for secrets (CI + pre-commit), not ggshield.
-6. **shellcheck** on `scripts/*.sh` in this slice; kubeconform → #75.
+6. **shellcheck** on `scripts/*.sh` in this slice; leaf kubeconform after `helm template` → #75 (done in follow-up).
 7. **One PR** with CI + pre-commit + template + steering + docs.
 8. **Required checks: documentation only** — README/docs list exact GitHub check names for an admin.
 
@@ -38,7 +39,7 @@ ruleset.
 1. Land workflows + local tooling; fix yamllint/shellcheck findings.
 2. Merge; run once on a PR so check names exist.
 3. Admin marks required checks per docs.
-4. Follow-ups: #73 actionlint, #75 kubeconform, optional last_push_approval later.
+4. Follow-ups: optional last_push_approval later; stricter kubeconform without `-ignore-missing-schemas`.
 
 ## Open Questions
 

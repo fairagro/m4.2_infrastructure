@@ -17,6 +17,7 @@ npm ci
 # install pre-commit (pipx, uv tool, or distro package) if needed
 sudo PINNED_TOOL_INSTALL_DIR=/usr/local/bin bash scripts/install-pinned-tool.sh actionlint
 sudo PINNED_TOOL_INSTALL_DIR=/usr/local/bin bash scripts/install-pinned-tool.sh gitleaks
+sudo PINNED_TOOL_INSTALL_DIR=/usr/local/bin bash scripts/install-pinned-tool.sh kubeconform  # for ./scripts/ci_helm_template_matrix.sh
 pre-commit install --hook-type pre-commit --hook-type commit-msg
 pre-commit run --all-files   # optional first pass
 ```
@@ -26,12 +27,12 @@ Commit messages must pass [Conventional Commits](https://www.conventionalcommits
 
 ## CI workflows
 
-| Workflow            | Job / check name            | Purpose                                                                                            |
-| ------------------- | --------------------------- | -------------------------------------------------------------------------------------------------- |
-| `pr-quality`        | `helm-template-matrix`      | `helm template` umbrella + leaves × fizz/draven (`ci/helm-ci-overrides.yaml`, TLS off / stub auth) |
-| `pr-quality`        | `argocd-yaml-parse`         | Parse `environments/*/argocd/*.yaml`                                                               |
-| `pr-quality`        | `infra-quality`             | Hygiene bundle: yamllint, commitlint (PRs), gitleaks, shellcheck, actionlint (#96/#95)             |
-| `check-draven-pins` | `check-draven-release-pins` | No pre-release image tags under `environments/draven/values/` (runs every PR; exits 0 when clean)  |
+| Workflow            | Job / check name            | Purpose                                                                                                     |
+| ------------------- | --------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `pr-quality`        | `helm-template-matrix`      | `helm template` umbrella + leaves × fizz/draven; leaf output → kubeconform (`-ignore-missing-schemas`, #75) |
+| `pr-quality`        | `argocd-yaml-parse`         | Parse `environments/*/argocd/*.yaml`                                                                        |
+| `pr-quality`        | `infra-quality`             | Hygiene bundle: yamllint, commitlint (PRs), gitleaks, shellcheck, actionlint (#96/#95)                      |
+| `check-draven-pins` | `check-draven-release-pins` | No pre-release image tags under `environments/draven/values/` (runs every PR; exits 0 when clean)           |
 
 **Ruleset target (4 checks):** `helm-template-matrix`, `argocd-yaml-parse`, `infra-quality`,
 `check-draven-release-pins`. Do not re-add per-linter job names after #96/#95.
@@ -63,7 +64,16 @@ once on a PR:
 4. Do **not** turn on dismiss-stale-reviews (team decision).
 5. Leave `require_last_push_approval` unchanged unless a later change revisits review politics.
 
+### helm-template-matrix + kubeconform (#75)
+
+- **Leaves** (middleware charts): `helm template` output is validated with pinned `kubeconform` via
+  `scripts/run-kubeconform.sh` (`-summary -ignore-missing-schemas` for CRDs we do not ship schemas for).
+- **Umbrella** (`fairagro-m42-applications`): `helm template` only — renders Argo `Application` CRDs; schema/parse
+  coverage for checked-in Argo YAML stays with `argocd-yaml-parse`. No fifth ruleset check.
+- **Local:** `./scripts/ci_helm_template_matrix.sh` needs `kubeconform` on `PATH` (pin via
+  `scripts/install-pinned-tool.sh kubeconform` / `versions.env`); CI installs it in the `helm-template-matrix` job.
+
 ## Out of scope (follow-ups)
 
-- kubeconform — #75
+- Shipping offline CRD schema packs (stricter kubeconform without `-ignore-missing-schemas`)
 - Secret-tool migration tracking — #74 (this repo uses **gitleaks**)

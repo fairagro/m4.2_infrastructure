@@ -1,6 +1,7 @@
 ## 1. Migrate env values
 
-- [x] 1.1 Convert all bare-string `known_rdis` in `environments/fizz/values/fairagro-advanced-middleware.yaml` to `{id: …}`; leave `sradi` description/url intact
+- [x] 1.1 Convert all bare-string `known_rdis` in `environments/fizz/values/fairagro-advanced-middleware.yaml` to
+      `{id: …}`; leave `sradi` description/url intact
 - [x] 1.2 Same for `environments/draven/values/fairagro-advanced-middleware.yaml`
 - [x] 1.3 Same for `environments/elise/values/fairagro-advanced-middleware.yaml`
 - [x] 1.4 Same for `environments/local_dev/values/fairagro-advanced-middleware.yaml`

@@ -44,11 +44,15 @@
 			}
 		}
 	},
+	"remoteEnv": {
+		"PATH": "${containerWorkspaceFolder}/scripts/bin:${containerEnv:PATH}"
+	},
 	"postCreateCommand": {
 		"fix commandhistory permissions": "sudo chown -R vscode:vscode /commandhistory",
 		"import gpg keys": "bash ${containerWorkspaceFolder}/scripts/import-public-gpg-keys.sh",
 		"init submodules": "bash ${containerWorkspaceFolder}/scripts/init-submodules.sh",
 		"npm ci": "npm ci",
+		"install pinned CLIs": "sudo PINNED_TOOL_INSTALL_DIR=/usr/local/bin bash ${containerWorkspaceFolder}/scripts/install-pinned-tool.sh actionlint && sudo PINNED_TOOL_INSTALL_DIR=/usr/local/bin bash ${containerWorkspaceFolder}/scripts/install-pinned-tool.sh gitleaks",
 		"pre-commit hooks": "pre-commit install --hook-type pre-commit --hook-type commit-msg"
 	},
 	"postStartCommand": {

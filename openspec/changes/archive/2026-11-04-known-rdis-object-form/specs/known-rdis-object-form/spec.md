@@ -2,7 +2,9 @@
 
 ### Requirement: known_rdis entries are object-shaped in all env overlays
 
-Every item in `config.known_rdis` under `environments/{fizz,draven,elise,local_dev}/values/fairagro-advanced-middleware.yaml` SHALL be a YAML mapping with a required `id` field. Bare string list items MUST NOT appear.
+Every item in `config.known_rdis` under
+`environments/{fizz,draven,elise,local_dev}/values/fairagro-advanced-middleware.yaml` SHALL be a YAML mapping with a
+required `id` field. Bare string list items MUST NOT appear.
 
 #### Scenario: fizz has no bare-string known_rdis
 
@@ -21,7 +23,8 @@ Every item in `config.known_rdis` under `environments/{fizz,draven,elise,local_d
 
 ### Requirement: SRADI metadata is preserved
 
-The `sradi` `known_rdis` entry on fizz and draven SHALL retain its existing non-empty `description` and `url` values through the migration.
+The `sradi` `known_rdis` entry on fizz and draven SHALL retain its existing non-empty `description` and `url` values
+through the migration.
 
 #### Scenario: sradi object keeps description and url
 
@@ -30,7 +33,8 @@ The `sradi` `known_rdis` entry on fizz and draven SHALL retain its existing non-
 
 ### Requirement: Membership unchanged
 
-Migration SHALL NOT add or remove RDI identifiers from each environment’s `known_rdis` list relative to the pre-migration set (shape change only).
+Migration SHALL NOT add or remove RDI identifiers from each environment’s `known_rdis` list relative to the
+pre-migration set (shape change only).
 
 #### Scenario: same ids before and after on fizz
 

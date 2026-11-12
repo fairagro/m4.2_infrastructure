@@ -8,5 +8,7 @@
 
 ## 2. Process + README
 
-- [x] 2.1 Add short happy-path + emergency pin vs SemVer release rollback + emergency-only ruleset bypass section (in the runbook)
-- [x] 2.2 Link the runbook from README GitOps / rollback text; replace stale emergency-pin → #43 pointer with #68 / docs path
+- [x] 2.1 Add short happy-path + emergency pin vs SemVer release rollback + emergency-only ruleset bypass section (in
+      the runbook)
+- [x] 2.2 Link the runbook from README GitOps / rollback text; replace stale emergency-pin → #43 pointer with #68 / docs
+      path

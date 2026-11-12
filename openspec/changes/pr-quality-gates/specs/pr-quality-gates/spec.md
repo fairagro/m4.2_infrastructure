@@ -2,7 +2,10 @@
 
 ### Requirement: PR CI runs deploy-relevant automated checks
 
-Pull requests targeting `main` SHALL run automated checks that include: `helm template` for the applications umbrella and leaf charts against fizz and draven values (with TLS disabled for render), validation that checked-in Argo Application YAML under `environments/*/argocd/` parses, always-on draven release-pin check (successful no-op when there is nothing to fail), yamllint, commitlint on PR commits, gitleaks secret scan, and shellcheck on `scripts/*.sh`.
+Pull requests targeting `main` SHALL run automated checks that include: `helm template` for the applications umbrella
+and leaf charts against fizz and draven values (with TLS disabled for render), validation that checked-in Argo
+Application YAML under `environments/*/argocd/` parses, always-on draven release-pin check (successful no-op when there
+is nothing to fail), yamllint, commitlint on PR commits, gitleaks secret scan, and shellcheck on `scripts/*.sh`.
 
 #### Scenario: Helm render fails the PR check
 
@@ -16,7 +19,9 @@ Pull requests targeting `main` SHALL run automated checks that include: `helm te
 
 ### Requirement: Local pre-commit mirrors feasible gates
 
-The repository SHALL provide a `.pre-commit-config.yaml` that runs locally feasible mirrors of the quality gates (including yamllint with templates excluded, gitleaks, shellcheck, and commitlint on `commit-msg`), and SHALL document how to install the hooks.
+The repository SHALL provide a `.pre-commit-config.yaml` that runs locally feasible mirrors of the quality gates
+(including yamllint with templates excluded, gitleaks, shellcheck, and commitlint on `commit-msg`), and SHALL document
+how to install the hooks.
 
 #### Scenario: Developer installs hooks
 
@@ -25,7 +30,8 @@ The repository SHALL provide a `.pre-commit-config.yaml` that runs locally feasi
 
 ### Requirement: Conventional commit message steering
 
-The repository SHALL ship Devinfra-compatible `commitlint.config.cjs` and IDE/agent steering (`.cursorrules` and Copilot commit message generation instructions) so generated commit subjects target Conventional Commits.
+The repository SHALL ship Devinfra-compatible `commitlint.config.cjs` and IDE/agent steering (`.cursorrules` and Copilot
+commit message generation instructions) so generated commit subjects target Conventional Commits.
 
 #### Scenario: Non-conventional subject is rejected by commitlint
 
@@ -34,7 +40,8 @@ The repository SHALL ship Devinfra-compatible `commitlint.config.cjs` and IDE/ag
 
 ### Requirement: PR template checklist
 
-The repository SHALL provide `.github/PULL_REQUEST_TEMPLATE.md` with a human checklist covering intent, draven pin rules, secrets hygiene, local/CI checks, and emergency bypass disclosure.
+The repository SHALL provide `.github/PULL_REQUEST_TEMPLATE.md` with a human checklist covering intent, draven pin
+rules, secrets hygiene, local/CI checks, and emergency bypass disclosure.
 
 #### Scenario: Opening a PR shows the template
 
@@ -43,7 +50,8 @@ The repository SHALL provide `.github/PULL_REQUEST_TEMPLATE.md` with a human che
 
 ### Requirement: Admin documentation for required status checks
 
-The repository SHALL document the stable CI check names and that a repository admin must mark them required on the `main` ruleset (documentation only; no automated ruleset mutation).
+The repository SHALL document the stable CI check names and that a repository admin must mark them required on the
+`main` ruleset (documentation only; no automated ruleset mutation).
 
 #### Scenario: Admin checklist lists check names
 

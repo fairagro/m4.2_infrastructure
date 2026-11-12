@@ -1,0 +1,148 @@
+# Personal GH_TOKEN (and legacy GITGUARDIAN_API_KEY if still in the store). Source this file.
+# Environment: Linux Dev Container only (requires /commandhistory).
+# Default: load only (store → keep non-empty process/host env). No TTY prompt.
+# Prompt only when DEV_TOKENS_FORCE=1 (set-dev-tokens.sh) or DEV_TOKENS_PROMPT=1 (scripts/bin/gh).
+# Empty prompt is not persisted. Override host: source ./scripts/set-dev-tokens.sh
+# Store: /commandhistory/tokens.env
+
+if [ "${BASH_SOURCE[0]-}" = "${0-}" ]; then
+  echo "dev-tokens: source this file (do not execute it directly)" >&2
+  echo "dev-tokens: example: source ./scripts/dev-tokens.sh" >&2
+  exit 1
+fi
+
+_dev_tokens_file() {
+  # Test/smoke only: absolute path override (do not use for normal interactive work).
+  if [ -n "${DEV_TOKENS_FILE:-}" ]; then
+    printf '%s\n' "${DEV_TOKENS_FILE}"
+    return 0
+  fi
+  if [ -d /commandhistory ]; then
+    echo /commandhistory/tokens.env
+    return 0
+  fi
+  echo "dev-tokens: /commandhistory missing — personal tokens are supported in the Linux Dev Container only" >&2
+  return 1
+}
+
+# Decode one stored value. Writes use b64:<base64> only — no legacy parsers.
+_dev_tokens_decode_raw() {
+  local raw=$1
+  local decoded
+  if [ "${raw#b64:}" != "${raw}" ]; then
+    if decoded="$(printf '%s' "${raw#b64:}" | base64 -d 2>/dev/null)"; then
+      printf '%s' "${decoded}"
+      return 0
+    fi
+    echo "dev-tokens: ignoring corrupt b64 token entry" >&2
+    return 1
+  fi
+  if [ -n "${raw}" ]; then
+    echo "dev-tokens: ignoring non-b64 token entry (re-run: source ./scripts/set-dev-tokens.sh)" >&2
+  fi
+  return 1
+}
+
+_dev_tokens_get_stored() {
+  local var=$1 line raw
+  [ -f "${_DEV_TOKENS_FILE}" ] || return 0
+  line="$(grep -E "^${var}=" "${_DEV_TOKENS_FILE}" 2>/dev/null | tail -n1)" || true
+  [ -n "${line}" ] || return 0
+  raw="${line#*=}"
+  _dev_tokens_decode_raw "${raw}" || true
+}
+
+_DEV_TOKENS_FILE="$(_dev_tokens_file)" || return 1
+
+# If the environment already holds a store-encoded value (e.g. someone ran
+# `source /commandhistory/tokens.env`), decode it in place before applying the store.
+# Still decode/load legacy GITGUARDIAN_API_KEY from store/env if present (products mid-migration).
+# Fleet secret scan is gitleaks — do not prompt for a GitGuardian key below.
+for _dev_tokens_var in GH_TOKEN GITGUARDIAN_API_KEY; do
+  _dev_tokens_cur="${!_dev_tokens_var-}"
+  if [ -n "${_dev_tokens_cur}" ] && [ "${_dev_tokens_cur#b64:}" != "${_dev_tokens_cur}" ]; then
+    if _dev_tokens_val="$(_dev_tokens_decode_raw "${_dev_tokens_cur}")"; then
+      export "${_dev_tokens_var}=${_dev_tokens_val}"
+    else
+      unset "${_dev_tokens_var}"
+    fi
+  fi
+done
+unset _dev_tokens_var _dev_tokens_cur _dev_tokens_val
+
+# Non-empty store wins; missing/empty store key keeps non-empty process/host env.
+# Absent store file does not blanket-unset (preserves remoteEnv host inject).
+if [ -f "${_DEV_TOKENS_FILE}" ]; then
+  for _dev_tokens_var in GH_TOKEN GITGUARDIAN_API_KEY; do
+    if grep -q "^${_dev_tokens_var}=" "${_DEV_TOKENS_FILE}" 2>/dev/null; then
+      _dev_tokens_val="$(_dev_tokens_get_stored "${_dev_tokens_var}")"
+      if [ -n "${_dev_tokens_val}" ]; then
+        export "${_dev_tokens_var}=${_dev_tokens_val}"
+      fi
+      # Empty decoded (legacy skip marker or corrupt): leave process env as-is.
+    fi
+    # Missing key: leave process env as-is.
+  done
+  unset _dev_tokens_var _dev_tokens_val
+fi
+
+_dev_tokens_write() {
+  local var=$1 val=$2 b64 tmp
+  (
+    set -euo pipefail
+    umask 077
+    touch "${_DEV_TOKENS_FILE}"
+    chmod 600 "${_DEV_TOKENS_FILE}"
+    # Bash may not trip `set -e` on a failing command-substitution assignment — check explicitly.
+    tmp="$(mktemp "${_DEV_TOKENS_FILE}.XXXXXX")" || exit 1
+    # Remove temp (may hold encoded secrets) if we exit before a successful rename.
+    trap 'rm -f "${tmp}"' EXIT
+    # grep exit 1 = no remaining lines (empty or only this var) — OK; other statuses abort.
+    # Capture status before `case` — bash sets $? to 0 when a case arm matches.
+    grep -v "^${var}=" "${_DEV_TOKENS_FILE}" >"${tmp}" 2>/dev/null || {
+      _grep_st=$?
+      case ${_grep_st} in
+        1) ;;
+        *) exit "${_grep_st}" ;;
+      esac
+    }
+    # GNU coreutils in the Dev Container (no BSD wrap fallback).
+    b64="$(printf '%s' "${val}" | base64 -w0)" || exit 1
+    printf '%s=b64:%s\n' "${var}" "${b64}" >>"${tmp}"
+    # Atomic replace: do not truncate the live store via redirect.
+    chmod 600 "${tmp}"
+    mv -f "${tmp}" "${_DEV_TOKENS_FILE}"
+    trap - EXIT
+  )
+}
+
+_dev_tokens_ask() {
+  local var=$1 hint=$2 val
+  if [ -z "${DEV_TOKENS_FORCE:-}" ]; then
+    # Already set (store or host/process) — do not prompt.
+    [ -n "${!var-}" ] && return 0
+  fi
+  { printf '' >/dev/tty; } 2>/dev/null || return 0
+  printf '%s — %s (empty leaves unset; override later: set-dev-tokens.sh)\n> ' "${var}" "${hint}" >/dev/tty
+  IFS= read -r -s val </dev/tty || true
+  printf '\n' >/dev/tty
+  if [ -z "${val}" ]; then
+    # Do not persist empty skip markers.
+    unset "${var}"
+    return 0
+  fi
+  if ! _dev_tokens_write "${var}" "${val}"; then
+    echo "dev-tokens: failed to persist ${var}; value kept for this shell only (re-run: source ./scripts/set-dev-tokens.sh)" >&2
+  fi
+  export "${var}=${val}"
+  return 0
+}
+
+# Load-only by default so Cursor SCM `git` polls / quality scripts never steal the TTY.
+# Interactive ask: set-dev-tokens (FORCE) or the gh wrapper (PROMPT).
+if [ -n "${DEV_TOKENS_FORCE:-}" ] || [ -n "${DEV_TOKENS_PROMPT:-}" ]; then
+  _dev_tokens_ask GH_TOKEN "GitHub PAT (issues + PRs)"
+fi
+unset -f _dev_tokens_file _dev_tokens_write _dev_tokens_ask
+unset -f _dev_tokens_decode_raw _dev_tokens_get_stored
+unset _DEV_TOKENS_FILE

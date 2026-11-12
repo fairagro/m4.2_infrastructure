@@ -1,50 +1,21 @@
-# Software dependencies (git submodules)
+# Optional local build contexts (not git submodules)
 
-These checkouts provide Docker build contexts for the local kind cluster.
-Production still consumes published OCI images/charts from Docker Hub.
+These directories are **not** tracked. Clone them only when you run the kind local stack and want to build images from
+source (`./scripts/local-dev-build.sh`). Production and fizz/draven still use published OCI images from Docker Hub.
 
-| Path | Upstream |
-| ---- | -------- |
+| Path                           | Upstream                                                                                                     |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------ |
 | `m4.2_advanced_middleware_api` | [github.com/fairagro/m4.2_advanced_middleware_api](https://github.com/fairagro/m4.2_advanced_middleware_api) |
-| `m4.2_middleware_harvester` | [github.com/fairagro/m4.2_middleware_harvester](https://github.com/fairagro/m4.2_middleware_harvester) |
-| `m4.2_sql_to_arc` | [github.com/fairagro/m4.2_sql_to_arc](https://github.com/fairagro/m4.2_sql_to_arc) |
+| `m4.2_middleware_harvester`    | [github.com/fairagro/m4.2_middleware_harvester](https://github.com/fairagro/m4.2_middleware_harvester)       |
+| `m4.2_sql_to_arc`              | [github.com/fairagro/m4.2_sql_to_arc](https://github.com/fairagro/m4.2_sql_to_arc)                           |
 
-## Initialise / update
-
-```bash
-./scripts/init-submodules.sh
-# or
-git submodule update --init --recursive
-```
-
-`m4.2_sql_to_arc` uses Git LFS; `init-submodules.sh` sets `GIT_LFS_SKIP_SMUDGE=1`
-(LFS blobs are not required for Docker image builds that copy sources).
-
-## Pin a branch or tag
-
-Git submodules always record a **commit SHA**, not a floating branch name.
-To build against a different branch or tag of one of the repos under `deps/`:
-
-### Local only (no infra commit)
+## Clone (once)
 
 ```bash
-cd deps/m4.2_advanced_middleware_api   # or harvester / sql_to_arc
-git fetch origin
-git checkout my-feature                # or: git checkout v1.2.3
-cd ../..
-./scripts/local-dev-build.sh
+git clone https://github.com/fairagro/m4.2_advanced_middleware_api.git deps/m4.2_advanced_middleware_api
+git clone https://github.com/fairagro/m4.2_middleware_harvester.git deps/m4.2_middleware_harvester
+# sql_to_arc uses Git LFS; skip LFS blobs for image builds that only need sources:
+GIT_LFS_SKIP_SMUDGE=1 git clone https://github.com/fairagro/m4.2_sql_to_arc.git deps/m4.2_sql_to_arc
 ```
 
-### Pin in this repository (share with others)
-
-```bash
-cd deps/m4.2_advanced_middleware_api
-git fetch origin
-git checkout my-feature                # or tag
-cd ../..
-git add deps/m4.2_advanced_middleware_api
-git status                             # shows: modified: ... (new commits)
-git commit -m "Pin advanced middleware API to my-feature"
-```
-
-After that, `git submodule update --init` checks out exactly that SHA for everyone.
+Then checkout any branch/tag you need inside each clone and run `./scripts/local-dev-build.sh`.

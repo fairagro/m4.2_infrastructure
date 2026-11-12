@@ -3,7 +3,7 @@
 #
 # All tool versions are pinned for reproducibility.
 
-FROM mcr.microsoft.com/devcontainers/base:2.1.10-trixie
+FROM mcr.microsoft.com/devcontainers/base:2.2.5-trixie
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
@@ -19,7 +19,8 @@ ARG JQ_VERSION=jq-1.7.1
 ARG HADOLINT_VERSION=v2.12.0
 ARG KIND_VERSION=v0.29.0
 ARG GIT_LFS_VERSION=v3.6.1
-ARG NODE_VERSION=v22.23.1
+# Keep in sync with versions.env NODE_VERSION (SoT) until build-args are wired.
+ARG NODE_VERSION=v26.13.1
 ARG OPENSPEC_VERSION=1.6.0
 ARG PRE_COMMIT_VERSION=4.3.0
 
@@ -55,7 +56,7 @@ RUN curl -fsSL "https://nodejs.org/dist/${NODE_VERSION}/node-${NODE_VERSION}-lin
             "node-${NODE_VERSION}-linux-x64/include" \
             "node-${NODE_VERSION}-linux-x64/share" \
     && npm install -g "@fission-ai/openspec@${OPENSPEC_VERSION}" \
-    && pip3 install --break-system-packages --no-cache-dir "pre-commit==${PRE_COMMIT_VERSION}"
+    && pip3 install --break-system-packages --ignore-installed --no-cache-dir "pre-commit==${PRE_COMMIT_VERSION}"
 
 # ── GitHub CLI (APT repos) ────────────────────────────────────────────────────
 # hadolint ignore=DL3008

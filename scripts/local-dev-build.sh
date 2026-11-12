@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Build middleware images from deps/ submodules and load them into kind.
+# Build middleware images from optional local clones under deps/ and load them into kind.
 set -euo pipefail
 
 repo_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -22,7 +22,7 @@ fail() { echo "ERROR: $*" >&2; exit 1; }
 
 for dir in "$api_dir" "$harvester_dir" "$sql_dir"; do
   if [ ! -f "$dir/pyproject.toml" ] && [ ! -d "$dir/.git" ]; then
-    fail "Missing submodule at $dir — run ./scripts/init-submodules.sh first."
+    fail "Missing local clone at $dir — see deps/README.md (optional; not a git submodule)."
   fi
 done
 

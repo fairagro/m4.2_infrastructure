@@ -1,0 +1,125 @@
+# m42-ai — agent GitHub/git plumbing
+
+Small Python CLI for deterministic GitHub/git work used by `/review-fixer`, `/create-issue`, `/issue-fixer`, and
+`/code-review`.
+
+## Layouts
+
+### Devinfra (workspace member)
+
+In [m4.2_middleware_devinfra](https://github.com/fairagro/m4.2_middleware_devinfra), `scripts/ai` is a
+`tool.uv.workspace` member of the repo-root [`pyproject.toml`](../../pyproject.toml). After `uv sync` at the repo root,
+`m42_ai` is editable in `.venv` so the IDE can resolve imports when that interpreter is selected.
+
+### Product consumers
+
+Product repos sync `scripts/ai/` (including **`scripts/ai/uv.lock`**) but **do not** add it to the root
+`tool.uv.workspace`. Invoke with `--project scripts/ai` (see below). Do not expect root-workspace membership solely
+because Devinfra has it.
+
+Treat the synced `scripts/ai/uv.lock` as source of truth: prefer `uv run --project scripts/ai --locked …`, do **not**
+hand-edit the lock in product checkouts, and do **not** gitignore it once synced (corrections → Devinfra → sync).
+
+## Run
+
+### Devinfra — invoke
+
+From the **repo root** (preferred):
+
+```bash
+uv sync
+uv run m42-ai --help
+uv run m42-ai review-open --pr 22
+```
+
+Equivalent: `uv run --project scripts/ai m42-ai …`.
+
+### Product consumers — invoke
+
+**Primary (silent):** when synced `scripts/bin` is on `PATH` (Dev Container `remoteEnv`), use the wrapper — it unsets a
+conflicting root `VIRTUAL_ENV` then runs `--project scripts/ai`:
+
+```bash
+m42-ai --help
+m42-ai review-open --pr 22
+```
+
+**Portable (no wrapper on `PATH`):**
+
+```bash
+env -u VIRTUAL_ENV uv run --project scripts/ai --locked m42-ai --help
+env -u VIRTUAL_ENV uv run --project scripts/ai --locked m42-ai review-open --pr 22
+```
+
+Do **not** use `uv run --active` (would target the product root `.venv`) and do **not** remove Dev Container
+`VIRTUAL_ENV` (root-venv activation is intentional). `--locked` fails closed if the synced lock is missing or out of
+date — that is intentional. Works on a **host** or in the Dev Container. Auth is whatever `gh` on your `PATH` uses
+(`GH_TOKEN` / `gh auth`) — the Dev Container token store and `scripts/bin/gh` wrapper are optional and DC-only. GitHub
+commands need a repo context (`gh` cwd / remotes), unless you pass `--owner` / `--repo` where the command supports them.
+
+## Commands
+
+| Command                         | Role                                                                                                                                                                                                                                                                                                                                                                                   |
+| ------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `auth-status`                   | Probe `gh auth` as JSON; exit `1` when not ok                                                                                                                                                                                                                                                                                                                                          |
+| `review-open --pr N`            | Ensure PR head checkout, then GraphQL shape; unresolved threads (any author) + finder summary-only work (Copilot **Suppressed comments**, **Previously missed** nested details in `ccr-overview-v2`, **and** `/code-review` marker); soft-enrich `github-code-quality` threads with `code_quality_finding` (`number`/`state`/`rule_id`) from read-only findings REST when correlatable |
+| `review-reply`                  | `in_reply_to` on a review comment, or `--conversation` PR comment                                                                                                                                                                                                                                                                                                                      |
+| `review-resolve --thread-id ID` | `resolveReviewThread`                                                                                                                                                                                                                                                                                                                                                                  |
+| `issue-view --issue N`          | Stable triage JSON (type, labels, body, comments, url, triage:\* extract)                                                                                                                                                                                                                                                                                                              |
+| `issue-create`                  | Type + severity/cost (+ optional `--practicality`, `--parent`)                                                                                                                                                                                                                                                                                                                         |
+| `issue-branch --issue N`        | Ensure `{channel}/issue-N-slug` checked out (`--channel` build/ci/docs, default build; no commit/PR)                                                                                                                                                                                                                                                                                   |
+| `branch-ahead`                  | JSON ahead count vs `origin/<base>`; exit `1` when tip is not ahead                                                                                                                                                                                                                                                                                                                    |
+| `issue-start --issue N`         | Ensure channel branch, push when ahead of base, draft PR with `Fixes #N` (no empty commit). Default Summary = issue title + commit subjects; optional `--body` / `--body-file` (Fixes appended if missing)                                                                                                                                                                             |
+| `pr-strip-footer --pr N`        | Remove trailing “Made with Cursor” (and similar) footers from a PR body                                                                                                                                                                                                                                                                                                                |
+| `code-review-context`           | Local or PR diff metadata JSON (paths/stats; full patch omitted) for `/code-review`                                                                                                                                                                                                                                                                                                    |
+| `code-review-report-write`      | Write review Markdown under `/tmp/code-review-*.md`; JSON includes path                                                                                                                                                                                                                                                                                                                |
+| `code-review-publish`           | COMMENT Pull Request Review via `gh pr review --comment` (local no-op without `--pr`)                                                                                                                                                                                                                                                                                                  |
+| `pr-for-commit --sha`           | Resolve a PR that contains a commit (sync follow-up)                                                                                                                                                                                                                                                                                                                                   |
+| `sync-followup-ids`             | Parse `SYNC-FOLLOWUP: <id>` from PR body+comments or offline `--body` / `--comment`                                                                                                                                                                                                                                                                                                    |
+| `sync-followup-ensure`          | Create or reuse product Task (`--repo`, `--id`; dedupe label `sync-followup:<id>`)                                                                                                                                                                                                                                                                                                     |
+| `openspec-instructions`         | Fail-closed wrap of `openspec instructions <artifact> --change <name> --json`; prints instructions fields or `{ok:false, agent_action:"stop"}` — agents MUST NOT invent `template` / `resolvedOutputPath` on failure                                                                                                                                                                   |
+
+`review-open` has a **git side effect**: it checks out the PR head (via `gh pr checkout`) when the current branch
+differs. Dirty trees on a **different** branch refuse with structured JSON
+`{"ok": false, "pr_head_ok": false, "error_code": "dirty_wrong_branch", "agent_action": "stop", …}` and exit `1`. Other
+gate failures use `empty_head_ref` / `checkout_failed` / `checkout_branch_mismatch`. Dirty on the correct head is
+allowed. Success includes `ok` / `pr_head_ok` true plus `head_ref` / `current_branch`. Paste-only / shaping-only callers
+can use library `fetch_review_open(..., ensure_checkout=False)`.
+
+**Summary-only Copilot work:** older overviews pack findings under a **Suppressed comments** heading (`**path:line**` +
+bullet). Newer `<!-- ccr-overview-v2 -->` bodies may show **Findings: None** and still leave actionable items only under
+**Previously missed** nested `<details>` (backtick `path:line` + prose, no review threads). Both shapes land in
+`summary_only_findings` / `open_summary_review_id` for `/review-fixer` until a triage reply names
+`#pullrequestreview-<id>`. **Resolved since last review** is not open work.
+
+## Tests
+
+### Devinfra — tests
+
+From the repo root (pytest configured in root `pyproject.toml`):
+
+```bash
+uv run pytest
+```
+
+### Product consumers — tests
+
+```bash
+env -u VIRTUAL_ENV uv run --project scripts/ai pytest
+```
+
+Fixtures only — no live GitHub in CI.
+
+## Maintaining `scripts/ai/uv.lock` (Devinfra)
+
+In this repo `scripts/ai` is a workspace member, so `uv lock` at the repo root updates the **root** `uv.lock` only. To
+refresh the **standalone** lock that products sync, lock a copy of the project outside the workspace (same
+`pyproject.toml` / `src` / `README.md`), then copy `uv.lock` into `scripts/ai/`:
+
+```bash
+tmpdir=$(mktemp -d)
+cp scripts/ai/pyproject.toml scripts/ai/README.md "$tmpdir/"
+cp -a scripts/ai/src "$tmpdir/"
+(cd "$tmpdir" && uv lock)
+cp "$tmpdir/uv.lock" scripts/ai/uv.lock
+```

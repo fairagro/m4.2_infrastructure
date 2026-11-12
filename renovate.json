@@ -1,0 +1,501 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+
+  "extends": ["config:recommended"],
+
+  "timezone": "Europe/Berlin",
+
+  "gitAuthor": "Carsten Scharfenberg <138563220+Zalfsten@users.noreply.github.com>",
+
+  "enabledManagers": [
+    "dockerfile",
+    "devcontainer",
+    "pep621",
+    "pip_requirements",
+    "npm",
+    "github-actions",
+    "custom.regex"
+  ],
+
+  "pip_requirements": {
+    "managerFilePatterns": ["/^scripts\\/quality-tools-pins\\.txt$/"]
+  },
+
+  "rangeStrategy": "auto",
+
+  "prHourlyLimit": 2,
+  "prConcurrentLimit": 5,
+
+  "labels": ["dependencies"],
+
+  "rebaseWhen": "behind-base-branch",
+
+  "commitMessagePrefix": "deps:",
+  "commitMessageAction": "update",
+
+  "lockFileMaintenance": {
+    "enabled": true,
+    "schedule": ["before 3am on monday"],
+    "recreateWhen": "always"
+  },
+
+  "osvVulnerabilityAlerts": true,
+
+  "vulnerabilityAlerts": {
+    "enabled": true,
+    "labels": ["dependencies", "security"],
+    "schedule": ["at any time"]
+  },
+
+  "devcontainer": {
+    "managerFilePatterns": ["/(^|/)\\.devcontainer(/.+)?/devcontainer\\.json$/"]
+  },
+
+  "customManagers": [
+    {
+      "description": "Python patch pin in versions.env",
+      "customType": "regex",
+      "managerFilePatterns": ["/^versions\\.env$/"],
+      "matchStrings": ["PYTHON_VERSION=(?<currentValue>\\d+\\.\\d+\\.\\d+)"],
+      "datasourceTemplate": "docker",
+      "depNameTemplate": "python",
+      "extractVersionTemplate": "^(?<version>\\d+\\.\\d+\\.\\d+)$",
+      "versioningTemplate": "loose"
+    },
+    {
+      "description": "Python patch pin in .python-version (mirror of versions.env)",
+      "customType": "regex",
+      "managerFilePatterns": ["/^\\.python-version$/"],
+      "matchStrings": ["^(?<currentValue>\\d+\\.\\d+\\.\\d+)\\s*$"],
+      "datasourceTemplate": "docker",
+      "depNameTemplate": "python",
+      "extractVersionTemplate": "^(?<version>\\d+\\.\\d+\\.\\d+)$",
+      "versioningTemplate": "loose"
+    },
+    {
+      "description": "Alpine patch pin in versions.env",
+      "customType": "regex",
+      "managerFilePatterns": ["/^versions\\.env$/"],
+      "matchStrings": ["ALPINE_VERSION=(?<currentValue>\\d+\\.\\d+\\.\\d+)"],
+      "datasourceTemplate": "docker",
+      "depNameTemplate": "alpine",
+      "extractVersionTemplate": "^(?<version>\\d+\\.\\d+\\.\\d+)$",
+      "versioningTemplate": "loose"
+    },
+    {
+      "description": "Dev Container base image pin in versions.env",
+      "customType": "regex",
+      "managerFilePatterns": ["/^versions\\.env$/"],
+      "matchStrings": [
+        "DEVCONTAINER_BASE_IMAGE=(?<depName>[^:\\s#]+):(?<currentValue>[^\\s#]+)"
+      ],
+      "datasourceTemplate": "docker",
+      "versioningTemplate": "docker"
+    },
+    {
+      "description": "uv pin in versions.env",
+      "customType": "regex",
+      "managerFilePatterns": ["/^versions\\.env$/"],
+      "matchStrings": ["UV_VERSION=(?<currentValue>[^\\s#]+)"],
+      "datasourceTemplate": "pypi",
+      "depNameTemplate": "uv",
+      "versioningTemplate": "pep440"
+    },
+    {
+      "description": "pip pin in versions.env",
+      "customType": "regex",
+      "managerFilePatterns": ["/^versions\\.env$/"],
+      "matchStrings": ["PIP_VERSION=(?<currentValue>[^\\s#]+)"],
+      "datasourceTemplate": "pypi",
+      "depNameTemplate": "pip",
+      "versioningTemplate": "pep440"
+    },
+    {
+      "description": "PyInstaller pin in versions.env",
+      "customType": "regex",
+      "managerFilePatterns": ["/^versions\\.env$/"],
+      "matchStrings": ["PYINSTALLER_VERSION=(?<currentValue>[^\\s#]+)"],
+      "datasourceTemplate": "pypi",
+      "depNameTemplate": "pyinstaller",
+      "versioningTemplate": "pep440"
+    },
+    {
+      "description": "Trivy pin in versions.env",
+      "customType": "regex",
+      "managerFilePatterns": ["/^versions\\.env$/"],
+      "matchStrings": ["TRIVY_VERSION=v(?<currentValue>[^\\s#]+)"],
+      "datasourceTemplate": "github-releases",
+      "depNameTemplate": "aquasecurity/trivy",
+      "extractVersionTemplate": "^v?(?<version>.*)$",
+      "autoReplaceStringTemplate": "TRIVY_VERSION=v{{newValue}}"
+    },
+    {
+      "description": "Renovate CLI pin in versions.env",
+      "customType": "regex",
+      "managerFilePatterns": ["/^versions\\.env$/"],
+      "matchStrings": ["RENOVATE_VERSION=(?<currentValue>[^\\s#]+)"],
+      "datasourceTemplate": "npm",
+      "depNameTemplate": "renovate",
+      "versioningTemplate": "npm"
+    },
+    {
+      "description": "OpenSpec CLI pin in versions.env",
+      "customType": "regex",
+      "managerFilePatterns": ["/^versions\\.env$/"],
+      "matchStrings": ["OPENSPEC_VERSION=(?<currentValue>[^\\s#]+)"],
+      "datasourceTemplate": "npm",
+      "depNameTemplate": "@fission-ai/openspec",
+      "versioningTemplate": "npm"
+    },
+    {
+      "description": "Prettier pin in versions.env",
+      "customType": "regex",
+      "managerFilePatterns": ["/^versions\\.env$/"],
+      "matchStrings": ["PRETTIER_VERSION=(?<currentValue>[^\\s#]+)"],
+      "datasourceTemplate": "npm",
+      "depNameTemplate": "prettier",
+      "versioningTemplate": "npm"
+    },
+    {
+      "description": "markdownlint-cli2 pin in versions.env",
+      "customType": "regex",
+      "managerFilePatterns": ["/^versions\\.env$/"],
+      "matchStrings": ["MARKDOWNLINT_CLI2_VERSION=(?<currentValue>[^\\s#]+)"],
+      "datasourceTemplate": "npm",
+      "depNameTemplate": "markdownlint-cli2",
+      "versioningTemplate": "npm"
+    },
+    {
+      "description": "Node pin in versions.env",
+      "customType": "regex",
+      "managerFilePatterns": ["/^versions\\.env$/"],
+      "matchStrings": ["NODE_VERSION=v(?<currentValue>[^\\s#]+)"],
+      "datasourceTemplate": "node-version",
+      "depNameTemplate": "node",
+      "extractVersionTemplate": "^v?(?<version>.*)$",
+      "autoReplaceStringTemplate": "NODE_VERSION=v{{newValue}}"
+    },
+    {
+      "description": "npm CLI pin in versions.env",
+      "customType": "regex",
+      "managerFilePatterns": ["/^versions\\.env$/"],
+      "matchStrings": ["NPM_VERSION=(?<currentValue>[^\\s#]+)"],
+      "datasourceTemplate": "npm",
+      "depNameTemplate": "npm",
+      "versioningTemplate": "npm"
+    },
+    {
+      "description": "kubectl pin in versions.env",
+      "customType": "regex",
+      "managerFilePatterns": ["/^versions\\.env$/"],
+      "matchStrings": ["KUBECTL_VERSION=v(?<currentValue>[^\\s#]+)"],
+      "datasourceTemplate": "github-releases",
+      "depNameTemplate": "kubernetes/kubernetes",
+      "extractVersionTemplate": "^v?(?<version>.*)$",
+      "autoReplaceStringTemplate": "KUBECTL_VERSION=v{{newValue}}"
+    },
+    {
+      "description": "Helm pin in versions.env",
+      "customType": "regex",
+      "managerFilePatterns": ["/^versions\\.env$/"],
+      "matchStrings": ["HELM_VERSION=v(?<currentValue>[^\\s#]+)"],
+      "datasourceTemplate": "github-releases",
+      "depNameTemplate": "helm/helm",
+      "extractVersionTemplate": "^v?(?<version>.*)$",
+      "autoReplaceStringTemplate": "HELM_VERSION=v{{newValue}}"
+    },
+    {
+      "description": "Minikube pin in versions.env",
+      "customType": "regex",
+      "managerFilePatterns": ["/^versions\\.env$/"],
+      "matchStrings": ["MINIKUBE_VERSION=v(?<currentValue>[^\\s#]+)"],
+      "datasourceTemplate": "github-releases",
+      "depNameTemplate": "kubernetes/minikube",
+      "extractVersionTemplate": "^v?(?<version>.*)$",
+      "autoReplaceStringTemplate": "MINIKUBE_VERSION=v{{newValue}}"
+    },
+    {
+      "description": "SOPS pin in versions.env",
+      "customType": "regex",
+      "managerFilePatterns": ["/^versions\\.env$/"],
+      "matchStrings": ["SOPS_VERSION=v(?<currentValue>[^\\s#]+)"],
+      "datasourceTemplate": "github-releases",
+      "depNameTemplate": "getsops/sops",
+      "extractVersionTemplate": "^v?(?<version>.*)$",
+      "autoReplaceStringTemplate": "SOPS_VERSION=v{{newValue}}"
+    },
+    {
+      "description": "age pin in versions.env",
+      "customType": "regex",
+      "managerFilePatterns": ["/^versions\\.env$/"],
+      "matchStrings": ["AGE_VERSION=v(?<currentValue>[^\\s#]+)"],
+      "datasourceTemplate": "github-releases",
+      "depNameTemplate": "FiloSottile/age",
+      "extractVersionTemplate": "^v?(?<version>.*)$",
+      "autoReplaceStringTemplate": "AGE_VERSION=v{{newValue}}"
+    },
+    {
+      "description": "yq pin in versions.env",
+      "customType": "regex",
+      "managerFilePatterns": ["/^versions\\.env$/"],
+      "matchStrings": ["YQ_VERSION=v(?<currentValue>[^\\s#]+)"],
+      "datasourceTemplate": "github-releases",
+      "depNameTemplate": "mikefarah/yq",
+      "extractVersionTemplate": "^v?(?<version>.*)$",
+      "autoReplaceStringTemplate": "YQ_VERSION=v{{newValue}}"
+    },
+    {
+      "description": "xq pin in versions.env",
+      "customType": "regex",
+      "managerFilePatterns": ["/^versions\\.env$/"],
+      "matchStrings": ["XQ_VERSION=v(?<currentValue>[^\\s#]+)"],
+      "datasourceTemplate": "github-releases",
+      "depNameTemplate": "sibprogrammer/xq",
+      "extractVersionTemplate": "^v?(?<version>.*)$",
+      "autoReplaceStringTemplate": "XQ_VERSION=v{{newValue}}"
+    },
+    {
+      "description": "yamlfmt pin in versions.env",
+      "customType": "regex",
+      "managerFilePatterns": ["/^versions\\.env$/"],
+      "matchStrings": ["YAMLFMT_VERSION=v(?<currentValue>[^\\s#]+)"],
+      "datasourceTemplate": "github-releases",
+      "depNameTemplate": "google/yamlfmt",
+      "extractVersionTemplate": "^v?(?<version>.*)$",
+      "autoReplaceStringTemplate": "YAMLFMT_VERSION=v{{newValue}}"
+    },
+    {
+      "description": "hadolint pin in versions.env",
+      "customType": "regex",
+      "managerFilePatterns": ["/^versions\\.env$/"],
+      "matchStrings": ["HADOLINT_VERSION=v(?<currentValue>[^\\s#]+)"],
+      "datasourceTemplate": "github-releases",
+      "depNameTemplate": "hadolint/hadolint",
+      "extractVersionTemplate": "^v?(?<version>.*)$",
+      "autoReplaceStringTemplate": "HADOLINT_VERSION=v{{newValue}}"
+    },
+    {
+      "description": "Starship pin in versions.env",
+      "customType": "regex",
+      "managerFilePatterns": ["/^versions\\.env$/"],
+      "matchStrings": ["STARSHIP_VERSION=v(?<currentValue>[^\\s#]+)"],
+      "datasourceTemplate": "github-releases",
+      "depNameTemplate": "starship/starship",
+      "extractVersionTemplate": "^v?(?<version>.*)$",
+      "autoReplaceStringTemplate": "STARSHIP_VERSION=v{{newValue}}"
+    },
+    {
+      "description": "container-structure-test pin in versions.env",
+      "customType": "regex",
+      "managerFilePatterns": ["/^versions\\.env$/"],
+      "matchStrings": ["CST_VERSION=v(?<currentValue>[^\\s#]+)"],
+      "datasourceTemplate": "github-releases",
+      "depNameTemplate": "GoogleContainerTools/container-structure-test",
+      "extractVersionTemplate": "^v?(?<version>.*)$",
+      "autoReplaceStringTemplate": "CST_VERSION=v{{newValue}}"
+    },
+    {
+      "description": "gitleaks pin in versions.env",
+      "customType": "regex",
+      "managerFilePatterns": ["/^versions\\.env$/"],
+      "matchStrings": ["GITLEAKS_VERSION=v(?<currentValue>[^\\s#]+)"],
+      "datasourceTemplate": "github-releases",
+      "depNameTemplate": "gitleaks/gitleaks",
+      "extractVersionTemplate": "^v?(?<version>.*)$",
+      "autoReplaceStringTemplate": "GITLEAKS_VERSION=v{{newValue}}"
+    },
+    {
+      "description": "actionlint pin in versions.env",
+      "customType": "regex",
+      "managerFilePatterns": ["/^versions\\.env$/"],
+      "matchStrings": ["ACTIONLINT_VERSION=v(?<currentValue>[^\\s#]+)"],
+      "datasourceTemplate": "github-releases",
+      "depNameTemplate": "rhysd/actionlint",
+      "extractVersionTemplate": "^v?(?<version>.*)$",
+      "autoReplaceStringTemplate": "ACTIONLINT_VERSION=v{{newValue}}"
+    },
+    {
+      "description": "kubeconform pin in versions.env",
+      "customType": "regex",
+      "managerFilePatterns": ["/^versions\\.env$/"],
+      "matchStrings": ["KUBECONFORM_VERSION=v(?<currentValue>[^\\s#]+)"],
+      "datasourceTemplate": "github-releases",
+      "depNameTemplate": "yannh/kubeconform",
+      "extractVersionTemplate": "^v?(?<version>.*)$",
+      "autoReplaceStringTemplate": "KUBECONFORM_VERSION=v{{newValue}}"
+    }
+  ],
+
+  "packageRules": [
+    {
+      "description": "Product repos: do not bump Devinfra-synced SoT files (land in Devinfra, then sync #13)",
+      "matchRepositories": [
+        "fairagro/m4.2_advanced_middleware_api",
+        "fairagro/m4.2_sql_to_arc",
+        "fairagro/m4.2_middleware_harvester"
+      ],
+      "matchFileNames": [
+        "versions.env",
+        ".python-version",
+        "package.json",
+        "package-lock.json",
+        "docker/Dockerfile.product-app.base",
+        ".devcontainer/Dockerfile",
+        ".devcontainer/devcontainer.json",
+        ".devcontainer/devcontainer-lock.json",
+        ".devcontainer/docker-compose.yml",
+        ".devcontainer/starship.toml",
+        "renovate.json",
+        ".github/workflows/renovate.yml",
+        ".github/workflows/codeql.yml"
+      ],
+      "enabled": false
+    },
+    {
+      "description": "Product repos: BuildKit frontend pin is documented/bumped in Devinfra examples",
+      "matchRepositories": [
+        "fairagro/m4.2_advanced_middleware_api",
+        "fairagro/m4.2_sql_to_arc",
+        "fairagro/m4.2_middleware_harvester"
+      ],
+      "matchPackageNames": ["docker/dockerfile"],
+      "enabled": false
+    },
+    {
+      "description": "Infra: do not bump Devinfra-synced Renovate/pin SoT (land in Devinfra, then sync #13)",
+      "matchRepositories": [
+        "fairagro/m4.2_infrastructure"
+      ],
+      "matchFileNames": [
+        "versions.env",
+        "package.json",
+        "package-lock.json",
+        "renovate.json",
+        ".github/workflows/renovate.yml"
+      ],
+      "enabled": false
+    },
+    {
+      "description": "Python 3.12 global lock (versions.env + .python-version)",
+      "matchManagers": [
+        "dockerfile",
+        "devcontainer",
+        "github-actions",
+        "custom.regex"
+      ],
+      "allowedVersions": "/^3\\.12/",
+      "groupName": "Python 3.12 runtime",
+      "matchPackageNames": ["/python/"]
+    },
+    {
+      "description": "Runtime Sync: Docker + Devcontainer base images",
+      "matchManagers": ["dockerfile", "devcontainer", "custom.regex"],
+      "groupName": "Runtime base (Docker + Devcontainer)",
+      "matchPackageNames": [
+        "/^alpine$/",
+        "/^mcr\\.microsoft\\.com/devcontainers/"
+      ]
+    },
+    {
+      "description": "Devcontainer features",
+      "matchManagers": ["devcontainer"],
+      "groupName": "Devcontainer features",
+      "separateMinorPatch": true,
+      "matchPackageNames": ["/ghcr\\.io/.*/features//", "//features//"]
+    },
+    {
+      "description": "Python application dependencies (uv / pep621)",
+      "matchManagers": ["pep621"],
+      "groupName": "Python dependencies (uv)",
+      "rangeStrategy": "widen",
+      "separateMinorPatch": true
+    },
+    {
+      "description": "Python build tools (pip/uv/pyinstaller via regex)",
+      "matchDatasources": ["pypi"],
+      "groupName": "Python build tools"
+    },
+    {
+      "description": "npm datasource default group (non-mirrored); prettier/markdownlint-cli2 overridden below",
+      "matchDatasources": ["npm"],
+      "groupName": "npm toolchain"
+    },
+    {
+      "description": "GitHub release CLI pins in versions.env",
+      "matchDatasources": ["github-releases"],
+      "groupName": "GitHub release CLIs",
+      "separateMinorPatch": true
+    },
+    {
+      "description": "GitHub Actions updates (stable grouping)",
+      "matchManagers": ["github-actions"],
+      "matchUpdateTypes": ["patch", "minor"],
+      "groupName": "GitHub Actions"
+    },
+    {
+      "description": "GitHub Actions major updates",
+      "matchManagers": ["github-actions"],
+      "matchUpdateTypes": ["major"],
+      "groupName": "GitHub Actions (major)"
+    },
+    {
+      "description": "Alpine Docker tags: patch-only (images + versions.env regex)",
+      "matchDatasources": ["docker"],
+      "matchPackageNames": ["alpine"],
+      "matchUpdateTypes": ["patch"],
+      "groupName": "Alpine Docker (patch)"
+    },
+    {
+      "description": "Disable Alpine Docker minor/major bumps",
+      "matchDatasources": ["docker"],
+      "matchPackageNames": ["alpine"],
+      "matchUpdateTypes": ["minor", "major"],
+      "enabled": false
+    },
+    {
+      "description": "Catch-all versions.env tool pins (k8s/security/query CLIs, Renovate, OpenSpec, …). Later rules below peel runtime/uv/mirrored-npm into smaller recreateWhen-always branches (#316 / #80).",
+      "matchFileNames": ["versions.env"],
+      "groupName": "versions.env CLI pins",
+      "separateMinorPatch": false,
+      "recreateWhen": "always"
+    },
+    {
+      "description": "versions.env / .python-version language & image runtime pins — split from the CLI mega-branch so one replaceString miss cannot abort all toolchain bumps (#80).",
+      "matchFileNames": ["versions.env", ".python-version"],
+      "matchPackageNames": [
+        "python",
+        "node",
+        "npm",
+        "alpine",
+        "pip",
+        "pyinstaller",
+        "mcr.microsoft.com/devcontainers/base"
+      ],
+      "groupName": "versions.env runtime pins",
+      "separateMinorPatch": false,
+      "recreateWhen": "always"
+    },
+    {
+      "description": "Isolate UV_VERSION pin in versions.env so vulnerabilityAlerts / security bumps do not share a mega-branch with other versions.env pins (#316).",
+      "matchFileNames": ["versions.env"],
+      "matchPackageNames": ["uv"],
+      "groupName": "versions.env uv pin",
+      "separateMinorPatch": false,
+      "recreateWhen": "always"
+    },
+    {
+      "description": "Mirrored npm: prettier + markdownlint-cli2 (package.json/lock + versions.env regex). Same group so SoT cannot diverge; recreateWhen always (#316).",
+      "matchPackageNames": ["prettier", "markdownlint-cli2"],
+      "groupName": "versions.env mirrored npm pins",
+      "separateMinorPatch": false,
+      "recreateWhen": "always"
+    }
+  ],
+
+  "ignorePaths": [
+    "**/node_modules/**",
+    "**/__pycache__/**",
+    "openspec/changes/**",
+    ".devcontainer/.env"
+  ]
+}

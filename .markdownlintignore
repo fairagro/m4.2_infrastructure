@@ -1,0 +1,24 @@
+# Vendor agent skills (`gh skill install`; do not hand-edit).
+.agents/skills/gh/**
+.agents/skills/docker/**
+.agents/skills/hadolint/**
+.agents/skills/uv/**
+
+# OpenSpec-managed trees (generated ## structure / example URLs — not prose docs).
+openspec/**
+.cursor/commands/opsx-*.md
+.cursor/skills/openspec-*/**
+.cursor/rules/openspec-*.mdc
+.github/prompts/opsx-*
+.github/skills/openspec-*/**
+
+# Not Markdown documentation
+LICENSE
+
+# Raw Copilot CCR review-body fixtures (HTML + ZWSP paths — not prose docs)
+scripts/ai/tests/fixtures/copilot_ccr_*.md
+
+# Third-party / local environments / build artifacts
+.venv/**
+node_modules/**
+dist/**

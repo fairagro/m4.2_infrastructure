@@ -8,3 +8,7 @@ charts/*/charts/*.tgz
 charts/*/Chart.lock
 couchdb-data-*.tgz
 node_modules/
+# Optional local kind build contexts (see deps/README.md) — not git submodules
+/deps/m4.2_advanced_middleware_api/
+/deps/m4.2_middleware_harvester/
+/deps/m4.2_sql_to_arc/

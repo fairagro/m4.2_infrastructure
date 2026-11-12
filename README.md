@@ -34,15 +34,11 @@ Use Conventional Commits (`commitlint.config.cjs`). After CI lands, a repo admin
 
 ### Local stack (kind + DinD)
 
-To exercise API + harvester together without pushing to Docker Hub, use the `local_dev` environment. Software sources
-live as **git submodules** under `deps/` (initialised by `postCreateCommand`).
+To exercise API + harvester together without pushing to Docker Hub, use the `local_dev` environment. Clone product repos
+into `deps/` only when you need source builds (optional — not git submodules; see `deps/README.md`).
 
 ```bash
-# Prefer when cloning outside an existing Dev Container:
-git clone --recurse-submodules https://github.com/fairagro/m4.2_infrastructure.git
-
-# Inside the Dev Container:
-./scripts/init-submodules.sh      # if postCreate already ran, this is a no-op refresh
+# Inside the Dev Container (after optional deps clones):
 ./scripts/local-dev-up.sh         # kind cluster + ingress-nginx
 ./scripts/local-dev-build.sh      # docker build from deps/ + kind load
 ./scripts/local-dev-deploy.sh     # helm install with environments/local_dev/values

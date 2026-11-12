@@ -53,7 +53,7 @@ jobs:
           fi
 
       - name: Checkout (tags for resolution)
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
           fetch-tags: true
@@ -78,7 +78,7 @@ jobs:
           echo "Next version: ${next} (patch rollback to ${{ steps.target.outputs.target }})"
 
       - name: Checkout target tree for pin gate
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
           fetch-tags: true

@@ -1,13 +1,13 @@
 # Software dependencies (git submodules)
 
-These checkouts provide Docker build contexts for the local kind cluster.
-Production still consumes published OCI images/charts from Docker Hub.
+These checkouts provide Docker build contexts for the local kind cluster. Production still consumes published OCI
+images/charts from Docker Hub.
 
-| Path | Upstream |
-| ---- | -------- |
+| Path                           | Upstream                                                                                                     |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------ |
 | `m4.2_advanced_middleware_api` | [github.com/fairagro/m4.2_advanced_middleware_api](https://github.com/fairagro/m4.2_advanced_middleware_api) |
-| `m4.2_middleware_harvester` | [github.com/fairagro/m4.2_middleware_harvester](https://github.com/fairagro/m4.2_middleware_harvester) |
-| `m4.2_sql_to_arc` | [github.com/fairagro/m4.2_sql_to_arc](https://github.com/fairagro/m4.2_sql_to_arc) |
+| `m4.2_middleware_harvester`    | [github.com/fairagro/m4.2_middleware_harvester](https://github.com/fairagro/m4.2_middleware_harvester)       |
+| `m4.2_sql_to_arc`              | [github.com/fairagro/m4.2_sql_to_arc](https://github.com/fairagro/m4.2_sql_to_arc)                           |
 
 ## Initialise / update
 
@@ -17,13 +17,13 @@ Production still consumes published OCI images/charts from Docker Hub.
 git submodule update --init --recursive
 ```
 
-`m4.2_sql_to_arc` uses Git LFS; `init-submodules.sh` sets `GIT_LFS_SKIP_SMUDGE=1`
-(LFS blobs are not required for Docker image builds that copy sources).
+`m4.2_sql_to_arc` uses Git LFS; `init-submodules.sh` sets `GIT_LFS_SKIP_SMUDGE=1` (LFS blobs are not required for Docker
+image builds that copy sources).
 
 ## Pin a branch or tag
 
-Git submodules always record a **commit SHA**, not a floating branch name.
-To build against a different branch or tag of one of the repos under `deps/`:
+Git submodules always record a **commit SHA**, not a floating branch name. To build against a different branch or tag of
+one of the repos under `deps/`:
 
 ### Local only (no infra commit)
 

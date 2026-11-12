@@ -1,8 +1,7 @@
-# Argo CD manifests — draven #
+# Argo CD manifests — draven
 
-GitOps Path A: the **wrapper** Application here uses `targetRevision: '*'` (highest
-SemVer git tag). Apply it with the bootstrap script (no Root Application).
-Child apps use `lock_children_to_revision: "*"` in values.
+GitOps Path A: the **wrapper** Application here uses `targetRevision: '*'` (highest SemVer git tag). Apply it with the
+bootstrap script (no Root Application). Child apps use `lock_children_to_revision: "*"` in values.
 
 ```bash
 ./scripts/setup_project_in_argocd.sh draven

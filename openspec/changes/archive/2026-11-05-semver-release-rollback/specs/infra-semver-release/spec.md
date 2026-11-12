@@ -2,11 +2,15 @@
 
 ### Requirement: SemVer release rollback via separate workflow
 
-The repository SHALL provide a GitHub Actions workflow distinct from the forward release workflow that creates a new higher infra SemVer git tag and GitHub Release for rolling draven back to a prior release tree. The rollback workflow MUST be triggerable only with `workflow_dispatch` on branch `main`. It MUST NOT require Soft fizz attestation. It MUST NOT rewrite Application manifests or environment value files. It MUST NOT call the Argo CD API.
+The repository SHALL provide a GitHub Actions workflow distinct from the forward release workflow that creates a new
+higher infra SemVer git tag and GitHub Release for rolling draven back to a prior release tree. The rollback workflow
+MUST be triggerable only with `workflow_dispatch` on branch `main`. It MUST NOT require Soft fizz attestation. It MUST
+NOT rewrite Application manifests or environment value files. It MUST NOT call the Argo CD API.
 
 #### Scenario: Rollback from main succeeds
 
-- **WHEN** an operator runs the rollback workflow on `main` with acknowledgment true, a resolvable target tag, and gates pass
+- **WHEN** an operator runs the rollback workflow on `main` with acknowledgment true, a resolvable target tag, and gates
+  pass
 - **THEN** the workflow creates a new SemVer tag and GitHub Release whose notes identify a SemVer release rollback
 
 #### Scenario: Rejected off main
@@ -16,11 +20,16 @@ The repository SHALL provide a GitHub Actions workflow distinct from the forward
 
 ### Requirement: Rollback target is previous SemVer or optional override
 
-When the optional override input is empty, the rollback workflow MUST resolve the target tag as the second-highest existing plain SemVer tag (`X.Y.Z`). When the override is non-empty, the workflow MUST use that value as the target tag if and only if it matches plain SemVer and exists. The workflow MUST fail if acknowledgment is false, if previous cannot be resolved (fewer than two plain SemVer tags), if an override is invalid or missing, or if the resolved target equals the current highest plain SemVer tag.
+When the optional override input is empty, the rollback workflow MUST resolve the target tag as the second-highest
+existing plain SemVer tag (`X.Y.Z`). When the override is non-empty, the workflow MUST use that value as the target tag
+if and only if it matches plain SemVer and exists. The workflow MUST fail if acknowledgment is false, if previous cannot
+be resolved (fewer than two plain SemVer tags), if an override is invalid or missing, or if the resolved target equals
+the current highest plain SemVer tag.
 
 #### Scenario: Default previous
 
-- **WHEN** an operator leaves the override empty, acknowledgment is true, and plain SemVer tags include at least `1.2.0` and `1.2.1` with `1.2.1` highest
+- **WHEN** an operator leaves the override empty, acknowledgment is true, and plain SemVer tags include at least `1.2.0`
+  and `1.2.1` with `1.2.1` highest
 - **THEN** the workflow uses `1.2.0` as the target tag
 
 #### Scenario: Override tag
@@ -40,7 +49,10 @@ When the optional override input is empty, the rollback workflow MUST resolve th
 
 ### Requirement: Rollback tag is patch bump at target SHA
 
-The rollback workflow MUST compute the next version with a **patch** bump from the highest existing plain SemVer tag (same first-tag rules as forward release when applicable) and MUST create the new annotated tag pointing at the git object of the target tag (same tree; no new commit required). GitHub Release notes MUST state that the release is a SemVer release rollback to the target tag and MUST identify the new and target versions.
+The rollback workflow MUST compute the next version with a **patch** bump from the highest existing plain SemVer tag
+(same first-tag rules as forward release when applicable) and MUST create the new annotated tag pointing at the git
+object of the target tag (same tree; no new commit required). GitHub Release notes MUST state that the release is a
+SemVer release rollback to the target tag and MUST identify the new and target versions.
 
 #### Scenario: Patch tag on previous SHA
 
@@ -49,7 +61,8 @@ The rollback workflow MUST compute the next version with a **patch** bump from t
 
 ### Requirement: Draven pin gate on rollback tree
 
-Before creating the rollback tag, the rollback workflow MUST run the draven release-pin check against the tree of the target tag and MUST NOT create a tag if that check fails.
+Before creating the rollback tag, the rollback workflow MUST run the draven release-pin check against the tree of the
+target tag and MUST NOT create a tag if that check fails.
 
 #### Scenario: Dirty pins on target tree block rollback
 
@@ -58,7 +71,9 @@ Before creating the rollback tag, the rollback workflow MUST run the draven rele
 
 ### Requirement: Shared concurrency for SemVer tag producers
 
-The forward release workflow and the rollback workflow MUST share a single concurrency group so that only one of them creates or pushes an infra SemVer tag at a time, and MUST NOT cancel an in-progress run of the other (`cancel-in-progress: false`).
+The forward release workflow and the rollback workflow MUST share a single concurrency group so that only one of them
+creates or pushes an infra SemVer tag at a time, and MUST NOT cancel an in-progress run of the other
+(`cancel-in-progress: false`).
 
 #### Scenario: Overlapping dispatch waits
 
@@ -69,12 +84,18 @@ The forward release workflow and the rollback workflow MUST share a single concu
 
 ### Requirement: Operator documentation for SemVer and release cadence
 
-The repository README (or linked ops docs) MUST document: (1) Leitplanken for choosing major vs minor vs patch for infra tags on the **forward** release workflow; (2) that infra tags are cut via the forward release workflow after a draven promote lands on `main`; (3) that Soft fizz attestation is required on forward release and honor-system; (4) that tags SHOULD be created only via the forward **or** SemVer release rollback workflows (Ruleset enforcement MAY be deferred); (5) that SemVer release rollback defaults to the previous plain SemVer tag (optional override), always patch-bumps, tags the target tag’s SHA, and does not use Soft fizz attestation; (6) when to use emergency pin vs SemVer release rollback.
+The repository README (or linked ops docs) MUST document: (1) Leitplanken for choosing major vs minor vs patch for infra
+tags on the **forward** release workflow; (2) that infra tags are cut via the forward release workflow after a draven
+promote lands on `main`; (3) that Soft fizz attestation is required on forward release and honor-system; (4) that tags
+SHOULD be created only via the forward **or** SemVer release rollback workflows (Ruleset enforcement MAY be deferred);
+(5) that SemVer release rollback defaults to the previous plain SemVer tag (optional override), always patch-bumps, tags
+the target tag’s SHA, and does not use Soft fizz attestation; (6) when to use emergency pin vs SemVer release rollback.
 
 #### Scenario: Operator finds bump guidance
 
 - **WHEN** an operator opens the documented GitOps / release section before cutting a release
-- **THEN** they can determine typical bump choice for an image-only promote vs breaking ops change and the Soft checkbox expectation
+- **THEN** they can determine typical bump choice for an image-only promote vs breaking ops change and the Soft checkbox
+  expectation
 
 #### Scenario: Operator finds rollback entry point
 

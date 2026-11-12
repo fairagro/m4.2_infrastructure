@@ -1,7 +1,7 @@
-# Argo CD manifests — fizz #
+# Argo CD manifests — fizz
 
-GitOps Path A: the **wrapper** Application here pins the umbrella chart to `main`
-with automated sync. Apply it with the bootstrap script (no Root Application).
+GitOps Path A: the **wrapper** Application here pins the umbrella chart to `main` with automated sync. Apply it with the
+bootstrap script (no Root Application).
 
 ```bash
 ./scripts/setup_project_in_argocd.sh fizz

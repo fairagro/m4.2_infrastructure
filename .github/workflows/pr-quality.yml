@@ -20,7 +20,7 @@ jobs:
       - name: Install Helm
         uses: azure/setup-helm@v4
         with:
-          version: v3.16.3
+          version: v3.22.1
       - name: Helm template fizz+draven matrix
         run: ./scripts/ci_helm_template_matrix.sh
 

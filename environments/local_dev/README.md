@@ -3,7 +3,7 @@
 Prerequisites (inside the Dev Container with DinD):
 
 ```bash
-./scripts/init-submodules.sh   # once / after clone
+# Optional: clone product repos into deps/ (see deps/README.md) — not git submodules
 ./scripts/local-dev-up.sh      # kind + ingress + Zalando postgres-operator
 ./scripts/local-dev-build.sh   # docker build + kind load
 ./scripts/local-dev-deploy.sh  # helm install API + harvester + sql-to-arc
@@ -23,7 +23,7 @@ source ./scripts/set_context.sh local_dev
 
 ## Notes
 
-- Images are built from git submodules under `deps/` and never pushed.
+- Images are built from optional local clones under `deps/` (gitignored) and never pushed.
 - `sql-to-arc` chart: `charts/fairagro-advanced-middleware-sql-to-arc` (Zalando `postgresql` CR, converter Job with
   dump-reload init container). Values: `values/fairagro-advanced-middleware-sql-to-arc.yaml`.
 - Postgres Operator is installed by `local-dev-up.sh` (not present on kind by default). Ensure `teamId: fairagro` is

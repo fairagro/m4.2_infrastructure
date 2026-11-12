@@ -9,7 +9,7 @@ context: |
   - Helm charts + Argo CD Application umbrella (fairagro-m42-applications)
   - SOPS + GPG for secrets (*.enc.yaml); public keys under environments/*/public_gpg_keys
   - Dev Container: kubectl, helm, sops, argocd, kind, Node/OpenSpec
-  - Local integration: kind + DinD (scripts/local-dev-*.sh); build contexts in deps/ (git submodules)
+  - Local integration: kind + DinD (scripts/local-dev-*.sh); optional build contexts in deps/ (local clones, not submodules)
 
   Environments (values overlays):
   - fizz — test (e.g. middleware-test.fairagro.net)
@@ -44,5 +44,5 @@ rules:
     - Note Argo CD sync / umbrella revision implications when chart or dependency versions change
     - Call out cluster network constraints (e.g. BonaRes hostAliases/proxies, TLS trust)
   tasks:
-    - Separate "values-only" steps from "chart/template" and "submodule/image rebuild" steps
+    - Separate "values-only" steps from "chart/template" and "deps clone / image rebuild" steps
     - Include a verification step (helm template, dry-run, or kubectl get) where practical

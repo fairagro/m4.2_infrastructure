@@ -6,6 +6,5 @@ elise_admin.yaml
 **/*.decoded.*
 charts/*/charts/*.tgz
 charts/*/Chart.lock
-charts/fairagro-advanced-middleware/Chart.yaml
 couchdb-data-*.tgz
 node_modules/

@@ -17,6 +17,7 @@ npm ci
 # install pre-commit (pipx, uv tool, or distro package) if needed
 sudo PINNED_TOOL_INSTALL_DIR=/usr/local/bin bash scripts/install-pinned-tool.sh actionlint
 sudo PINNED_TOOL_INSTALL_DIR=/usr/local/bin bash scripts/install-pinned-tool.sh gitleaks
+sudo PINNED_TOOL_INSTALL_DIR=/usr/local/bin bash scripts/install-pinned-tool.sh kubeconform  # for ./scripts/ci_helm_template_matrix.sh
 pre-commit install --hook-type pre-commit --hook-type commit-msg
 pre-commit run --all-files   # optional first pass
 ```
@@ -69,6 +70,8 @@ once on a PR:
   `scripts/run-kubeconform.sh` (`-summary -ignore-missing-schemas` for CRDs we do not ship schemas for).
 - **Umbrella** (`fairagro-m42-applications`): `helm template` only — renders Argo `Application` CRDs; schema/parse
   coverage for checked-in Argo YAML stays with `argocd-yaml-parse`. No fifth ruleset check.
+- **Local:** `./scripts/ci_helm_template_matrix.sh` needs `kubeconform` on `PATH` (pin via
+  `scripts/install-pinned-tool.sh kubeconform` / `versions.env`); CI installs it in the `helm-template-matrix` job.
 
 ## Out of scope (follow-ups)
 

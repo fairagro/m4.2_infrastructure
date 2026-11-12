@@ -16,7 +16,8 @@ Review-ruleset politics stay as-is for now (option C); we maximize **automatic**
 - `.github/PULL_REQUEST_TEMPLATE.md` checklist from #46.
 - Docs: how to install pre-commit; **documentation-only** list of check names for an admin to mark required on the
   ruleset (no Ruleset API automation).
-- **Non-goals:** `require_last_push_approval`; actionlint (#73); kubeconform (#75); ggshield (#74 follows gitleaks);
+- **Non-goals:** `require_last_push_approval`; ggshield (#74 follows gitleaks); offline CRD schema packs. Actionlint CI
+  and leaf kubeconform landed later (#95 / #75) inside existing `pr-quality` jobs — not separate ruleset check names.
   dismiss-stale-reviews; notifications (#43).
 
 ## Capabilities

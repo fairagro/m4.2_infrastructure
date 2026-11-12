@@ -2,12 +2,12 @@
 
 ## Requirement: Dedicated Helm chart for sql-to-arc
 
-The infrastructure repository SHALL provide a Helm chart at `helmcharts/fairagro-advanced-middleware-sql-to-arc/` that deploys sql-to-arc as its own Argo CD Application, parallel to the advanced middleware harvester, without embedding sql-to-arc into the harvester chart.
+The infrastructure repository SHALL provide a Helm chart at `charts/fairagro-advanced-middleware-sql-to-arc/` that deploys sql-to-arc as its own Argo CD Application, parallel to the advanced middleware harvester, without embedding sql-to-arc into the harvester chart.
 
 ### Scenario: Chart is installable via umbrella Application
 
 - **WHEN** an environment enables the sql-to-arc Application in `fairagro-m42-applications`
-- **THEN** Argo CD syncs a Helm release from `helmcharts/fairagro-advanced-middleware-sql-to-arc` into a dedicated namespace for sql-to-arc
+- **THEN** Argo CD syncs a Helm release from `charts/fairagro-advanced-middleware-sql-to-arc` into a dedicated namespace for sql-to-arc
 
 ## Requirement: Postgres RDI database via Zalando Operator
 

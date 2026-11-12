@@ -1,26 +1,26 @@
-{{- if .Values.advanced_middleware_revision }}
-{{- $rev := include "fairagro-m42-applications.childRevision" (dict "root" . "key" "advanced_middleware_revision") }}
+{{- if .Values.basic_middleware_revision }}
+{{- $rev := include "fairagro-m42-applications.childRevision" (dict "root" . "key" "basic_middleware_revision") }}
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: fairagro-advanced-middleware
+  name: basic-middleware
   namespace: fairagro-m42-applications
 spec:
   project: fairagro-m42
   sources:
     - repoURL: https://github.com/fairagro/m4.2_infrastructure.git
-      path: helmcharts/fairagro-advanced-middleware
+      path: charts/fairagro-basic-middleware
       targetRevision: "{{ $rev }}"
       helm:
         valueFiles:
-          - $values/environments/{{ .Values.cluster_name }}/values/fairagro-advanced-middleware.yaml
-          - $values/environments/{{ .Values.cluster_name }}/values/fairagro-advanced-middleware.enc.yaml
+          - $values/environments/{{ .Values.cluster_name }}/values/fairagro-basic-middleware.yaml
+          - $values/environments/{{ .Values.cluster_name }}/values/fairagro-basic-middleware.enc.yaml
     - repoURL: https://github.com/fairagro/m4.2_infrastructure.git
       targetRevision: "{{ $rev }}"
       ref: values
   destination:
     server: https://kubernetes.default.svc
-    namespace: fairagro-advanced-middleware
+    namespace: fairagro-basic-middleware
   syncPolicy:
     automated:
       prune: true

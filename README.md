@@ -53,7 +53,8 @@ Details: `environments/local_dev/README.md` and `deps/README.md`.
 ### GitOps bootstrap (Argo CD) ###
 
 Cluster deploys for **fizz**, **elise**, and **draven** use Path A (App-of-Apps,
-**no** Root Application — avoids an extra version layer):
+**no** Root Application — avoids an extra version layer). Helm chart trees live
+under `charts/` (fleet layout; wrappers and child Applications point there).
 
 1. Checked-in **wrapper** Application under `environments/<env>/argocd/`
    (`fairagro-m42-applications`): fizz/elise pin `targetRevision: main`;

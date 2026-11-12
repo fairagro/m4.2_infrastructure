@@ -13,7 +13,7 @@ The repository SHALL contain a plaintext Argo CD Application manifest for the m4
 #### Scenario: Operator can inspect wrapper desired state in git
 
 - **WHEN** an operator opens `environments/fizz/argocd/` (and likewise elise, draven) on branch `main`
-- **THEN** a wrapper Application manifest is present that points at `helmcharts/fairagro-m42-applications` with multi-source valueFiles for that environment
+- **THEN** a wrapper Application manifest is present that points at `charts/fairagro-m42-applications` with multi-source valueFiles for that environment
 
 ### Requirement: Bootstrap applies wrapper from git without a Root Application
 

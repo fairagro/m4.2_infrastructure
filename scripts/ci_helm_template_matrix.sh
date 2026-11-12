@@ -31,7 +31,7 @@ for env in "${ENVS[@]}"; do
   apps_values="$ROOT/environments/$env/values/fairagro-m42-applications.yaml"
   if [[ -f "$apps_values" ]]; then
     echo "==> helm template: m42-applications/$env"
-    helm template "ci-apps-$env" "$ROOT/helmcharts/fairagro-m42-applications" \
+    helm template "ci-apps-$env" "$ROOT/charts/fairagro-m42-applications" \
       -f "$apps_values" \
       >/dev/null
   fi
@@ -39,7 +39,7 @@ for env in "${ENVS[@]}"; do
   for chart in "${LEAF_CHARTS[@]}"; do
     values="$ROOT/environments/$env/values/${chart}.yaml"
     if [[ -f "$values" ]]; then
-      render "$ROOT/helmcharts/$chart" "$values" "${chart}/${env}"
+      render "$ROOT/charts/$chart" "$values" "${chart}/${env}"
     else
       echo "==> skip ${chart}/${env} (no values file)"
     fi

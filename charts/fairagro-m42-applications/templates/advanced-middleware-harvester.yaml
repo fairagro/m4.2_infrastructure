@@ -9,7 +9,7 @@ spec:
   project: fairagro-m42
   sources:
     - repoURL: https://github.com/fairagro/m4.2_infrastructure.git
-      path: helmcharts/fairagro-advanced-middleware-harvester
+      path: charts/fairagro-advanced-middleware-harvester
       targetRevision: "{{ $rev }}"
       helm:
         valueFiles:

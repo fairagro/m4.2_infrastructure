@@ -37,9 +37,9 @@
 				"sops.configPath": "./.sopsrc",
 				"hadolint.hadolintPath": "/usr/local/bin/hadolint",
 				"files.associations": {
-					"**/helmcharts/**/templates/*.yaml": "jinja-yaml",
-					"**/helmcharts/**/templates/*.yml": "jinja-yaml",
-					"**/helmcharts/**/templates/*.tpl": "jinja-yaml"
+					"**/charts/**/templates/*.yaml": "jinja-yaml",
+					"**/charts/**/templates/*.yml": "jinja-yaml",
+					"**/charts/**/templates/*.tpl": "jinja-yaml"
 				}
 			}
 		}

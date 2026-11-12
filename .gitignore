@@ -4,8 +4,7 @@ elise_admin.yaml
 **/admin.conf
 **/.decrypted~*
 **/*.decoded.*
-helmcharts/*/charts/*.tgz
-helmcharts/*/Chart.lock
-helmcharts/fairagro-advanced-middleware/Chart.yaml
+charts/*/charts/*.tgz
+charts/*/Chart.lock
 couchdb-data-*.tgz
 node_modules/

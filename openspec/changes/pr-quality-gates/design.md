@@ -10,7 +10,7 @@
 
 ## Decisions
 
-1. **Always-on helm matrix (fizz+draven only)** — umbrella `fairagro-m42-applications` + each leaf under `helmcharts/` with matching env values; `tls.enabled=false` (or chart-equivalent) so SOPS secrets are not required.
+1. **Always-on helm matrix (fizz+draven only)** — umbrella `fairagro-m42-applications` + each leaf under `charts/` with matching env values; `tls.enabled=false` (or chart-equivalent) so SOPS secrets are not required.
 2. **Draven pins every PR** — remove path filter (or keep workflow always scheduled); script may exit 0 when clean / nothing to enforce.
 3. **yamllint B** — trailing spaces, EOF newline, key duplicates; disable harsh line-length/document-start as needed; exclude `**/templates/**` (and chart package tarballs).
 4. **commitlint = Devinfra `commitlint.config.cjs`**; skip `commit-path-check`.

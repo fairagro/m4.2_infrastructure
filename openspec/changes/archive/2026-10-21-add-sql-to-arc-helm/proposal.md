@@ -4,7 +4,7 @@
 
 ## What Changes
 
-- Add Helm chart `helmcharts/fairagro-advanced-middleware-sql-to-arc/` (and Argo CD Application wiring), parallel to `fairagro-advanced-middleware-harvester`.
+- Add Helm chart `charts/fairagro-advanced-middleware-sql-to-arc/` (and Argo CD Application wiring), parallel to `fairagro-advanced-middleware-harvester`.
 - Chart behaviour mirrors `start-dev.sh` / `compose.dev.yaml`:
   - PostgreSQL for the RDI database via the cluster-wide **Zalando Postgres Operator** (`acid.zalan.do/v1` CR; `rdi` declared in the CR)
   - Dump download + import as an init container on every converter Job/CronJob run (no local fallback; fail with a clear error if download fails)
@@ -26,7 +26,7 @@
 
 ## Impact
 
-- New chart at `helmcharts/fairagro-advanced-middleware-sql-to-arc/` and Argo template in `helmcharts/fairagro-m42-applications`.
+- New chart at `charts/fairagro-advanced-middleware-sql-to-arc/` and Argo template in `charts/fairagro-m42-applications`.
 - New `environments/{elise,fizz?,local_dev}/values/fairagro-advanced-middleware-sql-to-arc.yaml` (+ `.enc.yaml`).
 - Depends on published or locally built sql-to-arc image (`deps/m4.2_sql_to_arc`).
 - Runtime dependency on Advanced Middleware API, cluster-wide Zalando Postgres Operator (installed via Helm on kind), and Edaphobase dump URL egress.

@@ -30,15 +30,15 @@ Commit messages must pass [Conventional Commits](https://www.conventionalcommits
 | ------------------- | --------------------------- | -------------------------------------------------------------------------------------------------- |
 | `pr-quality`        | `helm-template-matrix`      | `helm template` umbrella + leaves × fizz/draven (`ci/helm-ci-overrides.yaml`, TLS off / stub auth) |
 | `pr-quality`        | `argocd-yaml-parse`         | Parse `environments/*/argocd/*.yaml`                                                               |
-| `pr-quality`        | `infra-quality`             | Hygiene bundle: yamllint, commitlint (PRs), gitleaks, shellcheck on `scripts/` (#96)               |
+| `pr-quality`        | `infra-quality`             | Hygiene bundle: yamllint, commitlint (PRs), gitleaks, shellcheck, actionlint (#96/#95)             |
 | `check-draven-pins` | `check-draven-release-pins` | No pre-release image tags under `environments/draven/values/` (runs every PR; exits 0 when clean)  |
 
 **Ruleset target (4 checks):** `helm-template-matrix`, `argocd-yaml-parse`, `infra-quality`,
-`check-draven-release-pins`. Do not re-add per-linter job names after #96.
+`check-draven-release-pins`. Do not re-add per-linter job names after #96/#95.
 
 Local pre-commit also runs **actionlint** on `.github/workflows/**` via the synced Infra hook root (replaces deferred
-one-off #73). **yamllint** and **shellcheck** stay CI-only after that switch (not in the Infra pre-commit root). Fold
-actionlint into the `infra-quality` CI job when implementing #95 (not a fifth required check name).
+one-off #73). **yamllint** and **shellcheck** stay CI-only (not in the Infra pre-commit root). CI mirrors actionlint
+inside `infra-quality` via `versions.env` / `scripts/install-pinned-tool.sh` (#95) — not a fifth required check.
 
 ### gitleaks: CI vs pre-commit
 
@@ -67,4 +67,3 @@ once on a PR:
 
 - kubeconform — #75
 - Secret-tool migration tracking — #74 (this repo uses **gitleaks**)
-- actionlint in CI — #95 (add as a step under `infra-quality`, not a separate required check)

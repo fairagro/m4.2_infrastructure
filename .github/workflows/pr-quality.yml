@@ -39,7 +39,6 @@ jobs:
   # draven pins: always-on workflow check-draven-pins.yml (same gate, single check name)
 
   # Single hygiene job so the ruleset needs one check name (#96), not one per linter.
-  # Future actionlint CI (#95) should fold into this job.
   infra-quality:
     name: infra-quality
     runs-on: ubuntu-latest
@@ -69,3 +68,7 @@ jobs:
         with:
           scandir: scripts
           severity: warning
+      - name: Install actionlint
+        run: sudo PINNED_TOOL_INSTALL_DIR=/usr/local/bin bash scripts/install-pinned-tool.sh actionlint
+      - name: Lint GitHub Actions workflows
+        run: actionlint

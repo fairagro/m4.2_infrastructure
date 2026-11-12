@@ -28,9 +28,9 @@ is nothing to fail), yamllint, commitlint on PR commits, gitleaks secret scan, a
 
 The repository SHALL provide a `.pre-commit-config.yaml` that installs the synced Infra fleet root
 (`.pre-commit-config.infrastructure.yaml`: gitleaks, actionlint, commitlint / commit-path-check, prettier/markdownlint,
-helm-lint, and foundation hygiene — not python-product gates). Yamllint and shellcheck SHALL remain CI jobs under
-`pr-quality` (not required as local pre-commit hooks after the fleet root switch). Docs SHALL describe hook install and
-the CI vs local split.
+helm-lint, and foundation hygiene — not python-product gates). Yamllint and shellcheck SHALL remain CI under
+`pr-quality` (typically steps of the `infra-quality` job — not required as local pre-commit hooks after the fleet root
+switch). Docs SHALL describe hook install and the CI vs local split.
 
 #### Scenario: Developer installs hooks
 

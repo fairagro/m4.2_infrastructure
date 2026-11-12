@@ -19,14 +19,16 @@ is nothing to fail), yamllint, commitlint on PR commits, gitleaks secret scan, a
 
 ### Requirement: Local pre-commit mirrors feasible gates
 
-The repository SHALL provide a `.pre-commit-config.yaml` that runs locally feasible mirrors of the quality gates
-(including yamllint with templates excluded, gitleaks, shellcheck, and commitlint on `commit-msg`), and SHALL document
-how to install the hooks.
+The repository SHALL provide a `.pre-commit-config.yaml` that installs the synced Infra fleet root
+(`.pre-commit-config.infrastructure.yaml`: gitleaks, actionlint, commitlint / commit-path-check, prettier/markdownlint,
+helm-lint, and foundation hygiene — not python-product gates). Yamllint and shellcheck SHALL remain CI jobs under
+`pr-quality` (not required as local pre-commit hooks after the fleet root switch). Docs SHALL describe hook install and
+the CI vs local split.
 
 #### Scenario: Developer installs hooks
 
 - **WHEN** a developer follows the documented pre-commit install steps
-- **THEN** commit-msg commitlint and the configured pre-commit hooks are available locally
+- **THEN** commit-msg commitlint and the configured Infra fleet pre-commit hooks are available locally
 
 ### Requirement: Conventional commit message steering
 

@@ -37,7 +37,8 @@ Commit messages must pass [Conventional Commits](https://www.conventionalcommits
 | `check-draven-pins` | `check-draven-release-pins` | No pre-release image tags under `environments/draven/values/` (runs every PR; exits 0 when clean)           |
 
 Local pre-commit also runs **actionlint** on `.github/workflows/**` via the synced Infra hook root (replaces deferred
-one-off #73). CI does not yet mirror actionlint as a separate job.
+one-off #73). **yamllint** and **shellcheck** stay CI-only after that switch (not in the Infra pre-commit root). CI does
+not yet mirror actionlint as a separate job.
 
 ### gitleaks: CI vs pre-commit
 

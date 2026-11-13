@@ -20,7 +20,7 @@ jobs:
       - name: Install Helm
         uses: azure/setup-helm@v5
         with:
-          version: v4.3.1
+          version: v4.3.2
       - name: Install kubeconform
         run: sudo PINNED_TOOL_INSTALL_DIR=/usr/local/bin bash scripts/install-pinned-tool.sh kubeconform
       - name: Helm template fizz+draven matrix (+ leaf kubeconform)

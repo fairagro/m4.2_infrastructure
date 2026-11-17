@@ -1,6 +1,9 @@
 fairagro-advanced-middleware-harvester-chart:
   # CronJob schedule (TZ controlled by timeZone).
   schedule: "0 2 * * *"
+  image:
+    # Pin like fizz/draven so chart bumps do not silently move the image via appVersion.
+    tag: 4.0.0
   resources:
     requests:
       cpu: 100m

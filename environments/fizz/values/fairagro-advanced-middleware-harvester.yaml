@@ -2,7 +2,7 @@ fairagro-advanced-middleware-harvester-chart:
   # CronJob schedule (TZ controlled by timeZone).
   schedule: "0 2 * * *"
   image:
-    tag: 4.0.0
+    tag: 5.0.0
   resources:
     requests:
       cpu: 100m

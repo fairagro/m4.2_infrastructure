@@ -67,7 +67,7 @@ fairagro-advanced-middleware-api-chart:
   api:
     image:
       repository: zalf/fairagro-advanced-middleware-api
-      tag: 14.1.0
+      tag: 14.3.0
     ingress:
       enabled: true
       mtlsEnabled: true
@@ -96,7 +96,7 @@ fairagro-advanced-middleware-api-chart:
   celery:
     image:
       repository: zalf/fairagro-advanced-middleware-api
-      tag: 14.1.0
+      tag: 14.3.0
     worker:
       replicaCount: 2
       concurrency: 2

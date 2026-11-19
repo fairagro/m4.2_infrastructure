@@ -25,8 +25,6 @@ fairagro-advanced-middleware-api-chart:
     # Tokens: fairagro-advanced-middleware.enc.yaml →
     #   arc_store.git.token + consolidated_store.git.token
     arc_store:
-      git:
-        max_workers: 4
       git_repo:
         url: https://datahub.ipk-gatersleben.de
         group: FAIRagro-advanced-middleware
@@ -46,8 +44,6 @@ fairagro-advanced-middleware-api-chart:
           sradi: SRADI
           thunen_atlas: "Thunen Atlas"
     consolidated_store:
-      git:
-        max_workers: 4
       consolidated_git:
         repo_url: https://datahub.ipk-gatersleben.de/fairagro-advanced-middleware-basic-layout/middleware_repo.git
     celery: {}  # all further celery config is set via environment variables

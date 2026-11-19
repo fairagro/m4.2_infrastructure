@@ -12,7 +12,6 @@ fairagro-advanced-middleware-api-chart:
     git_repo:
       url: https://datahub-dev.ipk-gatersleben.de
       group: FAIRagro-advanced-middleware-dev
-      max_workers: 4
     celery: {}  # all further celery config is set via environment variables
     otel: {}
 

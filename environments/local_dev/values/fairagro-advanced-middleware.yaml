@@ -23,7 +23,6 @@ fairagro-advanced-middleware-api-chart:
       # placeholders and exercise API-only paths.
       url: https://datahub.ipk-gatersleben.de
       group: FAIRagro-advanced-middleware-test
-      max_workers: 2
       rdi_gitlab_topics:
         bonares: bonares
         dwd: DWD

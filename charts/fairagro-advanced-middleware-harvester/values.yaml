@@ -22,6 +22,10 @@ fairagro-advanced-middleware-harvester-chart:
       inspire:
         # Prod CSW; fizz/elise/local_dev override to test/staging URLs.
         csw_url: https://repository.zalf.de/catalogue/csw
+        # Only published records: ZALF says "has a DOI" (10.4228) means published.
+        # Remove once their CSW hides unpublished records: fairagro/m4.2_middleware_harvester#675
+        # fizz/elise/local_dev point at test/staging CSWs and reset it to null.
+        query: csw:AnyText like '%10.4228%'
         # Placeholder text this RDI writes instead of leaving an optional field
         # empty; treated as absent (harvester #413/#437).
         placeholders:

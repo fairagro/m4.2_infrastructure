@@ -37,4 +37,6 @@ fairagro-advanced-middleware-harvester-chart:
       inspire:
         # Staging CSW; cap records for fast local smoke.
         csw_url: https://repository-staging.dataservice.zalf.de/catalogue/csw
+        # Do not inherit the umbrella's prod DOI filter.
+        query: null
         max_records: 5

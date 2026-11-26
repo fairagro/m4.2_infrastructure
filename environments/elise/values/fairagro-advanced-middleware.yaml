@@ -42,8 +42,9 @@ fairagro-advanced-middleware-api-chart:
       repository: zalf/fairagro-advanced-middleware-api
       tag: 15.0.0
     ingress:
-      # Dual-path with Gateway during trial (#130); disable after live client-TLS check.
-      enabled: true
+      # Live client-TLS check done (#130); Gateway HTTPRoute is sole external entry.
+      # Host/tls block kept for easy rollback — not rendered while enabled: false.
+      enabled: false
       mtlsEnabled: true
       mtlsVerifyDepth: 3
       className: nginx-external

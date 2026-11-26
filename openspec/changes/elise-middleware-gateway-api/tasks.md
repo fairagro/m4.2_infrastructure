@@ -25,5 +25,5 @@
 
 - [x] 4.1 `helm template` for elise/fizz against the updated umbrella — Elise: HTTPRoute+SnippetsFilter+Ingress; fizz:
       Ingress only
-- [ ] 4.2 Document operator live check (5A) in PR body: with/without client cert; docs/health without cert; then Ingress
+- [x] 4.2 Document operator live check (5A) in PR body: with/without client cert; docs/health without cert; then Ingress
       off on Elise when satisfied

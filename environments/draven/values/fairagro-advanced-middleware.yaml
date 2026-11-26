@@ -66,6 +66,7 @@ fairagro-advanced-middleware-api-chart:
       repository: zalf/fairagro-advanced-middleware-api
       tag: 14.1.0
     ingress:
+      # Dual-path with Gateway during trial (#136); disable after live client-TLS check and DNS cutover.
       enabled: true
       mtlsEnabled: true
       mtlsVerifyDepth: 3
@@ -89,6 +90,22 @@ fairagro-advanced-middleware-api-chart:
         - secretName: server-tls
           hosts:
             - middleware.fairagro.net
+    httpRoute:
+      enabled: true
+      # Cluster ListenerSet CRD is gateway.networking.k8s.io/v1 (not x-k8s.io chart default).
+      # Match working routes (elise / fizz): stable group + sectionName https.
+      parentRefs:
+        - group: gateway.networking.k8s.io
+          kind: ListenerSet
+          name: fairagro-https
+          namespace: kube-gateway-api
+          sectionName: https
+      hostnames:
+        - middleware.fairagro.net
+      clientTls:
+        enabled: true
+        project: fairagro-m42
+        verifyDepth: 3
 
   celery:
     image:

@@ -73,6 +73,7 @@ repos:
       - id: helm-lint
         name: helm lint
         # Discovers charts/<chart>/ only; no-op without charts (#361).
+        # run-helm-lint.sh auto-applies ci/helm-ci-overrides.yaml when present (#419).
         entry: bash scripts/run-helm-lint.sh
         language: system
         files: ^charts/

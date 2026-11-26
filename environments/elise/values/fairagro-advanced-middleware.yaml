@@ -9,17 +9,30 @@ fairagro-advanced-middleware-api-chart:
       - id: openagrar
       - id: publisso
       - id: thunen_atlas
-    git_repo:
-      url: https://datahub-dev.ipk-gatersleben.de
-      group: FAIRagro-advanced-middleware-dev
+    # Dual-slot ArcStore (issue #517 hard cut):
+    # - required arc_store: per-ARC git_repo (backend selected by nested key, no type)
+    # - consolidated_store omitted on elise until a catalog repo exists (#130 / 4B)
+    # Token: fairagro-advanced-middleware.enc.yaml → arc_store.git.token
+    arc_store:
+      git_repo:
+        url: https://datahub-dev.ipk-gatersleben.de
+        group: FAIRagro-advanced-middleware-dev
+        rdi_gitlab_topics:
+          bonares: bonares
+          dwd: DWD
+          edal: "e!DAL"
+          edaphobase: edaphobase
+          openagrar: "OpenAgrar Repository"
+          publisso: Publisso
+          thunen_atlas: "Thunen Atlas"
     celery: {}  # all further celery config is set via environment variables
     otel: {}
 
   rabbitmq:
-    image: rabbitmq:4.2.2
+    image: rabbitmq:4.3.4-alpine
 
   couchdb:
-    image: couchdb:3.3
+    image: couchdb:3.5.2.1
     persistence:
       enabled: true
       size: 5Gi
@@ -27,8 +40,9 @@ fairagro-advanced-middleware-api-chart:
   api:
     image:
       repository: zalf/fairagro-advanced-middleware-api
-      tag: 8.7.1-rc.review-harvesting-api.11
+      tag: 15.0.0
     ingress:
+      # Dual-path with Gateway during trial (#130); disable after live client-TLS check.
       enabled: true
       mtlsEnabled: true
       mtlsVerifyDepth: 3
@@ -52,11 +66,19 @@ fairagro-advanced-middleware-api-chart:
         - secretName: server-tls
           hosts:
             - middleware-dev.fairagro.net
+    httpRoute:
+      enabled: true
+      hostnames:
+        - middleware-dev.fairagro.net
+      clientTls:
+        enabled: true
+        project: fairagro-m42
+        verifyDepth: 3
 
   celery:
     image:
       repository: zalf/fairagro-advanced-middleware-api
-      tag: 8.7.1-rc.review-harvesting-api.11
+      tag: 15.0.0
     worker:
       replicaCount: 2
       concurrency: 2

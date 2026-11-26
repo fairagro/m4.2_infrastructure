@@ -21,6 +21,6 @@ version: 0.1.0
 
 dependencies:
   - name: fairagro-advanced-middleware-api-chart
-    # Gateway HTTPRoute + optional client TLS (#130 / API #738); RC until #742 releases.
-    version: 3.0.0-rc.issue-738-helm-gateway-optiona.6
+    # Official Gateway HTTPRoute + optional client TLS release (#130 / API #742).
+    version: 3.0.0
     repository: oci://registry-1.docker.io/zalf

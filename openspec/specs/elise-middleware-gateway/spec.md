@@ -33,9 +33,8 @@ tag). RabbitMQ and CouchDB image pins SHALL be brought in line with the current 
 
 The infrastructure umbrella chart at `charts/fairagro-advanced-middleware` SHALL depend on an OCI
 `fairagro-advanced-middleware-api-chart` version that includes Gateway HTTPRoute and optional client TLS
-(`SnippetsFilter`) support (the #742 pre-release line such as `3.0.0-rc.issue-738-helm-gateway-optiona.6`, or a newer
-RC/release of that line). Chart defaults SHALL leave HTTPRoute disabled so environments that do not opt in remain on
-Ingress-only behaviour.
+(`SnippetsFilter`) support (`3.0.0` or newer on that line). Chart defaults SHALL leave HTTPRoute disabled so
+environments that do not opt in remain on Ingress-only behaviour.
 
 #### Scenario: Umbrella dependency is Gateway-capable
 
